@@ -1,9 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Music Player</string>
+
+    <!-- Library categories (tabs and the browsable media tree) -->
     <string name="library_albums">Albums</string>
     <string name="library_artists">Artists</string>
     <string name="library_playlists">Playlists</string>
     <string name="library_songs">Songs</string>
+
+    <!-- Playback -->
     <string name="skipped_cant_play">Skipped – can\'t play %1$s</string>
+    <string name="cant_play">Can\'t play</string>
+
+    <!-- App bar -->
+    <string name="search">Search</string>
+    <string name="more_options">More options</string>
+    <string name="settings">Settings</string>
+
+    <!-- Sorting -->
+    <string name="sort">Sort</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_artist">Artist</string>
+    <string name="sort_album">Album</string>
+    <string name="sort_date_added">Date added</string>
+
+    <!-- Library empty / unknown values -->
+    <string name="no_music_found">No music found</string>
+    <string name="no_music_tips">Copy some music onto this device, or check that it is not in an excluded folder. The library updates automatically.</string>
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="unknown_album">Unknown Album</string>
+    <string name="playlists_coming_soon">Playlists will appear here.</string>
+
+    <plurals name="albums_count">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
+    <plurals name="songs_count">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
+
+    <!-- Permissions -->
+    <string name="permission_title">Music access</string>
+    <string name="permission_rationale">Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>
+    <string name="permission_allow">Allow access</string>
+    <string name="permission_denied_title">Can\'t access your music</string>
+    <string name="permission_denied_message">Allow access to music and audio in the system settings to see your library.</string>
+    <string name="open_settings">Open settings</string>
 </resources>

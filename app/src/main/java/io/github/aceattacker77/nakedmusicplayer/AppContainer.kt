@@ -18,6 +18,7 @@ import io.github.aceattacker77.nakedmusicplayer.ui.skins.SkinParser
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.SkinStore
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.TypefaceFontProbe
 import io.github.aceattacker77.nakedmusicplayer.ui.player.connect
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -28,35 +29,39 @@ import kotlinx.coroutines.flow.map
 import java.io.File
 
 /** Manual DI root, created once in [MusicApp]. Later tasks add fields. */
-class AppContainer(private val app: Application) {
-    val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+open class AppContainer(private val app: Application) {
+    open val applicationScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    /** Where CPU-bound library work (grouping, sorting) runs; tests swap in an immediate dispatcher. */
+    open val computeDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     private val dataStore by lazy {
         PreferenceDataStoreFactory.create(scope = applicationScope) { app.preferencesDataStoreFile("settings") }
     }
 
-    val settingsRepository by lazy { SettingsRepository(dataStore) }
-    val sessionStore by lazy { SessionStore(dataStore) }
+    open val settingsRepository: SettingsRepository by lazy { SettingsRepository(dataStore) }
+    open val sessionStore: SessionStore by lazy { SessionStore(dataStore) }
 
-    val database: AppDatabase by lazy {
+    open val database: AppDatabase by lazy {
         Room.databaseBuilder(app, AppDatabase::class.java, "music.db").build()
     }
 
-    val libraryRepository by lazy {
+    open val libraryRepository: LibraryRepository by lazy {
         LibraryRepository(
             source = MediaStoreAudioRowSource(app),
             filter = settingsRepository.settings.map { it.libraryFilter() }.distinctUntilChanged(),
             scope = applicationScope,
+            computeDispatcher = computeDispatcher,
         )
     }
 
     /** Connects to the playback service on first use; the MediaController must live on the main thread. */
-    val playerConnection: Deferred<PlayerConnection> by lazy {
+    open val playerConnection: Deferred<PlayerConnection> by lazy {
         applicationScope.async(Dispatchers.Main) { PlayerConnection.connect(app, applicationScope) }
     }
 
     /** Built-in skins are parsed once here; imported ones are read from `filesDir/skins`. */
-    val skinManager: SkinManager by lazy {
+    open val skinManager: SkinManager by lazy {
         val builtIns = BuiltInSkins.load(app.assets) { json, defaults -> SkinParser.parse(json, defaults) }
         val default = builtIns.first { it.id == BuiltInSkins.DEFAULT_ID }
         SkinManager(

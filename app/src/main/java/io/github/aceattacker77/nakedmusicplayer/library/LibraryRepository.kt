@@ -32,9 +32,15 @@ class LibraryRepository(
 
     val permissionDenied: StateFlow<Boolean> = _permissionDenied
 
-    val library: StateFlow<Library> = combine(rows.filterNotNull(), filter) { raw, f ->
+    // null until the first query has been turned into a Library.
+    private val built: StateFlow<Library?> = combine(rows.filterNotNull(), filter) { raw, f ->
         LibraryBuilder.build(raw, f)
-    }.flowOn(computeDispatcher).stateIn(scope, SharingStarted.Eagerly, Library.EMPTY)
+    }.flowOn(computeDispatcher).stateIn(scope, SharingStarted.Eagerly, null)
+
+    val library: StateFlow<Library> = built.map { it ?: Library.EMPTY }.stateIn(scope, SharingStarted.Eagerly, Library.EMPTY)
+
+    /** False until the first library is built (even an empty or permission-denied one), so the UI can tell "loading" from "empty". */
+    val isLoaded: StateFlow<Boolean> = built.map { it != null }.stateIn(scope, SharingStarted.Eagerly, false)
 
     init {
         scope.launch {

@@ -6,7 +6,6 @@ import io.github.aceattacker77.nakedmusicplayer.library.model.Library
 import io.github.aceattacker77.nakedmusicplayer.library.model.LibraryFilter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -14,21 +13,6 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-
-private class FakeAudioRowSource : AudioRowSource {
-    var rows: List<AudioRow> = emptyList()
-    var throwOnQuery: Throwable? = null
-    var queryCount = 0
-    val changeFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 16)
-
-    override suspend fun query(): List<AudioRow> {
-        queryCount++
-        throwOnQuery?.let { throw it }
-        return rows
-    }
-
-    override fun changes(): Flow<Unit> = changeFlow
-}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LibraryRepositoryTest {
@@ -46,6 +30,21 @@ class LibraryRepositoryTest {
         runCurrent()
         assertThat(repo.library.value.songs.map { it.id }).containsExactly(1L, 2L)
         assertThat(repo.permissionDenied.value).isFalse()
+    }
+
+    @Test fun isLoaded_falseUntilFirstQueryCompletes() = runTest {
+        val source = FakeAudioRowSource()
+        val repo = repo(source)
+        assertThat(repo.isLoaded.value).isFalse()
+        runCurrent()
+        assertThat(repo.isLoaded.value).isTrue()
+    }
+
+    @Test fun isLoaded_trueEvenWhenPermissionDenied() = runTest {
+        val source = FakeAudioRowSource().apply { throwOnQuery = SecurityException("no") }
+        val repo = repo(source)
+        runCurrent()
+        assertThat(repo.isLoaded.value).isTrue()
     }
 
     @Test fun changes_areDebounced500ms() = runTest {
