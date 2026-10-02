@@ -42,6 +42,7 @@ fun SongsScreen(
     viewModel: LibraryViewModel,
     modifier: Modifier = Modifier,
     onSongLongClick: (Song) -> Unit = {},
+    onAddFolder: (() -> Unit)? = null,
 ) {
     val songs by viewModel.songs.collectAsStateWithLifecycle()
     val isLoaded by viewModel.isLoaded.collectAsStateWithLifecycle()
@@ -53,7 +54,7 @@ fun SongsScreen(
         EmptyState(
             title = stringResource(R.string.no_music_found),
             message = stringResource(R.string.no_music_tips),
-            action = null,
+            action = onAddFolder?.let { stringResource(R.string.add_folder_to_scan) to it },
             modifier = modifier,
         )
         return

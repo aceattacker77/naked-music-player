@@ -36,6 +36,8 @@ class TestContainer(
 
     override val computeDispatcher: CoroutineDispatcher = dispatcher
 
+    override val ioDispatcher: CoroutineDispatcher = dispatcher
+
     override val settingsRepository: SettingsRepository by lazy { SettingsRepository(prefs) }
 
     override val libraryRepository: LibraryRepository by lazy {

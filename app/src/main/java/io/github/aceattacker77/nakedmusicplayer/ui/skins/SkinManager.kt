@@ -16,6 +16,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.InputStream
+import java.io.OutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 sealed interface ImportOutcome {
     data class Installed(val skin: Skin) : ImportOutcome
@@ -29,6 +32,8 @@ class SkinManager(
     private val store: SkinStore,
     private val reader: SkinArchiveReader,
     private val settings: SettingsRepository,
+    /** Raw skin.json of a built-in skin by id, so built-ins can be exported like any other skin. */
+    private val builtInJson: (String) -> String? = { null },
     scope: CoroutineScope,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
@@ -86,6 +91,20 @@ class SkinManager(
         refreshImported()
         if (settings.settings.first().activeSkinId == id) {
             settings.update { it.copy(activeSkinId = default.id) }
+        }
+    }
+
+    /** Writes [skin] as a `.mskin` archive: imported skins from disk, built-ins from their bundled JSON. */
+    suspend fun export(skin: Skin, out: OutputStream) = withContext(ioDispatcher) {
+        if (skin.baseDir != null) {
+            store.export(skin, out)
+        } else {
+            val json = builtInJson(skin.id) ?: error("no bundled skin.json for '${skin.id}'")
+            ZipOutputStream(out).use { zip ->
+                zip.putNextEntry(ZipEntry("skin.json"))
+                zip.write(json.toByteArray(Charsets.UTF_8))
+                zip.closeEntry()
+            }
         }
     }
 

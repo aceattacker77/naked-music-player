@@ -27,7 +27,7 @@ class SkinManagerTest {
 
     private class Fixture(val manager: SkinManager, val settings: SettingsRepository)
 
-    private fun TestScope.fixture(): Fixture {
+    private fun TestScope.fixture(builtInJson: (String) -> String? = { null }): Fixture {
         val settings = SettingsRepository(InMemoryPreferencesStore())
         val store = SkinStore(File(tmp.root, "skins")) { SkinParser.parse(it, Skin.FALLBACK) }
         val manager = SkinManager(
@@ -35,6 +35,7 @@ class SkinManagerTest {
             store = store,
             reader = reader,
             settings = settings,
+            builtInJson = builtInJson,
             scope = backgroundScope,
             ioDispatcher = UnconfinedTestDispatcher(testScheduler),
         )
@@ -108,5 +109,29 @@ class SkinManagerTest {
         val outcome = f.manager.import(zipFor("builtin.default", "Fake"), replace = true)
         assertThat(outcome).isEqualTo(ImportOutcome.Failed("id 'builtin.default' is reserved for built-in skins"))
         assertThat(f.manager.available.value).hasSize(2)
+    }
+
+    @Test fun export_importedSkin_roundTripsThroughTheReader() = runTest(UnconfinedTestDispatcher()) {
+        val f = fixture()
+        f.manager.import(zipFor("x.y", "Mine"), replace = false)
+        val out = java.io.ByteArrayOutputStream()
+        f.manager.export(f.manager.available.value.first { it.id == "x.y" }, out)
+        val reread = reader.read(ByteArrayInputStream(out.toByteArray())) as SkinImportResult.Valid
+        assertThat(reread.skin.id).isEqualTo("x.y")
+    }
+
+    @Test fun export_builtInSkin_usesItsBundledJson() = runTest(UnconfinedTestDispatcher()) {
+        val f = fixture(builtInJson = { id -> """{"format":1,"id":"$id","name":"Bundled"}""" })
+        val out = java.io.ByteArrayOutputStream()
+        f.manager.export(vinyl, out)
+        val reread = reader.read(ByteArrayInputStream(out.toByteArray())) as SkinImportResult.Valid
+        assertThat(reread.skin.id).isEqualTo("builtin.vinyl")
+        assertThat(reread.skin.name).isEqualTo("Bundled")
+    }
+
+    @Test fun export_builtInWithoutJson_isRejected() = runTest(UnconfinedTestDispatcher()) {
+        val f = fixture()
+        val failure = runCatching { f.manager.export(vinyl, java.io.ByteArrayOutputStream()) }.exceptionOrNull()
+        assertThat(failure).isInstanceOf(IllegalStateException::class.java)
     }
 }

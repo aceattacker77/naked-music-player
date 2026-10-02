@@ -58,6 +58,11 @@ import io.github.aceattacker77.nakedmusicplayer.ui.playlists.PlaylistsScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.playlists.PlaylistsViewModel
 import io.github.aceattacker77.nakedmusicplayer.ui.playlists.SmartPlaylistDetailScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.search.SearchScreen
+import io.github.aceattacker77.nakedmusicplayer.ui.settings.AboutScreen
+import io.github.aceattacker77.nakedmusicplayer.ui.settings.SettingsScreen
+import io.github.aceattacker77.nakedmusicplayer.ui.settings.SettingsViewModel
+import io.github.aceattacker77.nakedmusicplayer.ui.settings.SkinPickerScreen
+import io.github.aceattacker77.nakedmusicplayer.ui.settings.rememberAddFolderAction
 import io.github.aceattacker77.nakedmusicplayer.ui.search.SearchViewModel
 import io.github.aceattacker77.nakedmusicplayer.ui.library.AlbumsScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.library.ArtistsScreen
@@ -154,6 +159,13 @@ private fun AppContent(container: AppContainer) {
             initializer { PlaylistsViewModel(container.playlistRepository) }
         },
     )
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { SettingsViewModel(container.settingsRepository, container.libraryRepository, container.folderScanner) }
+        },
+    )
+    val addFolder = rememberAddFolderAction(settingsViewModel)
+    val appSettings by container.settingsRepository.settings.collectAsStateWithLifecycle(initialValue = AppSettings())
     val nav = rememberNavController()
     var menuSong by remember { mutableStateOf<Song?>(null) }
     var addTarget by remember { mutableStateOf<List<Song>?>(null) }
@@ -212,10 +224,10 @@ private fun AppContent(container: AppContainer) {
                     }
                 },
                 onSearch = { nav.navigate(Search) },
-                onSettings = {},
+                onSettings = { nav.navigate(Settings) },
             ) {
                 NavHost(navController = nav, startDestination = Songs) {
-                    composable<Songs> { SongsScreen(libraryViewModel, onSongLongClick = showMenu) }
+                    composable<Songs> { SongsScreen(libraryViewModel, onSongLongClick = showMenu, onAddFolder = addFolder) }
                     composable<Albums> { AlbumsScreen(libraryViewModel, onSongLongClick = showMenu, onAddToPlaylist = { addTarget = it }) }
                     composable<Artists> {
                         ArtistsScreen(
@@ -271,6 +283,21 @@ private fun AppContent(container: AppContainer) {
                             onAddToPlaylist = { addTarget = it },
                         )
                     }
+                    composable<Settings> {
+                        SettingsScreen(
+                            viewModel = settingsViewModel,
+                            equalizerAvailable = equalizerCapabilities != null,
+                            onBack = { nav.popBackStack() },
+                            onOpenSkins = { nav.navigate(Skins) },
+                            onOpenEqualizer = { nav.navigate(Equalizer) },
+                            onOpenAbout = { nav.navigate(About) },
+                            onAddFolder = addFolder,
+                        )
+                    }
+                    composable<Skins> {
+                        SkinPickerScreen(container.skinManager, appSettings, container.ioDispatcher, onBack = { nav.popBackStack() })
+                    }
+                    composable<About> { AboutScreen(onBack = { nav.popBackStack() }) }
                     composable<Equalizer> {
                         EqualizerScreen(container.equalizerController, onBack = { nav.popBackStack() })
                     }

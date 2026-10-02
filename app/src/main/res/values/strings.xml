@@ -115,6 +115,58 @@
     <string name="eq_unavailable_title">Equalizer unavailable</string>
     <string name="eq_unavailable_message">This device does not offer a system equalizer.</string>
 
+    <!-- Settings -->
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_dynamic_colour">Dynamic colour</string>
+    <string name="settings_dynamic_colour_hint">Use your wallpaper colours when the skin allows it</string>
+    <string name="settings_skins">Skins</string>
+    <string name="settings_skins_hint">Choose, import or export how the player looks</string>
+    <string name="settings_library">Library</string>
+    <string name="settings_min_length">Minimum song length</string>
+    <string name="min_length_off">Off</string>
+    <string name="min_length_seconds">%1$d s</string>
+    <string name="settings_excluded_folders">Excluded folders</string>
+    <string name="settings_no_folders">No folders to choose from yet.</string>
+    <string name="settings_scan_folders">Folders to scan</string>
+    <string name="settings_add_folder">Add folder</string>
+    <string name="settings_remove_folder">Remove folder</string>
+    <string name="settings_rescan">Rescan now</string>
+    <string name="settings_about">About</string>
+    <string name="done">Done</string>
+    <string name="ok">OK</string>
+    <string name="add_folder_to_scan">Add folder to scan</string>
+    <plurals name="folders_excluded">
+        <item quantity="one">%d folder excluded</item>
+        <item quantity="other">%d folders excluded</item>
+    </plurals>
+
+    <!-- Skins -->
+    <string name="skin_import">Import skin</string>
+    <string name="skin_export">Export</string>
+    <string name="skin_import_failed">Couldn\'t import skin</string>
+    <string name="skin_import_unreadable">The file could not be read</string>
+    <string name="skin_export_failed">Couldn\'t save the skin</string>
+    <string name="skin_replace_title">Replace skin?</string>
+    <string name="skin_replace_message">A skin with this id is already installed. Replace it with the imported one?</string>
+    <string name="skin_replace">Replace</string>
+    <string name="skin_preview_sample">Sample</string>
+
+    <!-- About -->
+    <string name="about_version">Version %1$s</string>
+    <string name="about_licences">Open-source licences</string>
+    <string-array name="open_source_licences">
+        <item>AndroidX Media3 (ExoPlayer, Session)|Apache License 2.0</item>
+        <item>Jetpack Compose and Material 3|Apache License 2.0</item>
+        <item>AndroidX Room, DataStore, Navigation, Lifecycle, Palette|Apache License 2.0</item>
+        <item>Coil|Apache License 2.0</item>
+        <item>Material Kolor|MIT License</item>
+        <item>Reorderable|Apache License 2.0</item>
+        <item>Kotlin and kotlinx.serialization / coroutines|Apache License 2.0</item>
+    </string-array>
+
     <!-- Permissions -->
     <string name="permission_title">Music access</string>
     <string name="permission_rationale">Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>

@@ -78,6 +78,7 @@ fun NowPlayingScreen(
     modifier: Modifier = Modifier,
     artworkModifier: Modifier = Modifier,
     equalizerAvailable: Boolean = false,
+    applyWindowInsets: Boolean = true,
 ) {
     val skin = LocalSkin.current
     val style = skin.player
@@ -101,7 +102,7 @@ fun NowPlayingScreen(
         ) {
             Box(Modifier.fillMaxSize()) {
                 PlayerBackground(style.background, skin, albumId)
-                Column(Modifier.fillMaxSize().systemBarsPadding()) {
+                Column(Modifier.fillMaxSize().then(if (applyWindowInsets) Modifier.systemBarsPadding() else Modifier)) {
                     CollapseBar(actions.onCollapse)
                     // Layouts that put a small thumbnail beside the title read better left-aligned.
                     val centeredInfo = skin.layout.type != LayoutType.COMPACT &&

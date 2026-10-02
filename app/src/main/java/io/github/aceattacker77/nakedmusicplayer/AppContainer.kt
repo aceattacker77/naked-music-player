@@ -8,6 +8,7 @@ import io.github.aceattacker77.nakedmusicplayer.data.db.AppDatabase
 import io.github.aceattacker77.nakedmusicplayer.data.playlists.PlaylistRepository
 import io.github.aceattacker77.nakedmusicplayer.data.session.SessionStore
 import io.github.aceattacker77.nakedmusicplayer.data.settings.SettingsRepository
+import io.github.aceattacker77.nakedmusicplayer.library.FolderScanner
 import io.github.aceattacker77.nakedmusicplayer.library.LibraryRepository
 import io.github.aceattacker77.nakedmusicplayer.playback.eq.EqRepository
 import io.github.aceattacker77.nakedmusicplayer.playback.eq.EqualizerController
@@ -37,6 +38,9 @@ import java.io.File
 /** Manual DI root, created once in [MusicApp]. Later tasks add fields. */
 open class AppContainer(private val app: Application) {
     open val applicationScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    /** Where blocking file work (skin import/export) runs; tests swap in an immediate dispatcher. */
+    open val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
     /** Where CPU-bound library work (grouping, sorting) runs; tests swap in an immediate dispatcher. */
     open val computeDispatcher: CoroutineDispatcher = Dispatchers.Default
@@ -114,7 +118,15 @@ open class AppContainer(private val app: Application) {
                 fontProbe = TypefaceFontProbe(File(app.cacheDir, "skin-probe")),
             ),
             settings = settingsRepository,
+            builtInJson = { id ->
+                runCatching {
+                    app.assets.open("skins/${id.removePrefix("builtin.")}/skin.json").use { it.readBytes().toString(Charsets.UTF_8) }
+                }.getOrNull()
+            },
             scope = applicationScope,
+            ioDispatcher = ioDispatcher,
         )
     }
+
+    open val folderScanner: FolderScanner by lazy { FolderScanner(app) }
 }

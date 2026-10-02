@@ -17,3 +17,4 @@ import kotlinx.serialization.Serializable
 @Serializable data object Settings
 @Serializable data object Equalizer
 @Serializable data object Skins
+@Serializable data object About
