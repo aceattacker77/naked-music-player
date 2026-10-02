@@ -9,6 +9,9 @@ import io.github.aceattacker77.nakedmusicplayer.data.playlists.PlaylistRepositor
 import io.github.aceattacker77.nakedmusicplayer.data.session.SessionStore
 import io.github.aceattacker77.nakedmusicplayer.data.settings.SettingsRepository
 import io.github.aceattacker77.nakedmusicplayer.library.LibraryRepository
+import io.github.aceattacker77.nakedmusicplayer.playback.eq.EqRepository
+import io.github.aceattacker77.nakedmusicplayer.playback.eq.EqualizerController
+import io.github.aceattacker77.nakedmusicplayer.playback.eq.PlatformAudioEffectsBackend
 import io.github.aceattacker77.nakedmusicplayer.library.MediaStoreAudioRowSource
 import io.github.aceattacker77.nakedmusicplayer.ui.player.PlayerConnection
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.BitmapImageProbe
@@ -56,6 +59,19 @@ open class AppContainer(private val app: Application) {
             scope = applicationScope,
             computeDispatcher = computeDispatcher,
         )
+    }
+
+    /**
+     * Where the equalizer preamp reaches the player. The playback service sets this while it runs
+     * (and clears it on destroy); the player itself must only be touched on its own thread.
+     */
+    @Volatile
+    var equalizerVolumeSink: ((Float) -> Unit)? = null
+
+    open val equalizerController: EqualizerController by lazy {
+        EqualizerController(PlatformAudioEffectsBackend(), EqRepository(dataStore), applicationScope) { volume ->
+            equalizerVolumeSink?.invoke(volume)
+        }
     }
 
     open val playlistRepository: PlaylistRepository by lazy {

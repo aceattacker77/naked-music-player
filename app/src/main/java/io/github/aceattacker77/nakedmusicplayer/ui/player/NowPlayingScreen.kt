@@ -54,10 +54,11 @@ class NowPlayingActions(
     val onOpenQueue: () -> Unit,
     val onCollapse: () -> Unit,
     val onAddToPlaylist: () -> Unit,
+    val onOpenEqualizer: () -> Unit,
 ) {
     companion object {
         /** No-op actions, for previews and screenshot tests. */
-        val None = NowPlayingActions({}, {}, {}, {}, {}, {}, {}, {}, {})
+        val None = NowPlayingActions({}, {}, {}, {}, {}, {}, {}, {}, {}, {})
     }
 }
 
@@ -76,6 +77,7 @@ fun NowPlayingScreen(
     actions: NowPlayingActions,
     modifier: Modifier = Modifier,
     artworkModifier: Modifier = Modifier,
+    equalizerAvailable: Boolean = false,
 ) {
     val skin = LocalSkin.current
     val style = skin.player
@@ -104,8 +106,8 @@ fun NowPlayingScreen(
                     // Layouts that put a small thumbnail beside the title read better left-aligned.
                     val centeredInfo = skin.layout.type != LayoutType.COMPACT &&
                         !(skin.layout.type == LayoutType.MINIMAL && skin.layout.artPosition == ArtPosition.LEFT)
-                    val slots = remember(state, positionMs, style, actions, albumId, artworkModifier, centeredInfo) {
-                        buildSlots(state, positionMs, style, actions, albumId, artworkModifier, centeredInfo)
+                    val slots = remember(state, positionMs, style, actions, albumId, artworkModifier, centeredInfo, equalizerAvailable) {
+                        buildSlots(state, positionMs, style, actions, albumId, artworkModifier, centeredInfo, equalizerAvailable)
                     }
                     NowPlayingLayout(skin.layout, slots, Modifier.weight(1f))
                 }
@@ -133,6 +135,7 @@ private fun buildSlots(
     albumId: Long?,
     artworkModifier: Modifier,
     centeredInfo: Boolean,
+    equalizerAvailable: Boolean,
 ): NowPlayingSlots {
     val meta = state.current?.mediaMetadata
     return NowPlayingSlots(
@@ -160,7 +163,14 @@ private fun buildSlots(
             )
         },
         secondaryControls = {
-            SecondaryControls(state.shuffle, state.repeatMode, actions.onToggleShuffle, actions.onCycleRepeat, actions.onAddToPlaylist)
+            SecondaryControls(
+                shuffle = state.shuffle,
+                repeatMode = state.repeatMode,
+                onToggleShuffle = actions.onToggleShuffle,
+                onCycleRepeat = actions.onCycleRepeat,
+                onAddToPlaylist = actions.onAddToPlaylist,
+                onOpenEqualizer = if (equalizerAvailable) actions.onOpenEqualizer else null,
+            )
         },
         queueHandle = { QueueHandle(actions.onOpenQueue) },
     )

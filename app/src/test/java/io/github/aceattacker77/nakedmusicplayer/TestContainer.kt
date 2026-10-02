@@ -8,6 +8,9 @@ import io.github.aceattacker77.nakedmusicplayer.data.InMemoryPreferencesStore
 import io.github.aceattacker77.nakedmusicplayer.data.settings.SettingsRepository
 import io.github.aceattacker77.nakedmusicplayer.library.FakeAudioRowSource
 import io.github.aceattacker77.nakedmusicplayer.library.LibraryRepository
+import io.github.aceattacker77.nakedmusicplayer.playback.eq.EqRepository
+import io.github.aceattacker77.nakedmusicplayer.playback.eq.EqualizerController
+import io.github.aceattacker77.nakedmusicplayer.playback.eq.FakeAudioEffectsBackend
 import io.github.aceattacker77.nakedmusicplayer.ui.player.PlayerConnection
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
@@ -52,6 +55,11 @@ class TestContainer(
             .setQueryExecutor { it.run() }
             .setTransactionExecutor { it.run() }
             .build()
+    }
+
+    // A device with no equalizer: the Now Playing EQ button stays hidden in UI tests.
+    override val equalizerController: EqualizerController by lazy {
+        EqualizerController(FakeAudioEffectsBackend(capabilities = null), EqRepository(prefs), applicationScope) {}
     }
 
     override val playerConnection: Deferred<PlayerConnection> =

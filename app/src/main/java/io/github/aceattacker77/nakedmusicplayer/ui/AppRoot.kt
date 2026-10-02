@@ -51,6 +51,7 @@ import io.github.aceattacker77.nakedmusicplayer.ui.components.EmptyState
 import io.github.aceattacker77.nakedmusicplayer.ui.components.SongMenu
 import io.github.aceattacker77.nakedmusicplayer.ui.library.AlbumDetailPane
 import io.github.aceattacker77.nakedmusicplayer.ui.library.ArtistDetailPane
+import io.github.aceattacker77.nakedmusicplayer.ui.equalizer.EqualizerScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.playlists.AddToPlaylistSheet
 import io.github.aceattacker77.nakedmusicplayer.ui.playlists.PlaylistDetailScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.playlists.PlaylistsScreen
@@ -164,6 +165,7 @@ private fun AppContent(container: AppContainer) {
     val idle = remember { MutableStateFlow(PlayerUiState.EMPTY) }
     val playerState by (connection?.state ?: idle).collectAsStateWithLifecycle()
     val sheet = rememberPlayerSheetState()
+    val equalizerCapabilities by container.equalizerController.capabilities.collectAsStateWithLifecycle()
     val hasTrack = playerState.current != null
     val expanded = sheet.isExpanded && hasTrack
 
@@ -269,6 +271,9 @@ private fun AppContent(container: AppContainer) {
                             onAddToPlaylist = { addTarget = it },
                         )
                     }
+                    composable<Equalizer> {
+                        EqualizerScreen(container.equalizerController, onBack = { nav.popBackStack() })
+                    }
                     composable<Search> {
                         SearchScreen(
                             searchViewModel = searchViewModel,
@@ -291,6 +296,11 @@ private fun AppContent(container: AppContainer) {
                     NowPlayingHost(
                         connection = player,
                         sheet = sheet,
+                        equalizerAvailable = equalizerCapabilities != null,
+                        onOpenEqualizer = {
+                            sheet.collapse()
+                            nav.navigate(Equalizer)
+                        },
                         onAddToPlaylist = {
                             val current = playerState.current?.mediaId
                             container.libraryRepository.library.value.songs

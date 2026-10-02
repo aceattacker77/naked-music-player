@@ -53,6 +53,7 @@ class PlaybackService : MediaLibraryService() {
             }
         }
         player.addListener(PlayerListener())
+        connectEqualizer()
         session = MediaLibrarySession.Builder(this, player, LibraryCallback()).build()
         restoreSession()
     }
@@ -65,12 +66,27 @@ class PlaybackService : MediaLibraryService() {
     }
 
     override fun onDestroy() {
+        container.equalizerVolumeSink = null
+        container.equalizerController.release()
         session?.run {
             player.release()
             release()
         }
         session = null
         super.onDestroy()
+    }
+
+    /** Binds the equalizer to the player audio session, and sends the preamp to the player volume. */
+    private fun connectEqualizer() {
+        val equalizer = container.equalizerController
+        val mainExecutor = ContextCompat.getMainExecutor(this)
+        container.equalizerVolumeSink = { volume -> mainExecutor.execute { player.volume = volume } }
+        equalizer.onAudioSessionId(player.audioSessionId)
+        player.addListener(object : Player.Listener {
+            override fun onAudioSessionIdChanged(audioSessionId: Int) {
+                equalizer.onAudioSessionId(audioSessionId)
+            }
+        })
     }
 
     /** Restores the last queue paused: it is never started automatically. */

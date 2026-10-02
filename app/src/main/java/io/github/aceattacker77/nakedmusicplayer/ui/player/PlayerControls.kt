@@ -148,7 +148,7 @@ fun TrackInfo(
     }
 }
 
-/** Shuffle, add-to-playlist and repeat. */
+/** Shuffle, equalizer (when the device has one), add-to-playlist and repeat. */
 @Composable
 fun SecondaryControls(
     shuffle: Boolean,
@@ -157,6 +157,7 @@ fun SecondaryControls(
     onCycleRepeat: () -> Unit,
     onAddToPlaylist: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenEqualizer: (() -> Unit)? = null,
 ) {
     val active = MaterialTheme.colorScheme.primary
     val inactive = MaterialTheme.colorScheme.onSurfaceVariant
@@ -167,6 +168,15 @@ fun SecondaryControls(
                 contentDescription = stringResource(if (shuffle) R.string.shuffle_on else R.string.shuffle_off),
                 tint = if (shuffle) active else inactive,
             )
+        }
+        if (onOpenEqualizer != null) {
+            IconButton(onClick = onOpenEqualizer) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_equalizer),
+                    contentDescription = stringResource(R.string.equalizer),
+                    tint = inactive,
+                )
+            }
         }
         IconButton(onClick = onAddToPlaylist) {
             Icon(

@@ -100,6 +100,21 @@
     <string name="m3u_export_failed">Couldn\'t save the playlist</string>
     <string name="imported_playlist_fallback_name">Imported playlist</string>
 
+    <!-- Equalizer -->
+    <string name="equalizer">Equalizer</string>
+    <string name="eq_preset">Preset</string>
+    <string name="eq_preset_custom">Custom</string>
+    <string name="eq_preset_name">Preset name</string>
+    <string name="eq_save_preset">Save as preset</string>
+    <string name="eq_bass_boost">Bass boost</string>
+    <string name="eq_preamp">Preamp</string>
+    <string name="eq_db">%1$s dB</string>
+    <string name="eq_freq_hz">%1$d Hz</string>
+    <string name="eq_freq_khz">%1$s kHz</string>
+    <string name="eq_system_settings">System sound settings</string>
+    <string name="eq_unavailable_title">Equalizer unavailable</string>
+    <string name="eq_unavailable_message">This device does not offer a system equalizer.</string>
+
     <!-- Permissions -->
     <string name="permission_title">Music access</string>
     <string name="permission_rationale">Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>

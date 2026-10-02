@@ -25,6 +25,7 @@ fun PlaylistNameDialog(
     initialName: String,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
+    label: String = stringResource(R.string.playlist_name),
 ) {
     var name by remember { mutableStateOf(TextFieldValue(initialName, TextRange(initialName.length))) }
     AlertDialog(
@@ -38,7 +39,7 @@ fun PlaylistNameDialog(
                 value = name,
                 onValueChange = { name = it },
                 singleLine = true,
-                label = { Text(stringResource(R.string.playlist_name)) },
+                label = { Text(label) },
                 modifier = Modifier.testTag("playlist-name-field"),
             )
         },

@@ -31,6 +31,8 @@ fun NowPlayingHost(
     connection: PlayerConnection,
     sheet: PlayerSheetState,
     onAddToPlaylist: () -> Unit,
+    onOpenEqualizer: () -> Unit,
+    equalizerAvailable: Boolean,
     modifier: Modifier = Modifier,
     artworkModifier: Modifier = Modifier,
 ) {
@@ -38,7 +40,7 @@ fun NowPlayingHost(
     val position by remember(connection) { connection.positionMs() }.collectAsStateWithLifecycle(initialValue = 0L)
     var showQueue by rememberSaveable { mutableStateOf(false) }
 
-    val actions = remember(connection, sheet, onAddToPlaylist) {
+    val actions = remember(connection, sheet, onAddToPlaylist, onOpenEqualizer) {
         NowPlayingActions(
             onPlayPause = connection::togglePlayPause,
             onPrevious = connection::previous,
@@ -49,6 +51,7 @@ fun NowPlayingHost(
             onOpenQueue = { showQueue = true },
             onCollapse = sheet::collapse,
             onAddToPlaylist = onAddToPlaylist,
+            onOpenEqualizer = onOpenEqualizer,
         )
     }
 
@@ -70,7 +73,7 @@ fun NowPlayingHost(
             ),
         color = MaterialTheme.colorScheme.background,
     ) {
-        NowPlayingScreen(state, position, actions, artworkModifier = artworkModifier)
+        NowPlayingScreen(state, position, actions, artworkModifier = artworkModifier, equalizerAvailable = equalizerAvailable)
     }
 
     if (showQueue) {
