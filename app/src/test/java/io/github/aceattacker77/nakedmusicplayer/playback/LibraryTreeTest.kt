@@ -95,5 +95,6 @@ class LibraryTreeTest {
         assertThat(item.mediaMetadata.artworkUri.toString()).isEqualTo("content://media/external/audio/albumart/10")
         assertThat(item.mediaMetadata.isPlayable).isTrue()
         assertThat(item.mediaMetadata.isBrowsable).isFalse()
+        assertThat(item.mediaMetadata.durationMs).isEqualTo(200_000L)
     }
 }

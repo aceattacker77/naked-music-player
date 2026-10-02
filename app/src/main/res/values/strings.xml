@@ -5,4 +5,5 @@
     <string name="library_artists">Artists</string>
     <string name="library_playlists">Playlists</string>
     <string name="library_songs">Songs</string>
+    <string name="skipped_cant_play">Skipped – can\'t play %1$s</string>
 </resources>
