@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "id": "builtin.minimal",
+  "name": "Minimal",
+  "author": "Music Player",
+  "version": "1.0",
+  "colors": {
+    "mode": "both",
+    "light": { "primary": "#455A64" },
+    "dark": { "primary": "#B0BEC5" }
+  },
+  "shapes": { "cornerRadiusDp": 8 },
+  "player": {
+    "background": { "type": "solid" },
+    "artShape": { "type": "square" },
+    "artSpin": false,
+    "seekBar": "thin",
+    "controls": "iconOnly",
+    "controlSize": "small",
+    "glow": false,
+    "shadow": false,
+    "useArtColors": false
+  },
+  "layout": { "type": "minimal", "slots": { "artPosition": "left" } }
+}

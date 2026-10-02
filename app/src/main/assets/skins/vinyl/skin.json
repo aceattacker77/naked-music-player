@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "id": "builtin.vinyl",
+  "name": "Vinyl",
+  "author": "Music Player",
+  "version": "1.0",
+  "colors": {
+    "mode": "both",
+    "light": { "primary": "#C0392B" },
+    "dark": { "primary": "#E57368" }
+  },
+  "shapes": { "cornerRadiusDp": 24 },
+  "player": {
+    "background": { "type": "blurredArt" },
+    "artShape": { "type": "circle" },
+    "artSpin": true,
+    "seekBar": "flat",
+    "controls": "filled",
+    "controlSize": "large",
+    "glow": false,
+    "shadow": true,
+    "useArtColors": false
+  },
+  "layout": { "type": "vinyl", "slots": { "artPosition": "center" } }
+}

@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "id": "builtin.default",
+  "name": "Default",
+  "author": "Music Player",
+  "version": "1.0",
+  "colors": { "mode": "system" },
+  "shapes": { "cornerRadiusDp": 28 },
+  "player": {
+    "background": { "type": "artGradient" },
+    "artShape": { "type": "rounded", "radiusDp": 28 },
+    "artSpin": false,
+    "seekBar": "wavy",
+    "controls": "filled",
+    "controlSize": "medium",
+    "glow": false,
+    "shadow": false,
+    "useArtColors": true
+  },
+  "layout": { "type": "classic", "slots": { "artPosition": "top" } }
+}

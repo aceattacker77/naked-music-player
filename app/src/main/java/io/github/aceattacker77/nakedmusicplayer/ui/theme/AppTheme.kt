@@ -20,6 +20,7 @@ import io.github.aceattacker77.nakedmusicplayer.data.settings.AppSettings
 import io.github.aceattacker77.nakedmusicplayer.data.settings.ThemeMode
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ColorMode
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.Skin
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.SkinAssets
 import java.io.File
 
 /**
@@ -57,7 +58,7 @@ fun AppTheme(skin: Skin, settings: AppSettings, content: @Composable () -> Unit)
         null
     }
     val colors = selectColorScheme(skin, settings, systemDark, dynamic)
-    val fontFamily = remember(skin.id, skin.fontPath) { loadSkinFontFamily(skin) }
+    val fontFamily = remember(skin.id, skin.fontPath, skin.baseDir) { SkinAssets.fontFamily(skin) }
     val typography = remember(fontFamily) { Typography().withFontFamily(fontFamily) }
     val shapes = remember(skin.cornerRadiusDp) { shapesFor(skin.cornerRadiusDp) }
 

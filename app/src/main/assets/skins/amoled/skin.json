@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "id": "builtin.amoled",
+  "name": "AMOLED Black",
+  "author": "Music Player",
+  "version": "1.0",
+  "colors": {
+    "mode": "dark",
+    "dark": { "primary": "#BB86FC", "background": "#000000", "surface": "#000000" }
+  },
+  "shapes": { "cornerRadiusDp": 16 },
+  "player": {
+    "background": { "type": "solid" },
+    "artShape": { "type": "rounded", "radiusDp": 16 },
+    "artSpin": false,
+    "seekBar": "flat",
+    "controls": "outlined",
+    "controlSize": "medium",
+    "glow": false,
+    "shadow": false,
+    "useArtColors": false
+  },
+  "layout": { "type": "classic", "slots": { "artPosition": "top" } }
+}
