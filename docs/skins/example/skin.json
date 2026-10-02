@@ -1,0 +1,23 @@
+{
+  "format": 1,
+  "id": "com.example.neon",
+  "name": "Neon",
+  "author": "Someone",
+  "version": "1.0",
+  "colors": {
+    "mode": "dark",
+    "dark": { "primary": "#00E5FF", "background": "#0A0A12", "surface": "#141420", "onPrimary": "#000000" }
+  },
+  "shapes": { "cornerRadiusDp": 20 },
+  "player": {
+    "background": { "type": "artGradient" },
+    "artShape": { "type": "rounded", "radiusDp": 28 },
+    "artSpin": false,
+    "seekBar": "wavy",
+    "controls": "filled",
+    "controlSize": "large",
+    "glow": true,
+    "useArtColors": false
+  },
+  "layout": { "type": "classic", "slots": { "artPosition": "top" } }
+}
