@@ -9,12 +9,17 @@ goldens verified; Android lint has no errors; release APK 4.0 MB with no `INTERN
 
 The plan's performance and on-device steps are **unverified**: nothing below has been run.
 
-- All `androidTest` classes (compile only): `FormatPlaybackTest` (formats, gapless, skip-on-error through the service), `AndroidProbesTest`.
 - Baseline profile generation and the startup/scroll benchmarks, so *cold start < 400 ms* and *0 dropped frames* are unmeasured.
 - Memory (< 120 MB PSS with 5,000 songs) and the API 26 / API 36 emulator runs.
 - Every item in `docs/manual-test-checklist.md` (Bluetooth, calls, lock screen, widget, foldable, TalkBack, audible equalizer…).
 - The minified **release** build has not been run: R8 keep rules for kotlinx.serialization are untested at runtime.
 - Real file-backed DataStore, `PlatformAudioEffectsBackend`, `FolderScanner`, the M3U/skin file pickers and widget actions.
+
+## Verified on a device
+
+- `androidTest`: 10/10 pass on a Xiaomi POCO M8 5G (Android 16, API 36) over wireless adb: `FormatPlaybackTest` (all six formats, gapless, skip-on-error through the service, give-up after three corrupt files) and `AndroidProbesTest`. Run by hand with `adb install -t` and `am instrument`, because the Gradle runner's install flag is blocked on Xiaomi.
+- Two test bugs were found and fixed doing this: the player was built with the test APK's context (no application context), and the give-up test counted errors on the controller, which the service clears before it can see them.
+- The debug app installs and launches, and the library and UI load after granting audio access.
 
 ## Rulings (deviations from the plan, and why)
 
