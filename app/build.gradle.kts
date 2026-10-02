@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -26,7 +27,10 @@ android {
     buildFeatures { compose = true }
 
     testOptions {
-        unitTests.isIncludeAndroidResources = true
+        unitTests {
+            isIncludeAndroidResources = true
+            all { it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware" }
+        }
     }
 }
 
@@ -44,6 +48,8 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.material.kolor)
+    implementation(libs.palette.ktx)
+    implementation(libs.reorderable)
     implementation(libs.compose.material.icons.core)
     implementation(libs.compose.adaptive)
     implementation(libs.compose.adaptive.layout)
@@ -63,6 +69,8 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
     debugImplementation(libs.compose.ui.test.manifest)
     testImplementation(libs.media3.test.utils)
     testImplementation(libs.media3.test.utils.robolectric)

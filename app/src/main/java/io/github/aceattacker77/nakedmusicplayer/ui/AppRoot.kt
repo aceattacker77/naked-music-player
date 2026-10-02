@@ -5,12 +5,22 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,7 +60,14 @@ import io.github.aceattacker77.nakedmusicplayer.ui.onboarding.PermissionDeniedSc
 import io.github.aceattacker77.nakedmusicplayer.ui.onboarding.PermissionScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.onboarding.needsNotificationPermission
 import io.github.aceattacker77.nakedmusicplayer.ui.onboarding.requiredAudioPermission
+import io.github.aceattacker77.nakedmusicplayer.ui.player.MiniPlayer
+import io.github.aceattacker77.nakedmusicplayer.ui.player.NowPlayingHost
+import io.github.aceattacker77.nakedmusicplayer.ui.player.PlayerConnection
+import io.github.aceattacker77.nakedmusicplayer.ui.player.PlayerUiState
+import io.github.aceattacker77.nakedmusicplayer.ui.player.rememberPlayerSheetState
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.AppTheme
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /** Themed root: applies the active skin, then gates the app on audio permission. */
 @Composable
@@ -104,6 +122,7 @@ private fun PermissionGate(container: AppContainer, content: @Composable () -> U
 private fun Context.hasPermission(permission: String): Boolean =
     ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun AppContent(container: AppContainer) {
     val libraryViewModel: LibraryViewModel = viewModel(
@@ -126,55 +145,119 @@ private fun AppContent(container: AppContainer) {
     val nav = rememberNavController()
     var menuSong by remember { mutableStateOf<Song?>(null) }
 
+    // The player connects in the background; until it does the mini player simply stays hidden.
+    val connection by produceState<PlayerConnection?>(initialValue = null, container) {
+        value = runCatching { container.playerConnection.await() }.getOrNull()
+    }
+    val idle = remember { MutableStateFlow(PlayerUiState.EMPTY) }
+    val playerState by (connection?.state ?: idle).collectAsStateWithLifecycle()
+    val sheet = rememberPlayerSheetState()
+    val hasTrack = playerState.current != null
+    val expanded = sheet.isExpanded && hasTrack
+
+    // Nothing left to show: fall back to the library.
+    LaunchedEffect(hasTrack) { if (!hasTrack) sheet.collapse() }
+
+    PredictiveBackHandler(enabled = expanded) { progress ->
+        try {
+            progress.collect { sheet.backProgress = it.progress }
+            sheet.collapse()
+        } catch (e: CancellationException) {
+            sheet.backProgress = 0f
+            throw e
+        }
+    }
+
     val openAlbum: (Album) -> Unit = { nav.navigate(AlbumDetail(it.id)) }
     val openArtist: (Artist) -> Unit = { nav.navigate(ArtistDetail(it.id)) }
     val showMenu: (Song) -> Unit = { menuSong = it }
 
-    AppScaffold(
-        nav = nav,
-        miniPlayer = {},
-        onSearch = { nav.navigate(Search) },
-        onSettings = {},
-    ) {
-        NavHost(navController = nav, startDestination = Songs) {
-            composable<Songs> { SongsScreen(libraryViewModel, onSongLongClick = showMenu) }
-            composable<Albums> { AlbumsScreen(libraryViewModel, onSongLongClick = showMenu) }
-            composable<Artists> { ArtistsScreen(libraryViewModel, onAlbumClick = openAlbum, onSongLongClick = showMenu) }
-            composable<Playlists> {
-                EmptyState(
-                    title = stringResource(R.string.library_playlists),
-                    message = stringResource(R.string.playlists_coming_soon),
-                    action = null,
-                )
+    SharedTransitionLayout {
+        Box(Modifier.fillMaxSize()) {
+            AppScaffold(
+                nav = nav,
+                miniPlayer = {
+                    AnimatedVisibility(
+                        visible = hasTrack && !expanded,
+                        enter = slideInVertically { it } + fadeIn(),
+                        exit = slideOutVertically { it } + fadeOut(),
+                    ) {
+                        connection?.let { player ->
+                            MiniPlayer(
+                                state = playerState,
+                                positionMs = remember(player) { player.positionMs() },
+                                onExpand = sheet::expand,
+                                onPlayPause = player::togglePlayPause,
+                                onNext = player::next,
+                                artworkModifier = Modifier.sharedElement(
+                                    rememberSharedContentState(ARTWORK_KEY),
+                                    animatedVisibilityScope = this@AnimatedVisibility,
+                                ),
+                            )
+                        }
+                    }
+                },
+                onSearch = { nav.navigate(Search) },
+                onSettings = {},
+            ) {
+                NavHost(navController = nav, startDestination = Songs) {
+                    composable<Songs> { SongsScreen(libraryViewModel, onSongLongClick = showMenu) }
+                    composable<Albums> { AlbumsScreen(libraryViewModel, onSongLongClick = showMenu) }
+                    composable<Artists> { ArtistsScreen(libraryViewModel, onAlbumClick = openAlbum, onSongLongClick = showMenu) }
+                    composable<Playlists> {
+                        EmptyState(
+                            title = stringResource(R.string.library_playlists),
+                            message = stringResource(R.string.playlists_coming_soon),
+                            action = null,
+                        )
+                    }
+                    composable<AlbumDetail> { entry ->
+                        AlbumDetailPane(
+                            albumId = entry.toRoute<AlbumDetail>().id,
+                            viewModel = libraryViewModel,
+                            showBack = true,
+                            onBack = { nav.popBackStack() },
+                            onSongLongClick = showMenu,
+                        )
+                    }
+                    composable<ArtistDetail> { entry ->
+                        ArtistDetailPane(
+                            artistId = entry.toRoute<ArtistDetail>().id,
+                            viewModel = libraryViewModel,
+                            showBack = true,
+                            onBack = { nav.popBackStack() },
+                            onAlbumClick = openAlbum,
+                            onSongLongClick = showMenu,
+                        )
+                    }
+                    composable<Search> {
+                        SearchScreen(
+                            searchViewModel = searchViewModel,
+                            libraryViewModel = libraryViewModel,
+                            onBack = { nav.popBackStack() },
+                            onAlbumClick = openAlbum,
+                            onArtistClick = openArtist,
+                            onSongLongClick = showMenu,
+                        )
+                    }
+                }
             }
-            composable<AlbumDetail> { entry ->
-                AlbumDetailPane(
-                    albumId = entry.toRoute<AlbumDetail>().id,
-                    viewModel = libraryViewModel,
-                    showBack = true,
-                    onBack = { nav.popBackStack() },
-                    onSongLongClick = showMenu,
-                )
-            }
-            composable<ArtistDetail> { entry ->
-                ArtistDetailPane(
-                    artistId = entry.toRoute<ArtistDetail>().id,
-                    viewModel = libraryViewModel,
-                    showBack = true,
-                    onBack = { nav.popBackStack() },
-                    onAlbumClick = openAlbum,
-                    onSongLongClick = showMenu,
-                )
-            }
-            composable<Search> {
-                SearchScreen(
-                    searchViewModel = searchViewModel,
-                    libraryViewModel = libraryViewModel,
-                    onBack = { nav.popBackStack() },
-                    onAlbumClick = openAlbum,
-                    onArtistClick = openArtist,
-                    onSongLongClick = showMenu,
-                )
+
+            AnimatedVisibility(
+                visible = expanded,
+                enter = slideInVertically { it / 4 } + fadeIn(),
+                exit = slideOutVertically { it / 4 } + fadeOut(),
+            ) {
+                connection?.let { player ->
+                    NowPlayingHost(
+                        connection = player,
+                        sheet = sheet,
+                        artworkModifier = Modifier.sharedElement(
+                            rememberSharedContentState(ARTWORK_KEY),
+                            animatedVisibilityScope = this@AnimatedVisibility,
+                        ),
+                    )
+                }
             }
         }
     }
@@ -191,3 +274,5 @@ private fun AppContent(container: AppContainer) {
         )
     }
 }
+
+private const val ARTWORK_KEY = "now-playing-artwork"

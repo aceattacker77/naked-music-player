@@ -21,23 +21,25 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.github.aceattacker77.nakedmusicplayer.R
 
+/** What Coil should load for an album's artwork on this Android version. */
+fun albumArtModel(albumId: Long): Any =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        AlbumArtModel(albumId)
+    } else {
+        "content://media/external/audio/albumart/$albumId"
+    }
+
 /**
  * Album artwork over a themed placeholder. The placeholder stays visible when an album has no art
- * (the image simply never draws), so no separate error state is needed.
+ * (the image simply never draws), so no separate error state is needed. A null [albumId] means
+ * "nothing playing / unknown": only the placeholder shows.
  */
 @Composable
 fun AlbumArt(
-    albumId: Long,
+    albumId: Long?,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(8.dp),
 ) {
-    val model: Any = remember(albumId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            AlbumArtModel(albumId)
-        } else {
-            "content://media/external/audio/albumart/$albumId"
-        }
-    }
     Box(
         modifier = modifier.clip(shape).background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
@@ -48,11 +50,14 @@ fun AlbumArt(
             modifier = Modifier.fillMaxWidth(0.5f).padding(2.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
         )
-        AsyncImage(
-            model = model,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-        )
+        if (albumId != null) {
+            val model = remember(albumId) { albumArtModel(albumId) }
+            AsyncImage(
+                model = model,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }

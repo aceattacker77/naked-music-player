@@ -82,6 +82,14 @@ class PlayerConnection(
         }
     }
 
+    /** Jumps to a queue entry and plays it; out-of-range indices are ignored. */
+    fun playQueueItem(index: Int) {
+        if (index !in 0 until player.mediaItemCount) return
+        player.seekToDefaultPosition(index)
+        if (player.playbackState == Player.STATE_IDLE) player.prepare()
+        player.play()
+    }
+
     fun next() = player.seekToNextMediaItem()
 
     fun previous() = player.seekToPreviousMediaItem()

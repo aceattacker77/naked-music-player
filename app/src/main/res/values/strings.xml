@@ -54,6 +54,23 @@
     <string name="search_hint">Search your music</string>
     <string name="no_results">No results for “%1$s”</string>
 
+    <!-- Player -->
+    <string name="pause">Pause</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="seek">Seek</string>
+    <string name="shuffle_on">Shuffle: on</string>
+    <string name="shuffle_off">Shuffle: off</string>
+    <string name="repeat_off">Repeat: off</string>
+    <string name="repeat_all">Repeat: all</string>
+    <string name="repeat_one">Repeat: one</string>
+    <string name="queue">Queue</string>
+    <string name="queue_move_up">Move up</string>
+    <string name="queue_move_down">Move down</string>
+    <string name="queue_remove">Remove from queue</string>
+    <string name="now_playing">Now playing</string>
+    <string name="collapse_player">Collapse player</string>
+
     <!-- Permissions -->
     <string name="permission_title">Music access</string>
     <string name="permission_rationale">Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>

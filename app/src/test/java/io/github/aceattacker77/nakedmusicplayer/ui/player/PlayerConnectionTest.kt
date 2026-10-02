@@ -123,4 +123,19 @@ class PlayerConnectionTest {
         assertThat(player.playWhenReady).isFalse()
         assertThat(state.isPlaying).isFalse()
     }
+
+    @Test fun playQueueItem_jumpsToIndexAndPlays() {
+        connection.playSongs(listOf(song(1), song(2), song(3)), startIndex = 0)
+        player.pause()
+        connection.playQueueItem(2)
+        assertThat(state.currentIndex).isEqualTo(2)
+        assertThat(state.current?.mediaId).isEqualTo("song:3")
+        assertThat(player.playWhenReady).isTrue()
+    }
+
+    @Test fun playQueueItem_outOfRange_isIgnored() {
+        connection.playSongs(listOf(song(1)), startIndex = 0)
+        connection.playQueueItem(5)
+        assertThat(state.currentIndex).isEqualTo(0)
+    }
 }
