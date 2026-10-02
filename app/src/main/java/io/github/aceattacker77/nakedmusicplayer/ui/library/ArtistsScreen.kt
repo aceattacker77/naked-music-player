@@ -15,37 +15,81 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AnimatedPane
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
+import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aceattacker77.nakedmusicplayer.R
+import io.github.aceattacker77.nakedmusicplayer.library.model.Album
 import io.github.aceattacker77.nakedmusicplayer.library.model.Artist
+import io.github.aceattacker77.nakedmusicplayer.library.model.Song
 import io.github.aceattacker77.nakedmusicplayer.ui.components.artistLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.components.indexLetter
+import kotlinx.coroutines.launch
 
+/** The Artists tab; list-detail like [AlbumsScreen]. */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ArtistsScreen(
     viewModel: LibraryViewModel,
-    onArtistClick: (Artist) -> Unit,
+    onAlbumClick: (Album) -> Unit,
+    onSongLongClick: (Song) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val artists by viewModel.artists.collectAsStateWithLifecycle()
-    LazyColumn(modifier = modifier.fillMaxSize().testTag("artist-list")) {
-        items(artists, key = { it.id }, contentType = { "artist" }) { artist ->
-            ArtistRow(artist, onClick = { onArtistClick(artist) })
-        }
-    }
+    val navigator = rememberListDetailPaneScaffoldNavigator<Long>()
+    val scope = rememberCoroutineScope()
+
+    NavigableListDetailPaneScaffold(
+        navigator = navigator,
+        modifier = modifier,
+        listPane = {
+            AnimatedPane {
+                LazyColumn(Modifier.fillMaxSize().testTag("artist-list")) {
+                    items(artists, key = { it.id }, contentType = { "artist" }) { artist ->
+                        ArtistRow(artist, onClick = {
+                            scope.launch { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, artist.id) }
+                        })
+                    }
+                }
+            }
+        },
+        detailPane = {
+            AnimatedPane {
+                val artistId = navigator.currentDestination?.contentKey
+                if (artistId == null) {
+                    SelectPrompt(stringResource(R.string.select_artist))
+                } else {
+                    ArtistDetailPane(
+                        artistId = artistId,
+                        viewModel = viewModel,
+                        showBack = navigator.scaffoldValue[ListDetailPaneScaffoldRole.List] == PaneAdaptedValue.Hidden,
+                        onBack = { scope.launch { navigator.navigateBack() } },
+                        onAlbumClick = onAlbumClick,
+                        onSongLongClick = onSongLongClick,
+                    )
+                }
+            }
+        },
+    )
 }
 
 @Composable
-private fun ArtistRow(artist: Artist, onClick: () -> Unit) {
+fun ArtistRow(artist: Artist, onClick: () -> Unit) {
     val name = artistLabel(artist.name)
     Row(
         modifier = Modifier

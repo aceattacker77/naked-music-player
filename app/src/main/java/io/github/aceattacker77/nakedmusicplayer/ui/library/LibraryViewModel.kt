@@ -63,4 +63,12 @@ class LibraryViewModel(
     fun play(songs: List<Song>, index: Int) {
         viewModelScope.launch { playerConnection.await().playSongs(songs, index) }
     }
+
+    fun playNext(songs: List<Song>) {
+        viewModelScope.launch { playerConnection.await().playNext(songs) }
+    }
+
+    fun addToQueue(songs: List<Song>) {
+        viewModelScope.launch { playerConnection.await().addToQueue(songs) }
+    }
 }

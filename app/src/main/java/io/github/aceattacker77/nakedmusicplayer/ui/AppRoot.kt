@@ -27,11 +27,20 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import io.github.aceattacker77.nakedmusicplayer.AppContainer
 import io.github.aceattacker77.nakedmusicplayer.LocalAppContainer
 import io.github.aceattacker77.nakedmusicplayer.R
 import io.github.aceattacker77.nakedmusicplayer.data.settings.AppSettings
+import io.github.aceattacker77.nakedmusicplayer.library.model.Album
+import io.github.aceattacker77.nakedmusicplayer.library.model.Artist
+import io.github.aceattacker77.nakedmusicplayer.library.model.Song
 import io.github.aceattacker77.nakedmusicplayer.ui.components.EmptyState
+import io.github.aceattacker77.nakedmusicplayer.ui.components.SongMenu
+import io.github.aceattacker77.nakedmusicplayer.ui.library.AlbumDetailPane
+import io.github.aceattacker77.nakedmusicplayer.ui.library.ArtistDetailPane
+import io.github.aceattacker77.nakedmusicplayer.ui.search.SearchScreen
+import io.github.aceattacker77.nakedmusicplayer.ui.search.SearchViewModel
 import io.github.aceattacker77.nakedmusicplayer.ui.library.AlbumsScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.library.ArtistsScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.library.LibraryViewModel
@@ -109,13 +118,28 @@ private fun AppContent(container: AppContainer) {
             }
         },
     )
+    val searchViewModel: SearchViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { SearchViewModel(container.libraryRepository, container.computeDispatcher) }
+        },
+    )
     val nav = rememberNavController()
+    var menuSong by remember { mutableStateOf<Song?>(null) }
 
-    AppScaffold(nav = nav, miniPlayer = {}, onSearch = {}, onSettings = {}) {
+    val openAlbum: (Album) -> Unit = { nav.navigate(AlbumDetail(it.id)) }
+    val openArtist: (Artist) -> Unit = { nav.navigate(ArtistDetail(it.id)) }
+    val showMenu: (Song) -> Unit = { menuSong = it }
+
+    AppScaffold(
+        nav = nav,
+        miniPlayer = {},
+        onSearch = { nav.navigate(Search) },
+        onSettings = {},
+    ) {
         NavHost(navController = nav, startDestination = Songs) {
-            composable<Songs> { SongsScreen(libraryViewModel) }
-            composable<Albums> { AlbumsScreen(libraryViewModel, onAlbumClick = {}) }
-            composable<Artists> { ArtistsScreen(libraryViewModel, onArtistClick = {}) }
+            composable<Songs> { SongsScreen(libraryViewModel, onSongLongClick = showMenu) }
+            composable<Albums> { AlbumsScreen(libraryViewModel, onSongLongClick = showMenu) }
+            composable<Artists> { ArtistsScreen(libraryViewModel, onAlbumClick = openAlbum, onSongLongClick = showMenu) }
             composable<Playlists> {
                 EmptyState(
                     title = stringResource(R.string.library_playlists),
@@ -123,6 +147,47 @@ private fun AppContent(container: AppContainer) {
                     action = null,
                 )
             }
+            composable<AlbumDetail> { entry ->
+                AlbumDetailPane(
+                    albumId = entry.toRoute<AlbumDetail>().id,
+                    viewModel = libraryViewModel,
+                    showBack = true,
+                    onBack = { nav.popBackStack() },
+                    onSongLongClick = showMenu,
+                )
+            }
+            composable<ArtistDetail> { entry ->
+                ArtistDetailPane(
+                    artistId = entry.toRoute<ArtistDetail>().id,
+                    viewModel = libraryViewModel,
+                    showBack = true,
+                    onBack = { nav.popBackStack() },
+                    onAlbumClick = openAlbum,
+                    onSongLongClick = showMenu,
+                )
+            }
+            composable<Search> {
+                SearchScreen(
+                    searchViewModel = searchViewModel,
+                    libraryViewModel = libraryViewModel,
+                    onBack = { nav.popBackStack() },
+                    onAlbumClick = openAlbum,
+                    onArtistClick = openArtist,
+                    onSongLongClick = showMenu,
+                )
+            }
         }
+    }
+
+    menuSong?.let { song ->
+        SongMenu(
+            song = song,
+            onPlayNext = { libraryViewModel.playNext(listOf(song)) },
+            onAddToQueue = { libraryViewModel.addToQueue(listOf(song)) },
+            onAddToPlaylist = {}, // wired to the playlist sheet in the playlists task
+            onGoToAlbum = { nav.navigate(AlbumDetail(song.albumId)) },
+            onGoToArtist = { nav.navigate(ArtistDetail(song.artistId)) },
+            onDismiss = { menuSong = null },
+        )
     }
 }
