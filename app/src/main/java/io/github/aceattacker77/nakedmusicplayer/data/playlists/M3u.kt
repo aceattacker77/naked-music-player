@@ -12,6 +12,8 @@ data class M3uEntry(
 /** Reading and writing extended M3U (`.m3u` / `.m3u8`) playlists. */
 object M3u {
     private const val HEADER = "#EXTM3U"
+    /** The UTF-8 byte-order mark some Windows tools put in front of playlists. */
+    private val BOM = 0xFEFF.toChar().toString()
     private const val EXTINF = "#EXTINF:"
     private const val ARTIST_TITLE_SEPARATOR = " - "
 
@@ -29,7 +31,7 @@ object M3u {
     fun parse(text: String): List<M3uEntry> {
         val entries = ArrayList<M3uEntry>()
         var pending: ExtInf? = null
-        for (raw in text.removePrefix("﻿").split("\r\n", "\n", "\r")) {
+        for (raw in text.removePrefix(BOM).split("\r\n", "\n", "\r")) {
             val line = raw.trim()
             when {
                 line.isEmpty() -> Unit

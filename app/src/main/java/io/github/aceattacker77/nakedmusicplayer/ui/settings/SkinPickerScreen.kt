@@ -65,6 +65,7 @@ fun SkinPickerScreen(
     var menuSkin by remember { mutableStateOf<Skin?>(null) }
     var exportSkin by remember { mutableStateOf<Skin?>(null) }
     val cannotRead = stringResource(R.string.skin_import_unreadable)
+    val exportFailed = stringResource(R.string.skin_export_failed)
 
     fun import(uri: Uri, replace: Boolean) {
         scope.launch {
@@ -86,7 +87,7 @@ fun SkinPickerScreen(
         if (uri != null && skin != null) {
             scope.launch {
                 val ok = writeSkin(context, manager, skin, uri, ioDispatcher)
-                if (!ok) Toast.makeText(context, context.getString(R.string.skin_export_failed), Toast.LENGTH_SHORT).show()
+                if (!ok) Toast.makeText(context, exportFailed, Toast.LENGTH_SHORT).show()
             }
         }
     }

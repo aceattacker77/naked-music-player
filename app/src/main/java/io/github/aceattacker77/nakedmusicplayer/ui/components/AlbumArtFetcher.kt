@@ -2,6 +2,7 @@ package io.github.aceattacker77.nakedmusicplayer.ui.components
 
 import android.content.ContentUris
 import android.content.Context
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
 import coil3.ImageLoader
@@ -27,6 +28,8 @@ class AlbumArtFetcher(
     private val options: Options,
 ) : Fetcher {
     override suspend fun fetch(): FetchResult? {
+        // Only Android 10+ has loadThumbnail; older versions load the legacy album-art URI instead.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return null
         val albumUri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, data.albumId)
         val width = options.size.width.pxOrElse { DEFAULT_PX }
         val height = options.size.height.pxOrElse { DEFAULT_PX }

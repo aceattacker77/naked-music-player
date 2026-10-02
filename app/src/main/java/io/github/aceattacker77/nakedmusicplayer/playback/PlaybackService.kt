@@ -9,10 +9,12 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
+import androidx.media3.session.SessionError
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -28,6 +30,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
+// Media3 marks parts of the session / notification APIs unstable; both annotations are needed
+// (the Kotlin compiler honours kotlin.OptIn, Android lint only androidx.annotation.OptIn).
+@OptIn(UnstableApi::class)
+@androidx.annotation.OptIn(UnstableApi::class)
 class PlaybackService : MediaLibraryService() {
     private lateinit var container: AppContainer
     private lateinit var player: ExoPlayer
@@ -245,7 +251,7 @@ class PlaybackService : MediaLibraryService() {
             val songIds = playlistId?.let { dao.observeSongIds(it).first() }.orEmpty()
             val children = LibraryTree.children(parentId, library, playlists, labels) { songIds }
             if (children == null) {
-                LibraryResult.ofError(LibraryResult.RESULT_ERROR_BAD_VALUE)
+                LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
             } else {
                 val from = (page * pageSize).coerceAtMost(children.size)
                 val to = (from + pageSize).coerceAtMost(children.size)
@@ -260,7 +266,7 @@ class PlaybackService : MediaLibraryService() {
         ): ListenableFuture<LibraryResult<MediaItem>> {
             val item = LibraryTree.item(mediaId, library, labels)
             return Futures.immediateFuture(
-                if (item != null) LibraryResult.ofItem(item, null) else LibraryResult.ofError(LibraryResult.RESULT_ERROR_BAD_VALUE),
+                if (item != null) LibraryResult.ofItem(item, null) else LibraryResult.ofError(SessionError.ERROR_BAD_VALUE),
             )
         }
 

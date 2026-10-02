@@ -10,6 +10,7 @@ data class MatchResult(val songIds: List<Long>, val matched: Int, val total: Int
 /** Maps playlist entries from other players onto songs in the library. */
 object PlaylistMatcher {
     private const val DURATION_TOLERANCE_SEC = 2
+    @Suppress("SdCardPath") // matched as text in foreign playlists; never used to open files
     private val storagePrefixes = listOf("/storage/emulated/0/", "/sdcard/", "./")
     private val volumePrefix = Regex("^/storage/[^/]+/")
 

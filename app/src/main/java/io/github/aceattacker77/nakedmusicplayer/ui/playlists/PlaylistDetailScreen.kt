@@ -81,6 +81,7 @@ fun PlaylistDetailScreen(
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val exportFailed = stringResource(R.string.m3u_export_failed)
     var pendingExport by remember { mutableStateOf<String?>(null) }
     val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("audio/x-mpegurl")) { uri ->
         val text = pendingExport
@@ -88,7 +89,7 @@ fun PlaylistDetailScreen(
         if (uri != null && text != null) {
             scope.launch {
                 if (!writeM3uText(context, uri, text)) {
-                    Toast.makeText(context, context.getString(R.string.m3u_export_failed), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, exportFailed, Toast.LENGTH_SHORT).show()
                 }
             }
         }

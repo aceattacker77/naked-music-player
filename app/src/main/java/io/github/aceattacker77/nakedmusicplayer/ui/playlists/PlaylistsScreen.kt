@@ -22,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -55,6 +56,7 @@ fun PlaylistsScreen(
 ) {
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val fallbackName = stringResource(R.string.imported_playlist_fallback_name)
     val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -62,10 +64,10 @@ fun PlaylistsScreen(
             scope.launch {
                 val text = readM3uText(context, uri)
                 if (text == null) {
-                    Toast.makeText(context, context.getString(R.string.m3u_read_failed), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, resources.getString(R.string.m3u_read_failed), Toast.LENGTH_SHORT).show()
                 } else {
                     val result = viewModel.importM3u(displayNameOf(context, uri), text, fallbackName)
-                    Toast.makeText(context, context.getString(R.string.m3u_matched, result.matched, result.total), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, resources.getString(R.string.m3u_matched, result.matched, result.total), Toast.LENGTH_SHORT).show()
                 }
             }
         }

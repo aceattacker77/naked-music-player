@@ -29,7 +29,6 @@
     <string name="no_music_tips">Copy some music onto this device, or check that it is not in an excluded folder. The library updates automatically.</string>
     <string name="unknown_artist">Unknown Artist</string>
     <string name="unknown_album">Unknown Album</string>
-    <string name="playlists_coming_soon">Playlists will appear here.</string>
 
     <plurals name="albums_count">
         <item quantity="one">%d album</item>
