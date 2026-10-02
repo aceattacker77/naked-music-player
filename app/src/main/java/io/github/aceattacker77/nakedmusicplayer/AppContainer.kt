@@ -9,9 +9,13 @@ import io.github.aceattacker77.nakedmusicplayer.data.session.SessionStore
 import io.github.aceattacker77.nakedmusicplayer.data.settings.SettingsRepository
 import io.github.aceattacker77.nakedmusicplayer.library.LibraryRepository
 import io.github.aceattacker77.nakedmusicplayer.library.MediaStoreAudioRowSource
+import io.github.aceattacker77.nakedmusicplayer.ui.player.PlayerConnection
+import io.github.aceattacker77.nakedmusicplayer.ui.player.connect
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -36,5 +40,10 @@ class AppContainer(private val app: Application) {
             filter = settingsRepository.settings.map { it.libraryFilter() }.distinctUntilChanged(),
             scope = applicationScope,
         )
+    }
+
+    /** Connects to the playback service on first use; the MediaController must live on the main thread. */
+    val playerConnection: Deferred<PlayerConnection> by lazy {
+        applicationScope.async(Dispatchers.Main) { PlayerConnection.connect(app, applicationScope) }
     }
 }

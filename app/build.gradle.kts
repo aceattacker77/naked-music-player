@@ -52,6 +52,8 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.androidx.test.core)
+    testImplementation(libs.media3.test.utils)
+    testImplementation(libs.media3.test.utils.robolectric)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.core)
