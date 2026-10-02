@@ -18,6 +18,7 @@ class MusicApp : Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        container.startBackgroundWork()
     }
 
     /** Artwork loader with capped memory and disk caches, so scrolling a big library stays within budget. */

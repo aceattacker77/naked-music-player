@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import io.github.aceattacker77.nakedmusicplayer.data.db.AppDatabase
+import io.github.aceattacker77.nakedmusicplayer.data.playlists.PlaylistRepository
 import io.github.aceattacker77.nakedmusicplayer.data.session.SessionStore
 import io.github.aceattacker77.nakedmusicplayer.data.settings.SettingsRepository
 import io.github.aceattacker77.nakedmusicplayer.library.LibraryRepository
@@ -25,7 +26,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.io.File
 
 /** Manual DI root, created once in [MusicApp]. Later tasks add fields. */
@@ -53,6 +56,28 @@ open class AppContainer(private val app: Application) {
             scope = applicationScope,
             computeDispatcher = computeDispatcher,
         )
+    }
+
+    open val playlistRepository: PlaylistRepository by lazy {
+        PlaylistRepository(
+            dao = database.playlistDao(),
+            stats = database.playStatDao(),
+            library = libraryRepository.library,
+            clock = System::currentTimeMillis,
+        )
+    }
+
+    /**
+     * Starts long-lived background jobs. Stored playlist entries and play stats are pruned against
+     * the unfiltered song ids after every successful library load; failed loads (permission
+     * revoked, storage unavailable) publish nothing, so they can never wipe user data.
+     */
+    open fun startBackgroundWork() {
+        applicationScope.launch {
+            libraryRepository.allSongIds.filterNotNull().collect { ids ->
+                if (ids.isNotEmpty()) playlistRepository.prune(ids)
+            }
+        }
     }
 
     /** Connects to the playback service on first use; the MediaController must live on the main thread. */

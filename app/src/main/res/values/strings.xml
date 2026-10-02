@@ -71,6 +71,27 @@
     <string name="now_playing">Now playing</string>
     <string name="collapse_player">Collapse player</string>
 
+    <!-- Playlists -->
+    <string name="new_playlist">New playlist</string>
+    <string name="playlist_name">Playlist name</string>
+    <string name="playlist_options">Playlist options</string>
+    <string name="rename">Rename</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create</string>
+    <string name="save">Save</string>
+    <string name="delete_playlist_title">Delete playlist</string>
+    <string name="delete_playlist_message">Delete “%1$s”? The songs themselves are not deleted.</string>
+    <string name="your_playlists">Your playlists</string>
+    <string name="smart_recently_added">Recently added</string>
+    <string name="smart_most_played">Most played</string>
+    <string name="smart_recently_played">Recently played</string>
+    <string name="playlist_empty">No songs yet. Add some from a song\'s menu.</string>
+    <string name="smart_empty">Nothing here yet.</string>
+    <string name="removed_from_playlist">Removed \"%1$s\"</string>
+    <string name="undo">Undo</string>
+    <string name="add_to_playlist">Add to playlist</string>
+
     <!-- Permissions -->
     <string name="permission_title">Music access</string>
     <string name="permission_rationale">Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>

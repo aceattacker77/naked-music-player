@@ -30,6 +30,7 @@ private const val BACK_FADE = 0.25f
 fun NowPlayingHost(
     connection: PlayerConnection,
     sheet: PlayerSheetState,
+    onAddToPlaylist: () -> Unit,
     modifier: Modifier = Modifier,
     artworkModifier: Modifier = Modifier,
 ) {
@@ -37,7 +38,7 @@ fun NowPlayingHost(
     val position by remember(connection) { connection.positionMs() }.collectAsStateWithLifecycle(initialValue = 0L)
     var showQueue by rememberSaveable { mutableStateOf(false) }
 
-    val actions = remember(connection, sheet) {
+    val actions = remember(connection, sheet, onAddToPlaylist) {
         NowPlayingActions(
             onPlayPause = connection::togglePlayPause,
             onPrevious = connection::previous,
@@ -47,6 +48,7 @@ fun NowPlayingHost(
             onCycleRepeat = connection::cycleRepeat,
             onOpenQueue = { showQueue = true },
             onCollapse = sheet::collapse,
+            onAddToPlaylist = onAddToPlaylist,
         )
     }
 

@@ -48,6 +48,7 @@ fun ArtistsScreen(
     viewModel: LibraryViewModel,
     onAlbumClick: (Album) -> Unit,
     onSongLongClick: (Song) -> Unit,
+    onAddToPlaylist: (List<Song>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val artists by viewModel.artists.collectAsStateWithLifecycle()
@@ -81,6 +82,7 @@ fun ArtistsScreen(
                         onBack = { scope.launch { navigator.navigateBack() } },
                         onAlbumClick = onAlbumClick,
                         onSongLongClick = onSongLongClick,
+                        onAddToPlaylist = onAddToPlaylist,
                     )
                 }
             }

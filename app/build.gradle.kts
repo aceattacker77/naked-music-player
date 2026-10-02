@@ -29,7 +29,11 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
-            all { it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware" }
+            all {
+                it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware"
+                // Robolectric plus Compose tests on tall windows outgrow the default 512 MB heap.
+                it.maxHeapSize = "3g"
+            }
         }
     }
 }

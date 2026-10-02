@@ -2,6 +2,8 @@ package io.github.aceattacker77.nakedmusicplayer
 
 import android.app.Application
 import androidx.media3.common.Player
+import androidx.room.Room
+import io.github.aceattacker77.nakedmusicplayer.data.db.AppDatabase
 import io.github.aceattacker77.nakedmusicplayer.data.InMemoryPreferencesStore
 import io.github.aceattacker77.nakedmusicplayer.data.settings.SettingsRepository
 import io.github.aceattacker77.nakedmusicplayer.library.FakeAudioRowSource
@@ -40,6 +42,16 @@ class TestContainer(
             scope = applicationScope,
             computeDispatcher = computeDispatcher,
         )
+    }
+
+    // Room's executors are replaced by direct ones so queries finish on the calling thread and
+    // Compose tests need no waiting on background work.
+    override val database: AppDatabase by lazy {
+        Room.inMemoryDatabaseBuilder(app, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .setQueryExecutor { it.run() }
+            .setTransactionExecutor { it.run() }
+            .build()
     }
 
     override val playerConnection: Deferred<PlayerConnection> =

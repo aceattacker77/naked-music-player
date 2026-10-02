@@ -47,6 +47,23 @@ class LibraryRepositoryTest {
         assertThat(repo.isLoaded.value).isTrue()
     }
 
+    @Test fun allSongIds_includeSongsHiddenByTheFilter() = runTest {
+        val source = FakeAudioRowSource().apply { rows = listOf(row(1, dur = 10_000), row(2)) }
+        val repo = repo(source)
+        runCurrent()
+        assertThat(repo.library.value.songs.map { it.id }).containsExactly(2L)
+        // Playlists are pruned against this set, so a stricter filter must never delete entries.
+        assertThat(repo.allSongIds.value).containsExactly(1L, 2L)
+    }
+
+    @Test fun allSongIds_nullUntilLoaded_andOnPermissionDenied() = runTest {
+        val source = FakeAudioRowSource().apply { throwOnQuery = SecurityException("no") }
+        val repo = repo(source)
+        assertThat(repo.allSongIds.value).isNull()
+        runCurrent()
+        assertThat(repo.allSongIds.value).isNull()
+    }
+
     @Test fun changes_areDebounced500ms() = runTest {
         val source = FakeAudioRowSource().apply { rows = listOf(row(1)) }
         repo(source)

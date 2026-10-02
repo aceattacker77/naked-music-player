@@ -43,6 +43,7 @@ import io.github.aceattacker77.nakedmusicplayer.AppContainer
 import io.github.aceattacker77.nakedmusicplayer.LocalAppContainer
 import io.github.aceattacker77.nakedmusicplayer.R
 import io.github.aceattacker77.nakedmusicplayer.data.settings.AppSettings
+import io.github.aceattacker77.nakedmusicplayer.data.playlists.SmartPlaylist
 import io.github.aceattacker77.nakedmusicplayer.library.model.Album
 import io.github.aceattacker77.nakedmusicplayer.library.model.Artist
 import io.github.aceattacker77.nakedmusicplayer.library.model.Song
@@ -50,6 +51,11 @@ import io.github.aceattacker77.nakedmusicplayer.ui.components.EmptyState
 import io.github.aceattacker77.nakedmusicplayer.ui.components.SongMenu
 import io.github.aceattacker77.nakedmusicplayer.ui.library.AlbumDetailPane
 import io.github.aceattacker77.nakedmusicplayer.ui.library.ArtistDetailPane
+import io.github.aceattacker77.nakedmusicplayer.ui.playlists.AddToPlaylistSheet
+import io.github.aceattacker77.nakedmusicplayer.ui.playlists.PlaylistDetailScreen
+import io.github.aceattacker77.nakedmusicplayer.ui.playlists.PlaylistsScreen
+import io.github.aceattacker77.nakedmusicplayer.ui.playlists.PlaylistsViewModel
+import io.github.aceattacker77.nakedmusicplayer.ui.playlists.SmartPlaylistDetailScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.search.SearchScreen
 import io.github.aceattacker77.nakedmusicplayer.ui.search.SearchViewModel
 import io.github.aceattacker77.nakedmusicplayer.ui.library.AlbumsScreen
@@ -142,8 +148,14 @@ private fun AppContent(container: AppContainer) {
             initializer { SearchViewModel(container.libraryRepository, container.computeDispatcher) }
         },
     )
+    val playlistsViewModel: PlaylistsViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { PlaylistsViewModel(container.playlistRepository) }
+        },
+    )
     val nav = rememberNavController()
     var menuSong by remember { mutableStateOf<Song?>(null) }
+    var addTarget by remember { mutableStateOf<List<Song>?>(null) }
 
     // The player connects in the background; until it does the mini player simply stays hidden.
     val connection by produceState<PlayerConnection?>(initialValue = null, container) {
@@ -202,13 +214,38 @@ private fun AppContent(container: AppContainer) {
             ) {
                 NavHost(navController = nav, startDestination = Songs) {
                     composable<Songs> { SongsScreen(libraryViewModel, onSongLongClick = showMenu) }
-                    composable<Albums> { AlbumsScreen(libraryViewModel, onSongLongClick = showMenu) }
-                    composable<Artists> { ArtistsScreen(libraryViewModel, onAlbumClick = openAlbum, onSongLongClick = showMenu) }
+                    composable<Albums> { AlbumsScreen(libraryViewModel, onSongLongClick = showMenu, onAddToPlaylist = { addTarget = it }) }
+                    composable<Artists> {
+                        ArtistsScreen(
+                            libraryViewModel,
+                            onAlbumClick = openAlbum,
+                            onSongLongClick = showMenu,
+                            onAddToPlaylist = { addTarget = it },
+                        )
+                    }
                     composable<Playlists> {
-                        EmptyState(
-                            title = stringResource(R.string.library_playlists),
-                            message = stringResource(R.string.playlists_coming_soon),
-                            action = null,
+                        PlaylistsScreen(
+                            viewModel = playlistsViewModel,
+                            onOpenPlaylist = { nav.navigate(PlaylistDetail(it)) },
+                            onOpenSmart = { nav.navigate(SmartPlaylistDetail(it.name)) },
+                        )
+                    }
+                    composable<PlaylistDetail> { entry ->
+                        PlaylistDetailScreen(
+                            playlistId = entry.toRoute<PlaylistDetail>().id,
+                            playlistsViewModel = playlistsViewModel,
+                            libraryViewModel = libraryViewModel,
+                            onBack = { nav.popBackStack() },
+                            onSongLongClick = showMenu,
+                        )
+                    }
+                    composable<SmartPlaylistDetail> { entry ->
+                        SmartPlaylistDetailScreen(
+                            kind = SmartPlaylist.valueOf(entry.toRoute<SmartPlaylistDetail>().kind),
+                            playlistsViewModel = playlistsViewModel,
+                            libraryViewModel = libraryViewModel,
+                            onBack = { nav.popBackStack() },
+                            onSongLongClick = showMenu,
                         )
                     }
                     composable<AlbumDetail> { entry ->
@@ -218,6 +255,7 @@ private fun AppContent(container: AppContainer) {
                             showBack = true,
                             onBack = { nav.popBackStack() },
                             onSongLongClick = showMenu,
+                            onAddToPlaylist = { addTarget = it },
                         )
                     }
                     composable<ArtistDetail> { entry ->
@@ -228,6 +266,7 @@ private fun AppContent(container: AppContainer) {
                             onBack = { nav.popBackStack() },
                             onAlbumClick = openAlbum,
                             onSongLongClick = showMenu,
+                            onAddToPlaylist = { addTarget = it },
                         )
                     }
                     composable<Search> {
@@ -252,6 +291,12 @@ private fun AppContent(container: AppContainer) {
                     NowPlayingHost(
                         connection = player,
                         sheet = sheet,
+                        onAddToPlaylist = {
+                            val current = playerState.current?.mediaId
+                            container.libraryRepository.library.value.songs
+                                .firstOrNull { "song:${it.id}" == current }
+                                ?.let { addTarget = listOf(it) }
+                        },
                         artworkModifier = Modifier.sharedElement(
                             rememberSharedContentState(ARTWORK_KEY),
                             animatedVisibilityScope = this@AnimatedVisibility,
@@ -267,10 +312,20 @@ private fun AppContent(container: AppContainer) {
             song = song,
             onPlayNext = { libraryViewModel.playNext(listOf(song)) },
             onAddToQueue = { libraryViewModel.addToQueue(listOf(song)) },
-            onAddToPlaylist = {}, // wired to the playlist sheet in the playlists task
+            onAddToPlaylist = { addTarget = listOf(song) },
             onGoToAlbum = { nav.navigate(AlbumDetail(song.albumId)) },
             onGoToArtist = { nav.navigate(ArtistDetail(song.artistId)) },
             onDismiss = { menuSong = null },
+        )
+    }
+
+    addTarget?.let { songs ->
+        val playlists = playlistsViewModel.playlists.collectAsStateWithLifecycle().value
+        AddToPlaylistSheet(
+            playlists = playlists,
+            onPick = { playlistsViewModel.add(it.id, songs) },
+            onCreate = { playlistsViewModel.createAndAdd(it, songs) },
+            onDismiss = { addTarget = null },
         )
     }
 }

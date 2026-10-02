@@ -92,4 +92,14 @@ class PlaylistDaoTest : DbTestBase() {
         dao.pruneSongs(setOf(1L))
         assertThat(ids(id)).containsExactly(1L)
     }
+
+    @Test fun observeAllEntries_returnsEveryRowAcrossPlaylists() = runTest {
+        val a = dao.create("A", 1)
+        val b = dao.create("B", 1)
+        dao.addSongs(a, listOf(1, 2), 2)
+        dao.addSongs(b, listOf(2), 2)
+        val entries = dao.observeAllEntries().first()
+        assertThat(entries.map { Triple(it.playlistId, it.songId, it.position) })
+            .containsExactly(Triple(a, 1L, 0), Triple(a, 2L, 1), Triple(b, 2L, 0))
+    }
 }

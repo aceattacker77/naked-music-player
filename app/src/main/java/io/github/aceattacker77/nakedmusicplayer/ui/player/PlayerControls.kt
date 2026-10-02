@@ -148,13 +148,14 @@ fun TrackInfo(
     }
 }
 
-/** Shuffle and repeat toggles. */
+/** Shuffle, add-to-playlist and repeat. */
 @Composable
 fun SecondaryControls(
     shuffle: Boolean,
     repeatMode: Int,
     onToggleShuffle: () -> Unit,
     onCycleRepeat: () -> Unit,
+    onAddToPlaylist: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val active = MaterialTheme.colorScheme.primary
@@ -165,6 +166,13 @@ fun SecondaryControls(
                 painter = painterResource(R.drawable.ic_shuffle),
                 contentDescription = stringResource(if (shuffle) R.string.shuffle_on else R.string.shuffle_off),
                 tint = if (shuffle) active else inactive,
+            )
+        }
+        IconButton(onClick = onAddToPlaylist) {
+            Icon(
+                painter = painterResource(R.drawable.ic_playlist_add),
+                contentDescription = stringResource(R.string.add_to_playlist),
+                tint = inactive,
             )
         }
         IconButton(onClick = onCycleRepeat) {

@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -55,6 +56,7 @@ fun AlbumDetailPane(
     showBack: Boolean,
     onBack: () -> Unit,
     onSongLongClick: (Song) -> Unit,
+    onAddToPlaylist: (List<Song>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val albums by viewModel.albums.collectAsStateWithLifecycle()
@@ -88,6 +90,7 @@ fun AlbumDetailPane(
                 unplayable = unplayable,
                 onPlay = viewModel::play,
                 onSongLongClick = onSongLongClick,
+                onAddToPlaylist = { onAddToPlaylist(album.songs) },
             )
         }
     }
@@ -100,10 +103,11 @@ private fun AlbumDetailContent(
     unplayable: Set<String>,
     onPlay: (List<Song>, Int) -> Unit,
     onSongLongClick: (Song) -> Unit,
+    onAddToPlaylist: () -> Unit,
 ) {
     val discs = album.songs.groupBy { it.discNumber }
     LazyColumn(Modifier.fillMaxSize().testTag("album-detail")) {
-        item(key = "header") { AlbumHeader(album, onPlayAll = { onPlay(album.songs, 0) }) }
+        item(key = "header") { AlbumHeader(album, onPlayAll = { onPlay(album.songs, 0) }, onAddToPlaylist = onAddToPlaylist) }
         discs.forEach { (disc, songs) ->
             if (discs.size > 1) {
                 item(key = "disc-$disc") {
@@ -129,7 +133,7 @@ private fun AlbumDetailContent(
 }
 
 @Composable
-private fun AlbumHeader(album: Album, onPlayAll: () -> Unit) {
+private fun AlbumHeader(album: Album, onPlayAll: () -> Unit, onAddToPlaylist: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -150,7 +154,10 @@ private fun AlbumHeader(album: Album, onPlayAll: () -> Unit) {
         val total = formatDuration(album.songs.sumOf { it.durationMs })
         val details = listOfNotNull(album.year?.toString(), count, total).joinToString(" · ")
         Text(details, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Button(onClick = onPlayAll) { Text(stringResource(R.string.play)) }
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Button(onClick = onPlayAll) { Text(stringResource(R.string.play)) }
+            OutlinedButton(onClick = onAddToPlaylist) { Text(stringResource(R.string.add_to_playlist)) }
+        }
     }
 }
 

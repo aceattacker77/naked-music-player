@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,10 +17,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -59,6 +62,7 @@ fun ArtistDetailPane(
     onBack: () -> Unit,
     onAlbumClick: (Album) -> Unit,
     onSongLongClick: (Song) -> Unit,
+    onAddToPlaylist: (List<Song>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val artists by viewModel.artists.collectAsStateWithLifecycle()
@@ -91,6 +95,7 @@ fun ArtistDetailPane(
                 onPlay = viewModel::play,
                 onAlbumClick = onAlbumClick,
                 onSongLongClick = onSongLongClick,
+                onAddToPlaylist = { onAddToPlaylist(artist.songs.sortedWith(SongSort.ARTIST)) },
             )
         }
     }
@@ -104,10 +109,11 @@ private fun ArtistDetailContent(
     onPlay: (List<Song>, Int) -> Unit,
     onAlbumClick: (Album) -> Unit,
     onSongLongClick: (Song) -> Unit,
+    onAddToPlaylist: () -> Unit,
 ) {
     val songs = remember(artist) { artist.songs.sortedWith(SongSort.ARTIST) }
     LazyColumn(Modifier.fillMaxSize().testTag("artist-detail")) {
-        item(key = "header") { ArtistHeader(artist) }
+        item(key = "header") { ArtistHeader(artist, onPlayAll = { onPlay(songs, 0) }, onAddToPlaylist = onAddToPlaylist) }
         item(key = "albums-title") { SectionTitle(stringResource(R.string.library_albums)) }
         item(key = "albums") {
             LazyRow(
@@ -139,7 +145,7 @@ private fun ArtistDetailContent(
 }
 
 @Composable
-private fun ArtistHeader(artist: Artist) {
+private fun ArtistHeader(artist: Artist, onPlayAll: () -> Unit, onAddToPlaylist: () -> Unit) {
     val name = artistLabel(artist.name)
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -160,6 +166,10 @@ private fun ArtistHeader(artist: Artist) {
         val albums = pluralStringResource(R.plurals.albums_count, artist.albums.size, artist.albums.size)
         val songs = pluralStringResource(R.plurals.songs_count, artist.songs.size, artist.songs.size)
         Text("$albums · $songs", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Button(onClick = onPlayAll) { Text(stringResource(R.string.play)) }
+            OutlinedButton(onClick = onAddToPlaylist) { Text(stringResource(R.string.add_to_playlist)) }
+        }
     }
 }
 

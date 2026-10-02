@@ -16,6 +16,9 @@ abstract class PlaylistDao {
     @Query("SELECT songId FROM playlist_songs WHERE playlistId = :playlistId ORDER BY position")
     abstract fun observeSongIds(playlistId: Long): Flow<List<Long>>
 
+    @Query("SELECT * FROM playlist_songs ORDER BY playlistId, position")
+    abstract fun observeAllEntries(): Flow<List<PlaylistSongEntity>>
+
     @Query("SELECT position FROM playlist_songs WHERE playlistId = :playlistId ORDER BY position")
     abstract suspend fun positions(playlistId: Long): List<Int>
 

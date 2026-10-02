@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 fun AlbumsScreen(
     viewModel: LibraryViewModel,
     onSongLongClick: (Song) -> Unit,
+    onAddToPlaylist: (List<Song>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val albums by viewModel.albums.collectAsStateWithLifecycle()
@@ -75,6 +76,7 @@ fun AlbumsScreen(
                         showBack = navigator.scaffoldValue[ListDetailPaneScaffoldRole.List] == PaneAdaptedValue.Hidden,
                         onBack = { scope.launch { navigator.navigateBack() } },
                         onSongLongClick = onSongLongClick,
+                        onAddToPlaylist = onAddToPlaylist,
                     )
                 }
             }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +35,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.aceattacker77.nakedmusicplayer.R
 import io.github.aceattacker77.nakedmusicplayer.ui.components.AlbumArt
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtPosition
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtShape
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.LayoutType
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.PlayerStyle
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalSkin
 import com.materialkolor.dynamicColorScheme
@@ -50,10 +53,11 @@ class NowPlayingActions(
     val onCycleRepeat: () -> Unit,
     val onOpenQueue: () -> Unit,
     val onCollapse: () -> Unit,
+    val onAddToPlaylist: () -> Unit,
 ) {
     companion object {
         /** No-op actions, for previews and screenshot tests. */
-        val None = NowPlayingActions({}, {}, {}, {}, {}, {}, {}, {})
+        val None = NowPlayingActions({}, {}, {}, {}, {}, {}, {}, {}, {})
     }
 }
 
@@ -87,14 +91,24 @@ fun NowPlayingScreen(
     }
 
     MaterialTheme(colorScheme = scheme, typography = MaterialTheme.typography, shapes = MaterialTheme.shapes) {
-        Box(modifier.fillMaxSize().testTag("now-playing")) {
-            PlayerBackground(style.background, skin, albumId)
-            Column(Modifier.fillMaxSize().systemBarsPadding()) {
-                CollapseBar(actions.onCollapse)
-                val slots = remember(state, positionMs, style, actions, albumId, artworkModifier) {
-                    buildSlots(state, positionMs, style, actions, albumId, artworkModifier)
+        // Sets the content colour for everything inside, whatever hosts this screen.
+        Surface(
+            modifier = modifier.fillMaxSize().testTag("now-playing"),
+            color = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+        ) {
+            Box(Modifier.fillMaxSize()) {
+                PlayerBackground(style.background, skin, albumId)
+                Column(Modifier.fillMaxSize().systemBarsPadding()) {
+                    CollapseBar(actions.onCollapse)
+                    // Layouts that put a small thumbnail beside the title read better left-aligned.
+                    val centeredInfo = skin.layout.type != LayoutType.COMPACT &&
+                        !(skin.layout.type == LayoutType.MINIMAL && skin.layout.artPosition == ArtPosition.LEFT)
+                    val slots = remember(state, positionMs, style, actions, albumId, artworkModifier, centeredInfo) {
+                        buildSlots(state, positionMs, style, actions, albumId, artworkModifier, centeredInfo)
+                    }
+                    NowPlayingLayout(skin.layout, slots, Modifier.weight(1f))
                 }
-                NowPlayingLayout(skin.layout, slots, Modifier.weight(1f))
             }
         }
     }
@@ -118,6 +132,7 @@ private fun buildSlots(
     actions: NowPlayingActions,
     albumId: Long?,
     artworkModifier: Modifier,
+    centeredInfo: Boolean,
 ): NowPlayingSlots {
     val meta = state.current?.mediaMetadata
     return NowPlayingSlots(
@@ -127,6 +142,7 @@ private fun buildSlots(
                 title = meta?.title?.toString().orEmpty(),
                 artist = meta?.artist?.toString().orEmpty(),
                 album = meta?.albumTitle?.toString().orEmpty(),
+                centered = centeredInfo,
             )
         },
         seekBar = {
@@ -144,7 +160,7 @@ private fun buildSlots(
             )
         },
         secondaryControls = {
-            SecondaryControls(state.shuffle, state.repeatMode, actions.onToggleShuffle, actions.onCycleRepeat)
+            SecondaryControls(state.shuffle, state.repeatMode, actions.onToggleShuffle, actions.onCycleRepeat, actions.onAddToPlaylist)
         },
         queueHandle = { QueueHandle(actions.onOpenQueue) },
     )
