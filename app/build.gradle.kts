@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.roborazzi)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -22,6 +23,15 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    buildTypes {
+        release {
+            // R8 full mode is the AGP default; shrinking is what keeps the APK small.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
     }
 
     buildFeatures { compose = true }
@@ -52,6 +62,8 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.material.kolor)
+    implementation(libs.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
     implementation(libs.glance.appwidget)
     implementation(libs.glance.material3)
     implementation(libs.palette.ktx)

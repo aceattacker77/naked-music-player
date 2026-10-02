@@ -25,8 +25,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.core.content.ContextCompat
@@ -82,13 +85,18 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /** Themed root: applies the active skin, then gates the app on audio permission. */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AppRoot() {
     val container = LocalAppContainer.current
     val settings by container.settingsRepository.settings.collectAsState(initial = AppSettings())
     val skin by container.skinManager.active.collectAsState()
     AppTheme(skin = skin, settings = settings) {
-        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        // Lets UI Automator (the baseline-profile generator and benchmarks) find composables by test tag.
+        Surface(
+            modifier = Modifier.fillMaxSize().semantics { testTagsAsResourceId = true },
+            color = MaterialTheme.colorScheme.background,
+        ) {
             PermissionGate(container) { AppContent(container) }
         }
     }
