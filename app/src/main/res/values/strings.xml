@@ -96,8 +96,8 @@
     <string name="import_playlist">Import playlist</string>
     <string name="export_playlist">Export</string>
     <string name="m3u_matched">%1$d of %2$d matched</string>
-    <string name="m3u_read_failed">Couldn't read that file</string>
-    <string name="m3u_export_failed">Couldn't save the playlist</string>
+    <string name="m3u_read_failed">Couldn\'t read that file</string>
+    <string name="m3u_export_failed">Couldn\'t save the playlist</string>
     <string name="imported_playlist_fallback_name">Imported playlist</string>
 
     <!-- Permissions -->

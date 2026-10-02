@@ -33,7 +33,7 @@ import io.github.aceattacker77.nakedmusicplayer.data.playlists.SmartPlaylist
 import io.github.aceattacker77.nakedmusicplayer.ui.library.SectionTitle
 import kotlinx.coroutines.launch
 
-/** `*/*` last: many file managers label .m3u8 files with none of the audio playlist types. */
+// The catch-all type goes last: many file managers label .m3u8 files with none of the playlist types.
 private val M3U_MIME_TYPES = arrayOf("audio/x-mpegurl", "audio/mpegurl", "application/vnd.apple.mpegurl", "*/*")
 
 @Composable
