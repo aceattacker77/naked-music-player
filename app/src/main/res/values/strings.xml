@@ -167,6 +167,9 @@
         <item>Kotlin and kotlinx.serialization / coroutines|Apache License 2.0</item>
     </string-array>
 
+    <!-- Widget -->
+    <string name="widget_description">Control playback from your home screen</string>
+
     <!-- Permissions -->
     <string name="permission_title">Music access</string>
     <string name="permission_rationale">Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>

@@ -21,6 +21,8 @@ import io.github.aceattacker77.nakedmusicplayer.AppContainer
 import io.github.aceattacker77.nakedmusicplayer.MusicApp
 import io.github.aceattacker77.nakedmusicplayer.R
 import io.github.aceattacker77.nakedmusicplayer.data.session.SavedSession
+import io.github.aceattacker77.nakedmusicplayer.widget.WidgetState
+import io.github.aceattacker77.nakedmusicplayer.widget.WidgetUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -31,6 +33,7 @@ class PlaybackService : MediaLibraryService() {
     private lateinit var player: ExoPlayer
     private lateinit var playTracker: PlayTracker
     private val skipPolicy = SkipPolicy()
+    private var lastWidgetState: WidgetState? = null
     private var session: MediaLibrarySession? = null
 
     override fun onCreate() {
@@ -137,7 +140,39 @@ class PlaybackService : MediaLibraryService() {
         playTracker.onPlaying(item.mediaId, duration, nowMs)
     }
 
+    /** Pushes the current track and modes to the home-screen widget, but only when they changed. */
+    private fun updateWidget() {
+        val item = player.currentMediaItem
+        val meta = item?.mediaMetadata
+        val duration = player.duration.takeIf { it != C.TIME_UNSET && it > 0 }
+        val state = WidgetState(
+            title = meta?.title?.toString(),
+            artist = meta?.artist?.toString(),
+            albumId = meta?.artworkUri?.lastPathSegment?.toLongOrNull(),
+            isPlaying = player.isPlaying,
+            shuffle = player.shuffleModeEnabled,
+            repeatMode = player.repeatMode,
+            progress = if (duration != null) (player.currentPosition.toFloat() / duration).coerceIn(0f, 1f) else 0f,
+        )
+        if (!WidgetUpdater.shouldUpdate(lastWidgetState, state)) return
+        lastWidgetState = state
+        container.applicationScope.launch { WidgetUpdater.push(this@PlaybackService, state) }
+    }
+
     private inner class PlayerListener : Player.Listener {
+        override fun onEvents(player: Player, events: Player.Events) {
+            if (events.containsAny(
+                    Player.EVENT_MEDIA_ITEM_TRANSITION,
+                    Player.EVENT_IS_PLAYING_CHANGED,
+                    Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED,
+                    Player.EVENT_REPEAT_MODE_CHANGED,
+                    Player.EVENT_TIMELINE_CHANGED,
+                )
+            ) {
+                updateWidget()
+            }
+        }
+
         override fun onPlayerError(error: PlaybackException) {
             player.currentMediaItem?.let { item ->
                 UnplayableRegistry.mark(item.mediaId)
