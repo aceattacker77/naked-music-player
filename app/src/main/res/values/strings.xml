@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Music Player</string>
+    <string name="app_name">Naked Music Player</string>
 
     <!-- Library categories (tabs and the browsable media tree) -->
     <string name="library_albums">Albums</string>
@@ -171,7 +171,7 @@
 
     <!-- Permissions -->
     <string name="permission_title">Music access</string>
-    <string name="permission_rationale">Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>
+    <string name="permission_rationale">Naked Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>
     <string name="permission_allow">Allow access</string>
     <string name="permission_denied_title">Can\'t access your music</string>
     <string name="permission_denied_message">Allow access to music and audio in the system settings to see your library.</string>

@@ -58,7 +58,7 @@ class PlayerWidgetContentTest {
         setContext(ApplicationProvider.getApplicationContext())
         setAppWidgetSize(medium)
         provideComposable { GlanceTheme { PlayerWidgetContent(WidgetState.IDLE, art = null) } }
-        onNode(hasText("Music Player")).assertExists()
+        onNode(hasText("Naked Music Player")).assertExists()
         onNode(hasContentDescription("Play")).assertExists()
         onNode(hasContentDescription("Next")).assertDoesNotExist()
         onNode(hasTestTag("widget-progress")).assertDoesNotExist()

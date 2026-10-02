@@ -2,7 +2,7 @@
   "format": 1,
   "id": "builtin.amoled",
   "name": "AMOLED Black",
-  "author": "Music Player",
+  "author": "Naked Music Player",
   "version": "1.0",
   "colors": {
     "mode": "dark",

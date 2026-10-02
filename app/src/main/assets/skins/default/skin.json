@@ -2,7 +2,7 @@
   "format": 1,
   "id": "builtin.default",
   "name": "Default",
-  "author": "Music Player",
+  "author": "Naked Music Player",
   "version": "1.0",
   "colors": { "mode": "system" },
   "shapes": { "cornerRadiusDp": 28 },
