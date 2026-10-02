@@ -3,6 +3,7 @@ package io.github.aceattacker77.nakedmusicplayer.library
 import io.github.aceattacker77.nakedmusicplayer.library.model.AudioRow
 import io.github.aceattacker77.nakedmusicplayer.library.model.Library
 import io.github.aceattacker77.nakedmusicplayer.library.model.LibraryFilter
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,6 +72,11 @@ class LibraryRepository(
             rows.value = emptyList()
             _allSongIds.value = null
             _permissionDenied.value = true
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Any other failure (storage unmounted mid-query, a closed cursor...) keeps whatever was
+            // loaded before: it must not crash the app, and it must not blank the library.
         }
     }
 }

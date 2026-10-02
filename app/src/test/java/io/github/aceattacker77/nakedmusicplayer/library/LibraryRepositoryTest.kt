@@ -64,6 +64,19 @@ class LibraryRepositoryTest {
         assertThat(repo.allSongIds.value).isNull()
     }
 
+    @Test fun otherQueryFailure_keepsLastLibrary_andDoesNotThrow() = runTest {
+        val source = FakeAudioRowSource().apply { rows = listOf(row(1)) }
+        val repo = repo(source)
+        runCurrent()
+        source.throwOnQuery = IllegalStateException("cursor failed")
+        repo.refresh()
+        runCurrent()
+        // A flaky query must neither crash the app nor blank a library that was loaded fine.
+        assertThat(repo.library.value.songs.map { it.id }).containsExactly(1L)
+        assertThat(repo.allSongIds.value).containsExactly(1L)
+        assertThat(repo.permissionDenied.value).isFalse()
+    }
+
     @Test fun changes_areDebounced500ms() = runTest {
         val source = FakeAudioRowSource().apply { rows = listOf(row(1)) }
         repo(source)
