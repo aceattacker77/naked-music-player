@@ -1,0 +1,47 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+android {
+    namespace = "io.github.aceattacker77.nakedmusicplayer"
+    compileSdk = 37
+
+    defaultConfig {
+        applicationId = "io.github.aceattacker77.nakedmusicplayer"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = "0.1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    buildFeatures { compose = true }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+}
+
+kotlin { jvmToolchain(17) }
+
+dependencies {
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material3)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.serialization.json)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.truth)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.turbine)
+}
