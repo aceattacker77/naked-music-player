@@ -126,6 +126,53 @@ class PlaylistRepositoryTest {
         assertThat(repo.playlists().first()).isEmpty()
     }
 
+    @Test fun importM3u_createsPlaylistWithMatchedSongs() = runTest {
+        val text = "#EXTM3U\nMusic/f1.mp3\nNope/missing.mp3\nMusic/f3.mp3\n"
+        val result = repo.importM3u("Road trip.m3u8", text)
+        assertThat(result.matched).isEqualTo(2)
+        assertThat(result.total).isEqualTo(3)
+        val detail = repo.detail(result.playlistId).first()!!
+        assertThat(detail.name).isEqualTo("Road trip")
+        assertThat(detail.songs.map { it.song.id }).containsExactly(1L, 3L).inOrder()
+    }
+
+    @Test fun importM3u_deduplicatesNames() = runTest {
+        repo.create("Mix")
+        val first = repo.importM3u("Mix.m3u", "Music/f1.mp3\n")
+        val second = repo.importM3u("mix.m3u8", "Music/f1.mp3\n")
+        val names = repo.playlists().first().map { it.name }
+        assertThat(names).containsExactly("Mix", "Mix (2)", "mix (3)")
+        assertThat(first.playlistId).isNotEqualTo(second.playlistId)
+    }
+
+    @Test fun importM3u_blankBaseName_getsFallbackName() = runTest {
+        val result = repo.importM3u(".m3u8", "Music/f1.mp3\n")
+        assertThat(repo.detail(result.playlistId).first()!!.name).isNotEmpty()
+    }
+
+    @Test fun exportM3u_writesVisibleSongsInOrder() = runTest {
+        val id = repo.create("Mix")
+        repo.add(id, library.value.songs.sortedBy { it.id })
+        library.value = libraryOf(row(1), row(3))
+        val export = repo.exportM3u(id)!!
+        assertThat(export.fileName).isEqualTo("Mix.m3u8")
+        assertThat(export.text.lines().filter { it.isNotEmpty() && !it.startsWith("#") })
+            .containsExactly("Music/f1.mp3", "Music/f3.mp3").inOrder()
+    }
+
+    @Test fun exportThenImport_matchesEverything() = runTest {
+        val id = repo.create("Mix")
+        repo.add(id, library.value.songs.sortedBy { it.id })
+        val export = repo.exportM3u(id)!!
+        val result = repo.importM3u(export.fileName, export.text)
+        assertThat(result.matched).isEqualTo(3)
+        assertThat(result.total).isEqualTo(3)
+    }
+
+    @Test fun exportM3u_unknownPlaylist_isNull() = runTest {
+        assertThat(repo.exportM3u(999)).isNull()
+    }
+
     @Test fun prune_removesMissingSongsFromPlaylistsAndStats() = runTest {
         val id = repo.create("Mix")
         repo.add(id, library.value.songs.sortedBy { it.id })

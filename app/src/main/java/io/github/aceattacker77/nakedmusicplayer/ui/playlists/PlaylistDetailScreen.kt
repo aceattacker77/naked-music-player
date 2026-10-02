@@ -1,6 +1,9 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.playlists
 
 import androidx.compose.foundation.background
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -37,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -75,6 +80,19 @@ fun PlaylistDetailScreen(
     val detail by remember(playlistId) { playlistsViewModel.detail(playlistId) }.collectAsStateWithLifecycle(initialValue = null)
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var pendingExport by remember { mutableStateOf<String?>(null) }
+    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("audio/x-mpegurl")) { uri ->
+        val text = pendingExport
+        pendingExport = null
+        if (uri != null && text != null) {
+            scope.launch {
+                if (!writeM3uText(context, uri, text)) {
+                    Toast.makeText(context, context.getString(R.string.m3u_export_failed), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     val removedMessage = stringResource(R.string.removed_from_playlist, "%s")
     val undoLabel = stringResource(R.string.undo)
 
@@ -86,6 +104,18 @@ fun PlaylistDetailScreen(
                     IconButton(onClick = onBack) {
                         Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.back))
                     }
+                },
+                actions = {
+                    TextButton(
+                        onClick = {
+                            scope.launch {
+                                val export = playlistsViewModel.exportM3u(playlistId) ?: return@launch
+                                pendingExport = export.text
+                                exportLauncher.launch(export.fileName)
+                            }
+                        },
+                        enabled = detail != null,
+                    ) { Text(stringResource(R.string.export_playlist)) }
                 },
                 windowInsets = WindowInsets(0),
             )

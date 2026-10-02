@@ -19,6 +19,10 @@ data class IndexedSong(val position: Int, val song: Song)
 
 data class PlaylistDetail(val id: Long, val name: String, val songs: List<IndexedSong>)
 
+data class ImportResult(val playlistId: Long, val matched: Int, val total: Int)
+
+data class M3uExport(val fileName: String, val text: String)
+
 /**
  * Playlists and smart playlists over the current [library]. Songs missing from storage are hidden
  * at read time; the stored rows are only pruned by [prune].
@@ -75,6 +79,29 @@ class PlaylistRepository(
     suspend fun undoRemove(id: Long, removed: IndexedSong) = dao.insertAt(id, removed.position, removed.song.id, clock())
 
     suspend fun move(id: Long, from: Int, to: Int) = dao.move(id, from, to, clock())
+
+    /**
+     * Creates a playlist from M3U [text], named after [fileName] (extension dropped, ` (2)` etc.
+     * appended when the name is taken) and holding every entry that matched a library song.
+     */
+    suspend fun importM3u(fileName: String, text: String, fallbackName: String = "Imported playlist"): ImportResult {
+        val match = PlaylistMatcher.match(M3u.parse(text), library.value)
+        val base = fileName.substringBeforeLast('.', fileName).trim().ifEmpty { fallbackName }
+        val taken = dao.observePlaylists().first().mapTo(HashSet()) { it.name.lowercase() }
+        var name = base
+        var n = 2
+        while (name.lowercase() in taken) name = "$base (${n++})"
+        val id = dao.create(name, clock())
+        if (match.songIds.isNotEmpty()) dao.addSongs(id, match.songIds, clock())
+        return ImportResult(id, match.matched, match.total)
+    }
+
+    /** The playlist as `.m3u8` text (songs missing from storage are left out), or null if it is gone. */
+    suspend fun exportM3u(id: Long): M3uExport? {
+        val detail = detail(id).first() ?: return null
+        val safeName = detail.name.replace(Regex("[\\\\/:*?\"<>|]"), "_")
+        return M3uExport("$safeName.m3u8", M3u.write(detail.songs.map { it.song }))
+    }
 
     /** Drops stored entries and play stats for songs that no longer exist. */
     suspend fun prune(validSongIds: Set<Long>) {

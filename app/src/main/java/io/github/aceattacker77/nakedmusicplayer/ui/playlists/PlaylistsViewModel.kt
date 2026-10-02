@@ -57,4 +57,9 @@ class PlaylistsViewModel(private val repository: PlaylistRepository) : ViewModel
     fun undoRemove(id: Long, removed: IndexedSong) {
         viewModelScope.launch { repository.undoRemove(id, removed) }
     }
+
+    suspend fun importM3u(fileName: String, text: String, fallbackName: String) =
+        repository.importM3u(fileName, text, fallbackName)
+
+    suspend fun exportM3u(id: Long) = repository.exportM3u(id)
 }

@@ -92,6 +92,14 @@
     <string name="undo">Undo</string>
     <string name="add_to_playlist">Add to playlist</string>
 
+    <!-- M3U -->
+    <string name="import_playlist">Import playlist</string>
+    <string name="export_playlist">Export</string>
+    <string name="m3u_matched">%1$d of %2$d matched</string>
+    <string name="m3u_read_failed">Couldn't read that file</string>
+    <string name="m3u_export_failed">Couldn't save the playlist</string>
+    <string name="imported_playlist_fallback_name">Imported playlist</string>
+
     <!-- Permissions -->
     <string name="permission_title">Music access</string>
     <string name="permission_rationale">Music Player needs access to the audio files on your device to build your library. Nothing leaves your phone.</string>
