@@ -56,7 +56,7 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 
 - [ ] **Audible change:** enable, push a band to +, hear it; presets change the sound; disabling restores flat sound but keeps the sliders.
 - [x] **Persists** across app restarts and across track changes. — equalizer on, band +8.7 dB and preamp -4.3 dB survived a force-stop (track-change persistence not checked).
-- [ ] **Preamp** attenuates while enabled and is ignored while disabled.
+- [x] **Preamp** attenuates while enabled and is ignored while disabled. — measured on the phone from the audio system's per-track gain (`dumpsys media.audio_flinger`), not by ear: equalizer off + preamp -2.9 dB -> 0 dB; switched on -> -2.9 dB on both channels; moving the slider while on -> -4.6, then -2.4 dB (the gain followed each value exactly); switched off -> 0 dB, slider value kept. Reset to 0.0 dB / off afterwards.
 - [ ] **No-equalizer device / emulator image:** the Now Playing EQ button and the Settings row are hidden and nothing crashes.
 
 ## Playlists
