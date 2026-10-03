@@ -14,7 +14,7 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 
 ## Setup
 
-- [ ] `scripts/make_fixtures.sh` (needs ffmpeg) then `scripts/seed_library.sh` to put 5,000 songs on the device.
+- [ ] `scripts/make_fixtures.sh` (needs ffmpeg) then `scripts/seed_library.sh` to put 5,000 songs on the device. — *not done as written:* no ffmpeg here, so a 1,500-song library was generated with Python instead (1,500 two-second 8 kHz WAV files in 50 album folders, 48 MB, titles spread over A-Z, no artwork), pushed to `Music/NMPBulk`, indexed, tested and removed.
 - [ ] In the app: Settings → Library → Minimum song length → **Off** (the seed songs are 2 s long).
 - [ ] Also keep a handful of real songs in different formats (mp3, flac, ogg, opus, m4a, wav) and one with no tags.
 
@@ -39,7 +39,7 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 - [ ] **Limited access (Android 14+ "selected music" if offered):** the granted subset is shown.
 - [x] **Add music while the app is open:** it appears within a couple of seconds (ContentObserver). — files pushed and scanned appeared in search while the app was open (not timed).
 - [x] **Folder scanning:** add a folder containing an `.opus` file MediaStore skipped: it appears after the scan. Remove the folder: its persisted permission is released. — added a folder with an .opus file via the tree picker: it appeared in the library; removing the folder released the grant. (MediaStore may have indexed the file too, so the 'skipped by MediaStore' case is not proven.)
-- [ ] **Scrolling 5,000 songs:** smooth, fast-scroller works, artwork loads without stutter.
+- [ ] **Scrolling 5,000 songs:** smooth, fast-scroller works, artwork loads without stutter. — *partly, with ~1,570 songs, no artwork:* Songs list scroll 0.05% janky frames, p99 10 ms (same as the small library); Albums (50) and Artists tabs 0% janky; search and all four sort orders work; the fast scroller was **broken and is fixed** (see the notes), 11 of 11 letters then land correctly and Z and the last heading are reachable. Artwork loading at scale and the full 5,000 were not tested.
 
 ## UI
 
@@ -79,7 +79,7 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 
 - [ ] `./gradlew :app:generateBaselineProfile` produces `app/src/release/generated/baselineProfiles/baseline-prof.txt`. — *partly:* the generator test passes on the phone (67,646 rules) but the Gradle task reports failure before copying; the profile was copied by hand and is not committed.
 - [ ] `./gradlew :baselineprofile:connectedBenchmarkAndroidTest` on a physical 120 Hz device: cold start median `timeToInitialDisplayMs` < 400; scroll `frameOverrunMs` P99 < 0.
-- [ ] `adb shell dumpsys meminfo io.github.aceattacker77.nakedmusicplayer`: TOTAL PSS < 120 MB after browsing every tab and Now Playing with the 5,000-song library.
+- [ ] `adb shell dumpsys meminfo io.github.aceattacker77.nakedmusicplayer`: TOTAL PSS < 120 MB after browsing every tab and Now Playing with the 5,000-song library. — *partly:* 113 MB with ~1,570 songs, against 119 MB for the same routine with the small library (run-to-run it has ranged 98-119 MB), so library size made no visible difference, but the app sits close to the 120 MB line either way (Graphics ~43 MB, Native ~20 MB). Not measured with 5,000 songs.
 - [x] `scripts/check_release.sh` passes (APK under 6 MB, no INTERNET). Last result on the build machine: 4.0 MB, no INTERNET. — last run 4.0 MB, no INTERNET.
 - [x] `./gradlew :app:connectedDebugAndroidTest` passes on an API 26 emulator and an API 36 emulator. — the 10 androidTest tests pass on a real API 36 device (run with adb because the Gradle installer is blocked on Xiaomi); no API 26 run.
 - [x] Smoke-test the **minified release** build once: skins load (R8 keep rules for kotlinx.serialization), playlists, equalizer settings and navigation all work. — launches, library, playback, skins, equalizer persistence verified; the skin and M3U import pickers were exercised on later builds. The widget was not run.

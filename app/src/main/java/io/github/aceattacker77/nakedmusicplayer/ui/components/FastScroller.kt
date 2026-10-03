@@ -3,9 +3,10 @@ package io.github.aceattacker77.nakedmusicplayer.ui.components
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
@@ -38,6 +40,8 @@ fun FastScroller(
         scope.launch { lazyListState.scrollToItem(indexOfLetter(letters[bucket])) }
     }
 
+    // Every letter gets an equal slot of the strip, so a letter's drawn position and the touch-to-letter
+    // formula in jumpTo() always agree, however many letters there are.
     Column(
         modifier = modifier
             .fillMaxHeight()
@@ -45,15 +49,17 @@ fun FastScroller(
             .onSizeChanged { heightPx = it.height.coerceAtLeast(1) }
             .pointerInput(letters) { detectTapGestures { jumpTo(it.y) } }
             .pointerInput(letters) { detectVerticalDragGestures { change, _ -> jumpTo(change.position.y) } },
-        verticalArrangement = Arrangement.SpaceEvenly,
     ) {
+        val style = MaterialTheme.typography.labelSmall
         letters.forEach { letter ->
-            Text(
-                text = letter.toString(),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.align(androidx.compose.ui.Alignment.CenterHorizontally),
-            )
+            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = letter.toString(),
+                    // Line height = font size, so a crowded strip's letters stay inside their slots.
+                    style = style.copy(lineHeight = style.fontSize),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
 }
