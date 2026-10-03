@@ -171,6 +171,29 @@ class PlaylistsUiTest {
         compose.onNodeWithText("Undo").click()
         settle()
         assertThat(songIds(id)).containsExactly(1L, 2L, 3L).inOrder()
+        // ...and the row is back on screen, not stuck in its swiped-away state.
+        compose.onNodeWithTag("playlist-row-1").assertIsDisplayed()
+        compose.onNodeWithText("Beta").assertIsDisplayed()
+    }
+
+    @Test fun twoQuickRemovals_onlyTheLatestOffersUndo_andUndoRestoresIt() {
+        launch()
+        val id = seedMix()
+        openPlaylistsTab()
+        compose.onNodeWithText("Mix").click()
+        settle()
+
+        compose.onNodeWithTag("playlist-row-1").performTouchInput { swipeLeft() } // Beta -> [Alpha, Gamma]
+        settle()
+        compose.onNodeWithTag("playlist-row-0").performTouchInput { swipeLeft() } // Alpha -> [Gamma]
+        settle()
+        assertThat(songIds(id)).containsExactly(3L)
+
+        // Undo offers the latest removal; the older prompt must not be queued ahead of it.
+        compose.onNodeWithText("Removed \"Alpha\"").assertIsDisplayed()
+        compose.onNodeWithText("Undo").click()
+        settle()
+        assertThat(songIds(id)).containsExactly(1L, 3L).inOrder()
     }
 
     @Test fun dragReorder_persists() {
@@ -193,6 +216,36 @@ class PlaylistsUiTest {
         val order = songIds(id)
         assertThat(order.first()).isNotEqualTo(1L)
         assertThat(order).containsExactly(1L, 2L, 3L)
+    }
+
+    @Test fun swipeRemove_afterReorder_removesTheSwipedSong() {
+        launch()
+        val id = seedMix()
+        openPlaylistsTab()
+        compose.onNodeWithText("Mix").click()
+        settle()
+
+        // Reorder first, so rows no longer sit where they were first composed.
+        val handle = compose.onNodeWithTag("playlist-drag-0", useUnmergedTree = true)
+        handle.performTouchInput { down(center) }
+        settle()
+        listOf(30f, 60f, 60f, 60f).forEach { dy ->
+            handle.performTouchInput { moveBy(Offset(0f, dy)) }
+            settle()
+        }
+        handle.performTouchInput { up() }
+        settle()
+        val reordered = songIds(id)
+        assertThat(reordered.first()).isNotEqualTo(1L)
+
+        // Swipe away whatever is shown in the second slot.
+        val swiped = reordered[1]
+        val title = mapOf(1L to "Alpha", 2L to "Beta", 3L to "Gamma").getValue(swiped)
+        compose.onNodeWithTag("playlist-row-1").performTouchInput { swipeLeft() }
+        settle()
+
+        assertThat(songIds(id)).containsExactlyElementsIn(reordered - swiped).inOrder()
+        compose.onNodeWithText("Removed \"$title\"").assertIsDisplayed()
     }
 
     @Test fun smartPlaylists_listedFirst() {

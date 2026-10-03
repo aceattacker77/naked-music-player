@@ -34,9 +34,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -135,6 +137,9 @@ fun PlaylistDetailScreen(
                     onRemove = { position ->
                         playlistsViewModel.remove(playlistId, position) { removed ->
                             scope.launch {
+                                // Undo restores by position, so only the newest removal may be undone: an older
+                                // prompt queued ahead of it would put its song back in the wrong place.
+                                snackbar.currentSnackbarData?.dismiss()
                                 val result = snackbar.showSnackbar(
                                     message = removedMessage.replace("%s", removed.song.title),
                                     actionLabel = undoLabel,
@@ -173,6 +178,11 @@ private fun PlaylistSongs(
         songs.map { "${it.id}#${seen.merge(it.id, 1, Int::plus)}" }
     }
 
+    // A row's swipe handler is created once per row, so it must read these through state: values captured
+    // when the row was first composed go stale after a reorder or a reload.
+    val latestKeys by rememberUpdatedState(keys)
+    val latestSlotPositions by rememberUpdatedState(slotPositions)
+
     val listState = rememberLazyListState()
     val reorderState = rememberReorderableLazyListState(listState) { from, to ->
         songs = songs.toMutableList().apply { add(to.index, removeAt(from.index)) }
@@ -192,9 +202,10 @@ private fun PlaylistSongs(
                     val dismissState = rememberSwipeToDismissBoxState(
                         confirmValueChange = { value ->
                             if (value == SwipeToDismissBoxValue.EndToStart) {
-                                val position = slotPositions.getOrNull(index)
-                                if (position != null) {
-                                    songs = songs.toMutableList().apply { removeAt(index) }
+                                val current = latestKeys.indexOf(key)
+                                val position = latestSlotPositions.getOrNull(current)
+                                if (current >= 0 && position != null) {
+                                    songs = songs.toMutableList().apply { removeAt(current) }
                                     onRemove(position)
                                 }
                                 true
@@ -203,6 +214,13 @@ private fun PlaylistSongs(
                             }
                         },
                     )
+                    // The dismissed state is saved per row key, so a row brought back by Undo returns already "swiped
+                    // away" and invisible. Put it back at rest.
+                    LaunchedEffect(dismissState) {
+                        if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
+                            dismissState.snapTo(SwipeToDismissBoxValue.Settled)
+                        }
+                    }
                     SwipeToDismissBox(
                         state = dismissState,
                         enableDismissFromStartToEnd = false,

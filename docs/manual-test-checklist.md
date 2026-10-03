@@ -62,7 +62,7 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 ## Playlists
 
 - [x] Create, rename, delete; add from the song menu, from an album, from Now Playing. — create, add from the song menu, rename and delete (with the confirm dialog) verified; add from an album and from Now Playing were not tried.
-- [ ] Drag to reorder; swipe to remove with Undo. — *partly:* not exercised.
+- [x] Drag to reorder; swipe to remove with Undo. — verified on the phone, after three bugs were found and fixed (see the notes): drag down and up persists across reopen and a force-stop; swipe-remove after a reorder removes the swiped song; Undo brings the row back on screen; a second quick removal replaces the first Undo prompt.
 - [x] **M3U:** export a playlist, then import the exported file: "N of N matched" and an identically ordered copy named with " (2)". — exported (valid #EXTM3U, UTF-8, durations, relative paths) and imported back: copy named "... (2)", same 3 songs, same order.
 - [ ] Import an `.m3u8` made on Windows (CRLF, `C:\Music\…` paths) and one from another Android player. — *partly:* a CRLF + BOM + `C:\Music\...` file matched 2 of 3 (the missing entry was skipped); a playlist from another Android player was not tried.
 

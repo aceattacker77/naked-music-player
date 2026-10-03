@@ -67,6 +67,18 @@ class PlaylistRepositoryTest {
         assertThat(restored.songs.map { it.position }).containsExactly(0, 1, 2).inOrder()
     }
 
+    @Test fun twoRemovals_undoneInReverseOrder_restoreEverything() = runTest {
+        val id = repo.create("Mix")
+        repo.add(id, library.value.songs.filter { it.id in setOf(1L, 2L, 3L) }.sortedBy { it.id })
+
+        val removedBeta = repo.remove(id, 1) // [1, 3]
+        val removedAlpha = repo.remove(id, 0) // [3]
+        repo.undoRemove(id, removedAlpha) // [1, 3]
+        repo.undoRemove(id, removedBeta) // [1, 2, 3]
+
+        assertThat(repo.detail(id).first()!!.songs.map { it.song.id }).containsExactly(1L, 2L, 3L).inOrder()
+    }
+
     @Test fun move_reordersSongs() = runTest {
         val id = repo.create("Mix")
         repo.add(id, library.value.songs.sortedBy { it.id })
