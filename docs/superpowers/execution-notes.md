@@ -34,7 +34,8 @@ The plan's performance and on-device steps are **unverified**: nothing below has
 - **Skin export is named `*.mskin.zip`:** Android appends `.zip` because the app asks for a zip MIME type. Re-import works either way. Minor.
 - **Landscape Now Playing:** artwork left, controls right, but the Queue button starts below the fold (the control column scrolls). Minor.
 - **Could not test from adb:** HyperOS re-grants the audio permission after `adb` revokes it, so the in-app rationale/denied screens were not seen on this phone.
-- **Not done (need a person or hardware):** Bluetooth headset buttons, incoming call, unplugging headphones, audible equalizer/gapless, TalkBack, foldable/tablet, large font / display size (system settings), the 5,000-song library (no ffmpeg here), and the widget (adding it needs the launcher).
+- **Two R8 bugs found via the widget and fixed with keep rules (`app/proguard-rules.pro`):** in the minified build WorkManager could not create `OverwritingInputMerger` ("Could not create Input Merger"), so every Glance render job failed and the widget stayed on its loading spinner; then Glance could not create the button callbacks (`NoSuchMethodException: PlayPauseAction.<init>`), so the buttons did nothing. Unit tests cannot see either (no R8). Verified on the phone: the widget renders and play/pause/next/previous and tap-to-open work. There is still no automated guard; any new reflectively-created class (workers, Glance callbacks) needs a keep rule and a device check.
+- **Not done (need a person or hardware):** Bluetooth headset buttons, incoming call, unplugging headphones, audible equalizer/gapless, TalkBack, foldable/tablet, large font / display size (system settings), the 5,000-song library (no ffmpeg here), and the 4×2 widget's shuffle/repeat, skin recolouring and dynamic colour.
 
 ## Rulings (deviations from the plan, and why)
 

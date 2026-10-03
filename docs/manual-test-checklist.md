@@ -68,10 +68,10 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 
 ## Widget
 
-- [ ] Add the 4×1 widget and the resized 4×2 widget.
-- [ ] Play, pause, next, previous work from the widget; shuffle and repeat on the 4×2.
-- [ ] Tapping the widget body opens the app.
-- [ ] Play on the widget with nothing playing resumes the last queue.
+- [ ] Add the 4×1 widget and the resized 4×2 widget. — *partly:* the 4×1 widget was added and renders (title, artist, prev/play/next); the 4×2 resize was not tried. It was stuck on the loading spinner until two R8 keep rules were added (see the notes).
+- [ ] Play, pause, next, previous work from the widget; shuffle and repeat on the 4×2. — *partly:* play, pause, next and previous verified on the 4×1; shuffle and repeat (4×2 only) not tried.
+- [x] Tapping the widget body opens the app. — opens MainActivity.
+- [ ] Play on the widget with nothing playing resumes the last queue. — *partly:* Play on the widget started the restored (paused) queue; not tried with the app process dead.
 - [ ] Change skin: the widget recolours on its next update.
 - [ ] Dynamic colour on Android 12+ when the active skin is the Default one.
 

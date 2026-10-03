@@ -25,3 +25,14 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 -keep,includedescriptorclasses class io.github.aceattacker77.nakedmusicplayer.ui.**$$serializer { *; }
+
+# WorkManager (pulled in by the Glance widget) creates input mergers and workers by reflection.
+# Without these, R8 strips their constructors and every widget render fails with
+# "Could not create Input Merger", leaving the widget on its loading spinner.
+-keep class * extends androidx.work.InputMerger { <init>(); }
+-keep class * extends androidx.work.ListenableWorker {
+    <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+
+# Glance builds ActionCallback classes (the widget buttons) by reflection from their class name.
+-keep class * implements androidx.glance.appwidget.action.ActionCallback { <init>(); }
