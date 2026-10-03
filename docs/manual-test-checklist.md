@@ -71,9 +71,9 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 - [x] Add the 4×1 widget and the resized 4×2 widget. — both render (the 4×2 adds a progress bar, shuffle and repeat). Both were stuck on the loading spinner until the R8 keep rules were added (see the notes).
 - [x] Play, pause, next, previous work from the widget; shuffle and repeat on the 4×2. — all verified on the phone. Shuffle and repeat icons update within a second; before a fix they stayed stale (the widget captured its state outside the composition).
 - [x] Tapping the widget body opens the app. — opens MainActivity.
-- [ ] Play on the widget with nothing playing resumes the last queue. — *partly:* Play on the widget started the restored (paused) queue; not tried with the app process dead.
-- [ ] Change skin: the widget recolours on its next update.
-- [ ] Dynamic colour on Android 12+ when the active skin is the Default one.
+- [x] Play on the widget with nothing playing resumes the last queue. — with the app process crashed, Play on the widget restarted the app, restored the queue and played from the saved position.
+- [x] Change skin: the widget recolours on its next update. — it recoloured as soon as the skin changed (Vinyl: reddish-brown background), before any playback update; Default restored afterwards.
+- [x] Dynamic colour on Android 12+ when the active skin is the Default one. — on: wallpaper palette (blue, bg 42/48/66); off: the app's own palette (purple-grey, bg 51/46/64). A setting change shows on the widget at its next update. This needed a fix (see the notes).
 
 ## Performance and release (see the plan, Task 19)
 

@@ -56,8 +56,8 @@ import androidx.media3.common.Player
 import io.github.aceattacker77.nakedmusicplayer.MainActivity
 import io.github.aceattacker77.nakedmusicplayer.MusicApp
 import io.github.aceattacker77.nakedmusicplayer.R
-import io.github.aceattacker77.nakedmusicplayer.data.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 private val SMALL = DpSize(250.dp, 50.dp) // 4 x 1
@@ -72,11 +72,13 @@ class PlayerWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val container = (context.applicationContext as MusicApp).container
+        // The real current settings, so the first frame is right (AppSettings() defaults dynamic colour on).
+        val initialSettings = container.settingsRepository.settings.first()
         provideContent {
             // Glance keeps this session alive and recomposes it on every update, so everything the widget shows
             // is read here, inside the composition. Values captured before provideContent would go stale.
             val skin by container.skinManager.active.collectAsState()
-            val settings by container.settingsRepository.settings.collectAsState(initial = AppSettings())
+            val settings by container.settingsRepository.settings.collectAsState(initial = initialSettings)
             val dynamic = widgetUsesDynamicColors(skin.colorMode, settings.dynamicColor, Build.VERSION.SDK_INT)
             val albumId = WidgetState.readFrom(currentState<Preferences>()).albumId
             val art by produceState<Bitmap?>(initialValue = null, albumId) {
