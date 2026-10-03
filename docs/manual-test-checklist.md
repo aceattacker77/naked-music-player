@@ -20,7 +20,7 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 
 ## Playback and system integration
 
-- [ ] **Bluetooth headset buttons:** play/pause, next, previous work from the headset, also with the screen off.
+- [x] **Bluetooth headset buttons:** play/pause, next, previous work from the headset, also with the screen off. — reported working by the owner on their own headset (no detail given on screen-off use or with the app killed; the dead-process resumption path was separately verified with a media key).
 - [ ] **Incoming call:** playback pauses on ring and does *not* resume by itself after the call ends unless it was playing before and focus returns (system behaviour for transient focus loss).
 - [ ] **Lock screen / notification controls:** artwork, title, seek bar, play/pause, next, previous all work. — *partly:* notification checked with dumpsys (MediaStyle, public, title/artist, prev/play/next, session token); the test songs have no artwork, so artwork/seek bar on the lock screen were not seen.
 - [ ] **Unplug headphones** (wired or Bluetooth disconnect) while playing: playback pauses.
@@ -54,7 +54,7 @@ device; a note after `—` says how, or what was *not* covered. Open boxes need 
 
 ## Equalizer
 
-- [ ] **Audible change:** enable, push a band to +, hear it; presets change the sound; disabling restores flat sound but keeps the sliders.
+- [x] **Audible change:** enable, push a band to +, hear it; presets change the sound; disabling restores flat sound but keeps the sliders. — reported fine by the owner by ear (no detail given on presets or on disabling restoring flat sound).
 - [x] **Persists** across app restarts and across track changes. — equalizer on, band +8.7 dB and preamp -4.3 dB survived a force-stop (track-change persistence not checked).
 - [x] **Preamp** attenuates while enabled and is ignored while disabled. — measured on the phone from the audio system's per-track gain (`dumpsys media.audio_flinger`), not by ear: equalizer off + preamp -2.9 dB -> 0 dB; switched on -> -2.9 dB on both channels; moving the slider while on -> -4.6, then -2.4 dB (the gain followed each value exactly); switched off -> 0 dB, slider value kept. Reset to 0.0 dB / off afterwards.
 - [ ] **No-equalizer device / emulator image:** the Now Playing EQ button and the Settings row are hidden and nothing crashes.
