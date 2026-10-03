@@ -39,6 +39,15 @@
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+        <!-- Lets a headset or system "play" wake the app and resume the last queue (onPlaybackResumption). -->
+        <receiver
+            android:name="androidx.media3.session.MediaButtonReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".widget.PlayerWidgetReceiver"
             android:exported="true">
