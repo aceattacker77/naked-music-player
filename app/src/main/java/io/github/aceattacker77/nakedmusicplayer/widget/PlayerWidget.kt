@@ -10,6 +10,9 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -31,7 +34,6 @@ import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
-import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
@@ -54,8 +56,8 @@ import androidx.media3.common.Player
 import io.github.aceattacker77.nakedmusicplayer.MainActivity
 import io.github.aceattacker77.nakedmusicplayer.MusicApp
 import io.github.aceattacker77.nakedmusicplayer.R
+import io.github.aceattacker77.nakedmusicplayer.data.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 private val SMALL = DpSize(250.dp, 50.dp) // 4 x 1
@@ -70,24 +72,29 @@ class PlayerWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val container = (context.applicationContext as MusicApp).container
-        val skin = container.skinManager.active.value
-        val dynamic = widgetUsesDynamicColors(
-            skin.colorMode,
-            container.settingsRepository.settings.first().dynamicColor,
-            Build.VERSION.SDK_INT,
-        )
-        val state = WidgetState.readFrom(getAppWidgetState(context, PreferencesGlanceStateDefinition, id))
-        val art = state.albumId?.let { loadArtwork(context, it) }
-
         provideContent {
-            @Suppress("UNUSED_VARIABLE") val unused = currentState<Preferences>()
+            // Glance keeps this session alive and recomposes it on every update, so everything the widget shows
+            // is read here, inside the composition. Values captured before provideContent would go stale.
+            val skin by container.skinManager.active.collectAsState()
+            val settings by container.settingsRepository.settings.collectAsState(initial = AppSettings())
+            val dynamic = widgetUsesDynamicColors(skin.colorMode, settings.dynamicColor, Build.VERSION.SDK_INT)
+            val albumId = WidgetState.readFrom(currentState<Preferences>()).albumId
+            val art by produceState<Bitmap?>(initialValue = null, albumId) {
+                value = albumId?.let { loadArtwork(context, it) }
+            }
             if (dynamic) {
-                GlanceTheme { PlayerWidgetContent(state, art, skin.cornerRadiusDp.dp) }
+                GlanceTheme { StatefulPlayerWidgetContent(art, skin.cornerRadiusDp.dp) }
             } else {
-                GlanceTheme(colors = widgetColorProviders(skin)) { PlayerWidgetContent(state, art, skin.cornerRadiusDp.dp) }
+                GlanceTheme(colors = widgetColorProviders(skin)) { StatefulPlayerWidgetContent(art, skin.cornerRadiusDp.dp) }
             }
         }
     }
+}
+
+/** The widget body for the widget's current saved state (re-read on every recomposition). */
+@Composable
+internal fun StatefulPlayerWidgetContent(art: Bitmap?, cornerRadius: Dp = 16.dp) {
+    PlayerWidgetContent(WidgetState.readFrom(currentState<Preferences>()), art, cornerRadius)
 }
 
 /** Small thumbnail of an album's art, or null when it has none. */
