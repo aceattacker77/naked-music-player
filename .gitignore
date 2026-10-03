@@ -7,3 +7,6 @@ local.properties
 .kotlin/
 captures/
 .cxx/
+
+# Generated on a device by :app:generateBaselineProfile; large, goes stale, deliberately not committed.
+app/src/release/generated/
