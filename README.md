@@ -119,4 +119,4 @@ Dependencies are wired by hand through `AppContainer` (no DI framework); tests s
 
 ## Licence
 
-No licence file has been added yet. Until one is, the code is not licensed for reuse.
+Copyright 2026 Ace Attacker. Licensed under the [Apache License, Version 2.0](LICENSE); see [`NOTICE`](NOTICE).

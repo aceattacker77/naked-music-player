@@ -167,4 +167,4 @@ display size, gesture navigation, lock-screen artwork, an Android 8 device, a ph
 5,000-song library.
 
 Release readiness: the app is **not signed for release**; the release APK is built unsigned and needs a signing
-setup before any store submission. The project has no licence file yet.
+setup before any store submission. The project is licensed under Apache-2.0 (see `LICENSE`).
