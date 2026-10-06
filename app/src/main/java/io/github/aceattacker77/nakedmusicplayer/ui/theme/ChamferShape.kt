@@ -4,6 +4,7 @@ import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.Dp
@@ -53,3 +54,6 @@ private val CUT_FACTORS = listOf(0.3f, 0.5f, 0.8f, 1f, 1.4f)
 
 /** The five Material shape sizes (extraSmall to extraLarge) as cuts scaled from [chamferDp]. */
 internal fun chamferCutsDp(chamferDp: Int): List<Dp> = CUT_FACTORS.map { (chamferDp * it).dp }
+
+/** [themed] when the active theme is a chamfer one, otherwise the call site's own [fallback] shape. */
+fun shapeOr(fallback: Shape, themed: Shape): Shape = if (themed is ChamferShape) themed else fallback

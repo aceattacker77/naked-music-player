@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.library
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.shapeOr
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -139,7 +140,7 @@ private fun AlbumHeader(album: Album, onPlayAll: () -> Unit, onAddToPlaylist: ()
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        AlbumArt(album.id, Modifier.size(200.dp), RoundedCornerShape(16.dp))
+        AlbumArt(album.id, Modifier.size(200.dp), shapeOr(RoundedCornerShape(16.dp), MaterialTheme.shapes.large))
         Text(
             text = albumLabel(album.title),
             style = MaterialTheme.typography.headlineSmall,

@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.shapeOr
 import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,10 +39,11 @@ fun albumArtModel(albumId: Long): Any =
 fun AlbumArt(
     albumId: Long?,
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(8.dp),
+    shape: Shape? = null,
 ) {
+    val resolved = shape ?: shapeOr(RoundedCornerShape(8.dp), MaterialTheme.shapes.small)
     Box(
-        modifier = modifier.clip(shape).background(MaterialTheme.colorScheme.surfaceVariant),
+        modifier = modifier.clip(resolved).background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
         Icon(

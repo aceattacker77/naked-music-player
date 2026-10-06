@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.settings
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.shapeOr
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -55,7 +56,7 @@ fun SkinPreviewCard(
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = shapeOr(RoundedCornerShape(16.dp), MaterialTheme.shapes.large)
     Column(modifier.testTag("skin-card-${skin.id}")) {
         Surface(
             shape = shape,

@@ -53,4 +53,10 @@ class ChamferShapeTest {
         val expected = Shapes(extraSmall = r(0.25f), small = r(0.5f), medium = r(0.75f), large = r(1f), extraLarge = r(1.5f))
         assertThat(shapesFor(Skin.FALLBACK)).isEqualTo(expected)
     }
+
+    @Test fun shapeOr_returnsThemedOnlyForChamfer() {
+        val fallback = RoundedCornerShape(8.dp)
+        assertThat(shapeOr(fallback, ChamferShape(5.dp))).isEqualTo(ChamferShape(5.dp))
+        assertThat(shapeOr(fallback, RoundedCornerShape(14.dp))).isEqualTo(fallback)
+    }
 }
