@@ -42,4 +42,12 @@ class HexagonGeometryTest {
     @Test fun trackCode_noCurrentTrackIsNull() {
         assertThat(trackCode(-1)).isNull()
     }
+
+    @Test fun captions_showOnlyOnLargeNonCircularArt() {
+        assertThat(shouldShowCaptions(minSideDp = 200f, circular = false)).isTrue()
+        assertThat(shouldShowCaptions(minSideDp = 160f, circular = false)).isTrue()
+        assertThat(shouldShowCaptions(minSideDp = 159.9f, circular = false)).isFalse()
+        assertThat(shouldShowCaptions(minSideDp = 64f, circular = false)).isFalse()
+        assertThat(shouldShowCaptions(minSideDp = 300f, circular = true)).isFalse()
+    }
 }

@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,9 @@ internal fun hexagonPoints(size: Size, inset: Float): List<Offset> {
     }
 }
 
+/** Captions need room: they are skipped on small tiles (the compact layouts) and on circular artwork, whose clip hides the corners. */
+internal fun shouldShowCaptions(minSideDp: Float, circular: Boolean): Boolean = !circular && minSideDp >= 160f
+
 /** `TRK 0002` for the second queue entry; null when nothing is playing. */
 internal fun trackCode(currentIndex: Int): String? =
     if (currentIndex < 0) null else String.format(Locale.ROOT, "TRK %04d", currentIndex + 1)
@@ -51,7 +55,8 @@ fun HexagonPlaceholder(modifier: Modifier = Modifier, captions: ArtCaptions? = n
     val outerColor = MaterialTheme.colorScheme.outlineVariant
     val middleColor = MaterialTheme.colorScheme.outline
     val innerColor = MaterialTheme.colorScheme.primary
-    Box(modifier.fillMaxSize().clearAndSetSemantics {}, contentAlignment = Alignment.Center) {
+    BoxWithConstraints(modifier.fillMaxSize().clearAndSetSemantics {}, contentAlignment = Alignment.Center) {
+        val showCaptions = captions != null && shouldShowCaptions(minOf(maxWidth, maxHeight).value, circular = false)
         Canvas(Modifier.fillMaxSize()) {
             val half = min(size.width, size.height) / 2f
             fun outline(scale: Float, color: Color, widthDp: Float) {
@@ -73,11 +78,12 @@ fun HexagonPlaceholder(modifier: Modifier = Modifier, captions: ArtCaptions? = n
             modifier = Modifier.fillMaxWidth(0.24f),
             tint = innerColor,
         )
-        if (captions != null) {
+        if (captions != null && showCaptions) {
             Text(
                 text = captions.top,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
                 modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
             )
             captions.bottom?.let {
@@ -85,6 +91,7 @@ fun HexagonPlaceholder(modifier: Modifier = Modifier, captions: ArtCaptions? = n
                     text = it,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
                     modifier = Modifier.align(Alignment.BottomStart).padding(8.dp),
                 )
             }

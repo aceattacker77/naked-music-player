@@ -146,7 +146,7 @@ private fun buildSlots(
     val meta = state.current?.mediaMetadata
     return NowPlayingSlots(
         artwork = {
-            val captions = if (LocalOrnament.current.artPlaceholder == ArtPlaceholder.HEXAGON) {
+            val captions = if (LocalOrnament.current.artPlaceholder == ArtPlaceholder.HEXAGON && style.artShape != ArtShape.Circle) {
                 ArtCaptions(stringResource(R.string.no_artwork), trackCode(state.currentIndex))
             } else {
                 null

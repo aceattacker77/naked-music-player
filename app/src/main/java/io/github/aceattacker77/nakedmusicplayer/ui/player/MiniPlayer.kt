@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.draw.drawBehind
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoPanel
 import androidx.compose.foundation.layout.height
@@ -68,14 +70,15 @@ fun MiniPlayer(
             onDragStopped = { velocity -> if (velocity < EXPAND_FLING_VELOCITY) onExpand() },
         )
         .clickable(onClick = onExpand)
-    val fraction = (position.toFloat() / duration).coerceIn(0f, 1f)
+    // A lambda, so the position state is read in the draw phase and a tick does not recompose the body.
+    val fraction = { (position.toFloat() / duration).coerceIn(0f, 1f) }
 
     val body: @Composable () -> Unit = {
         Column {
             if (brackets) {
                 ThinProgressLine(fraction)
             } else {
-                LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
+                LinearProgressIndicator(progress = fraction, modifier = Modifier.fillMaxWidth())
             }
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -126,8 +129,13 @@ fun MiniPlayer(
 
 /** A 2 dp continuous progress line, used instead of Material's 4 dp indicator in the bracketed mini player. */
 @Composable
-private fun ThinProgressLine(fraction: Float) {
-    Box(Modifier.fillMaxWidth().height(2.dp).background(MaterialTheme.colorScheme.surfaceVariant)) {
-        Box(Modifier.fillMaxWidth(fraction).height(2.dp).background(MaterialTheme.colorScheme.primary))
-    }
+private fun ThinProgressLine(fraction: () -> Float) {
+    val track = MaterialTheme.colorScheme.surfaceVariant
+    val fill = MaterialTheme.colorScheme.primary
+    Box(
+        Modifier.fillMaxWidth().height(2.dp).drawBehind {
+            drawRect(track)
+            drawRect(fill, size = Size(size.width * fraction(), size.height))
+        },
+    )
 }

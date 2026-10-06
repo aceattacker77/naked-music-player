@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui
 
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.WindowInsetsSides
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoTab
 import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoNavigationBar
@@ -43,6 +46,13 @@ private val tabs = listOf(
     Tab(Artists, Artists::class, R.string.library_artists, R.drawable.ic_person),
     Tab(Playlists, Playlists::class, R.string.library_playlists, R.drawable.ic_playlist_play),
 )
+
+/**
+ * Which window insets the scaffold body pads. Null keeps the Material default; with the custom bottom bar the bar
+ * pads the navigation-bar inset itself (so its background reaches under the system bar), so the body leaves it out.
+ */
+internal fun scaffoldContentInsetSides(useGeoBar: Boolean): WindowInsetsSides? =
+    if (useGeoBar) WindowInsetsSides.Top + WindowInsetsSides.Horizontal else null
 
 private fun navigateToTab(nav: NavHostController, tab: Tab) {
     nav.navigate(tab.route) {
@@ -92,6 +102,8 @@ fun AppScaffold(
     ) {
         Scaffold(
             topBar = { if (topLevel) LibraryTopBar(onSearch = onSearch, onSettings = onSettings) },
+            contentWindowInsets = scaffoldContentInsetSides(useGeoBar)
+                ?.let { ScaffoldDefaults.contentWindowInsets.only(it) } ?: ScaffoldDefaults.contentWindowInsets,
         ) { padding ->
             Column(Modifier.fillMaxSize().padding(padding)) {
                 Box(Modifier.weight(1f)) { content() }
