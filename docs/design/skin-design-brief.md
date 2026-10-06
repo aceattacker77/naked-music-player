@@ -11,10 +11,10 @@ says so.
 
 ## 0. The brief in one paragraph
 
-Design one skin for a local-music player: a palette (light and/or dark), an optional font, a corner-radius style, and
+Design one skin for a local-music player: a palette (light and/or dark), optional fonts, a corner-radius style, and
 a look for the **Now Playing** screen (background, artwork shape, seek bar, controls, layout). The skin is delivered
-as a **`skin.json`** plus optional images and one font file, zipped and renamed to **`.mskin`**. A skin contains no
-code. The owner imports it in the app (Settings → Skins → Import skin) and it applies instantly everywhere.
+as a **`skin.json`** plus optional images and font files, zipped and renamed to **`.mskin`**. A skin contains no
+code. The person using the app imports it (Settings → Skins → Import skin) and it applies instantly everywhere.
 
 **What to hand back:**
 
@@ -25,7 +25,7 @@ code. The owner imports it in the app (Settings → Skins → Import skin) and i
 
 A ready-to-use prompt for the designer: *"Using this brief, design a skin called `<name>` with the mood `<mood>` and
 the palette direction `<palette>`. Return `skin.json`, any assets, and previews. Respect every limit in §8 and §10."*
-Fill the blanks from §12.
+Fill the blanks from the decisions in §12.
 
 ## 1. The app in brief
 
@@ -34,7 +34,7 @@ Fill the blanks from §12.
 - **Structure:** four top-level tabs (Songs, Albums, Artists, Playlists) in a bottom bar; a **mini player** above the
   bar that expands into **Now Playing**; a queue sheet; an equalizer screen; settings; the skin picker; and a
   home-screen widget.
-- **Character:** a lightweight utility that the owner wants to look personal. The built-in Default skin is plain Material 3
+- **Character:** a lightweight utility that is meant to be personalised through skins. The built-in Default skin is plain Material 3
   (Android's design system) and follows the phone's wallpaper colours on Android 12+. The library contains **Latin and Japanese
   titles** side by side, so type choices must cope with both (see §5).
 - **Dark use is common.** Treat dark mode as a first-class design, not a derivative.
@@ -120,7 +120,7 @@ colours: `primary` for the active part, `surfaceVariant`/`onSurfaceVariant` for 
 - **Skin picker:** a two-column grid of **live preview cards**: each card is a miniature Now Playing rendered in
   that skin, with the skin name beneath and the active one outlined in its `primary`. Cards use `outlineVariant`
   borders. Long-press a card for Export and Delete. See [`reference/skin_picker_cards.png`](reference/skin_picker_cards.png).
-  **The first thing the owner sees of a new skin is its card, so the Now Playing design must read well at about
+  **The first thing a user sees of a new skin is its card, so the Now Playing design must read well at about
   170 dp wide.**
 
 ### 3.7 Home-screen widget
@@ -202,7 +202,7 @@ than by this app's own code, but they appear on screen all the same.
   regular and as artificially emboldened, or accept regular weight throughout.
 - Fonts bundled with a skin should be Latin. **Japanese (and other non-Latin) text falls back to the system font**,
   which will not match, so a decorative Latin font will sit beside system CJK in the same list. Prefer a font with
-  neutral metrics, or tell the owner this is expected.
+  neutral metrics, or tell whoever the skin is for that this is expected.
 - The widget does not use the skin font.
 - Test at the system font scale up to **1.3×**: long titles are single-line with an ellipsis, and the Now Playing title
   scrolls as a marquee when it does not fit.
@@ -294,7 +294,7 @@ layouts are in [`reference/`](reference/): `layout_classic.png`, `layout_compact
   installed; anything else in the archive is ignored.
 - **Safe paths only:** no `..`, no leading `/`, no backslashes, no drive letters.
 - **`id`:** unique, at most 64 characters, lowercase letters, digits, `_` and `-`, in dot-separated groups, for
-  example `com.example.neon`. Importing an existing `id` offers to replace it. Suggested author field: `Ace Attacker`.
+  example `com.example.neon`. Importing an existing `id` offers to replace it. Use your own name or handle as the author.
 - Keep images small: they are decoded at screen size and sit behind a scrolling interface. Prefer a webp of a few
   hundred kilobytes.
 
@@ -308,7 +308,7 @@ fields, which are required). Colour roles shown are a subset; the roles accepted
   "format": 1,
   "id": "com.example.myskin",
   "name": "My Skin",
-  "author": "Ace Attacker",
+  "author": "Your Name",
   "version": "1.0",
   "colors": {
     "mode": "system",
@@ -375,30 +375,35 @@ Reference renders (sample data, no artwork, so the artwork tile shows the placeh
 4. Check Songs, Now Playing (with and without artwork), the queue, the equalizer and the widget, in light and dark,
    at font scale 1.0 and 1.3.
 
-## 12. Inputs needed from the owner
+## 12. Decisions to settle before designing
 
-Answer these before designing. The first four decide most of the result.
+These are the choices a skin needs, written so they work whatever your process is. If you already have a brand guide,
+a palette, a mood board, a design tool or a font you always use, take the answers from those and skip the question.
+If you are designing for someone else, ask them; if you are designing for yourself, decide. The first four shape most
+of the result, and each one maps to the skin fields named beside it.
 
-1. **Mood and references:** three words for the feel (for example "warm, analogue, quiet"), and any apps, album covers
-   or objects it should evoke.
-2. **Palette direction:** one or two anchor colours, or the mood to derive them from; light, dark or both; whether it
-   should follow the wallpaper.
-3. **Now Playing layout:** classic, compact, minimal, vinyl or cassette, and where the artwork sits.
-4. **Artwork treatment:** square, rounded or circle; spinning or still; shadow; whether colours should follow the album
-   art (`useArtColors`) or stay fixed.
-5. **Font:** a specific family (and where it can be obtained under a licence that allows bundling), or the system
-   font. Remember the Japanese fallback (§5).
-6. **Shape language:** crisp (radius 4–8), soft (16–24) or pill-like (28 and up).
-7. **Background:** gradient, blurred art, flat colour, or a custom image (and its source).
-8. **Extras:** glow behind the play button; control style and size.
-9. **Name and identity:** the skin's display name, its `id` (see §8) and the author line.
+1. **Mood and references** (guides every other choice): three words for the feel, for example "warm, analogue,
+   quiet", and any apps, album covers or objects it should evoke.
+2. **Palette** (`colors`): one or two anchor colours, or the mood to derive them from; light, dark or both
+   (`colors.mode`); whether it should follow the wallpaper (`system`). Decide whether surfaces should be neutral or
+   tinted by the accent (see the container roles in §4.2).
+3. **Now Playing layout** (`layout`): classic, compact, minimal, vinyl or cassette, and where the artwork sits.
+4. **Artwork treatment** (`player.artShape`, `artSpin`, `shadow`, `useArtColors`): square, rounded or circle;
+   spinning or still; shadow; whether colours follow the album art or stay fixed.
+5. **Fonts** (`typography`): one family for all text, or separate families for headings, body and labels, with the
+   source and licence of each (it must allow bundling). Remember the Japanese fallback (§5).
+6. **Shape language** (`shapes.cornerRadiusDp`): crisp (radius 4–8), soft (16–24) or pill-like (28 and up).
+7. **Background** (`player.background`): gradient, blurred art, flat colour, or a custom image and where it comes from.
+8. **Extras** (`player.glow`, `controls`, `controlSize`): glow behind the play button; control style and size.
+9. **Identity** (`id`, `name`, `author`): the display name, a unique `id` (see §8) and the author line.
 
-## 13. Revision brief: Geofront
+## 13. Worked example: revising an existing skin (Geofront)
 
-Use this section instead of §12 when the job is to **revise the existing Geofront skin** rather than design a new
-one. §12's questions are deferred; the owner's answers for Geofront are already in the attached `geofront.mskin`,
-which is the source of truth (`id` `com.nakedmusic.geofront`, author `Ace Attacker`). Keep its identity, mood and
-palette; change only what is listed under "What to change".
+Use this pattern when the job is to **revise a skin that already exists** rather than start from §12. The decisions in
+§12 are already made and recorded in the skin file, so the file is the source of truth: keep its identity, mood and
+palette, and change only what the brief lists under "What to change". The example below revises Geofront
+(`id` `com.nakedmusic.geofront`), a hard-edged black-and-orange skin, to use the container roles and separate fonts
+that format 1 now supports. Supply the existing `.mskin` alongside this brief.
 
 ### 13.1 What Geofront is today
 
@@ -450,7 +455,7 @@ Everything not listed above stays as it is: the 28 existing colour roles in both
 
 ### 13.5 Deliverable
 
-A complete replacement `skin.json` (format 1, unknown fields are ignored but do not add any) plus the font files in
+A complete replacement `skin.json` (format 1; unknown fields are ignored, so do not add any) plus the font files in
 `fonts/`, referenced by relative path, ready to zip into `geofront.mskin` (§11). With it:
 a table of the final values for the eight new roles in both modes, the chosen fonts with their sources and licences,
 and renders or notes for Songs, the mini player, the queue sheet and Now Playing in dark and light, at font scale 1.0
