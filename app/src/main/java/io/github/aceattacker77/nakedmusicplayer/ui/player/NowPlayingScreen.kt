@@ -161,6 +161,7 @@ private fun buildSlots(
                 onPrevious = actions.onPrevious,
                 onPlayPause = actions.onPlayPause,
                 onNext = actions.onNext,
+                shape = controlShapeFor(style.controlShape, MaterialTheme.shapes),
             )
         },
         secondaryControls = {

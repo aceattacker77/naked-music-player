@@ -1,5 +1,9 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.ControlShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.IconButtonDefaults
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
@@ -56,6 +60,7 @@ fun PlayerControls(
     onPlayPause: () -> Unit,
     onNext: () -> Unit,
     modifier: Modifier = Modifier,
+    shape: Shape? = null,
 ) {
     val d = size.dimens()
     val glowColor = MaterialTheme.colorScheme.primary
@@ -64,7 +69,7 @@ fun PlayerControls(
         horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ControlButton(style, d.side, R.drawable.ic_skip_previous, stringResource(R.string.previous), d.sideIcon, primary = false, onClick = onPrevious)
+        ControlButton(style, d.side, R.drawable.ic_skip_previous, stringResource(R.string.previous), d.sideIcon, primary = false, shape = shape, onClick = onPrevious)
         Box(
             modifier = Modifier.then(
                 if (glow) {
@@ -86,10 +91,11 @@ fun PlayerControls(
                 description = stringResource(if (isPlaying) R.string.pause else R.string.play),
                 iconSize = d.playIcon,
                 primary = true,
+                shape = shape,
                 onClick = onPlayPause,
             )
         }
-        ControlButton(style, d.side, R.drawable.ic_skip_next, stringResource(R.string.next), d.sideIcon, primary = false, onClick = onNext)
+        ControlButton(style, d.side, R.drawable.ic_skip_next, stringResource(R.string.next), d.sideIcon, primary = false, shape = shape, onClick = onNext)
     }
 }
 
@@ -101,29 +107,38 @@ private fun ControlButton(
     description: String,
     iconSize: Dp,
     primary: Boolean,
+    shape: Shape?,
     onClick: () -> Unit,
 ) {
     val content: @Composable () -> Unit = {
         Icon(painterResource(icon), contentDescription = description, modifier = Modifier.size(iconSize))
     }
     val modifier = Modifier.size(size)
-    when (style) {
-        ControlsStyle.FILLED ->
-            if (primary) {
-                FilledIconButton(onClick = onClick, modifier = modifier, content = content)
-            } else {
-                FilledTonalIconButton(onClick = onClick, modifier = modifier, content = content)
-            }
-        ControlsStyle.OUTLINED -> OutlinedIconButton(onClick = onClick, modifier = modifier, content = content)
-        ControlsStyle.ICON_ONLY -> IconButton(onClick = onClick, modifier = modifier, content = content)
-        ControlsStyle.MIXED ->
-            if (primary) {
-                FilledIconButton(onClick = onClick, modifier = modifier, content = content)
-            } else {
-                OutlinedIconButton(onClick = onClick, modifier = modifier, content = content)
-            }
+    when (controlKind(style, primary)) {
+        ControlKind.FILLED ->
+            FilledIconButton(onClick = onClick, modifier = modifier, shape = shape ?: IconButtonDefaults.filledShape, content = content)
+        ControlKind.TONAL ->
+            FilledTonalIconButton(onClick = onClick, modifier = modifier, shape = shape ?: IconButtonDefaults.filledShape, content = content)
+        ControlKind.OUTLINED ->
+            OutlinedIconButton(onClick = onClick, modifier = modifier, shape = shape ?: IconButtonDefaults.outlinedShape, content = content)
+        ControlKind.ICON ->
+            IconButton(onClick = onClick, modifier = modifier, shape = shape ?: IconButtonDefaults.standardShape, content = content)
     }
 }
+
+internal enum class ControlKind { FILLED, TONAL, OUTLINED, ICON }
+
+/** Which Material button a control uses: [primary] is the play/pause button, the others are previous and next. */
+internal fun controlKind(style: ControlsStyle, primary: Boolean): ControlKind = when (style) {
+    ControlsStyle.FILLED -> if (primary) ControlKind.FILLED else ControlKind.TONAL
+    ControlsStyle.OUTLINED -> ControlKind.OUTLINED
+    ControlsStyle.ICON_ONLY -> ControlKind.ICON
+    ControlsStyle.MIXED -> if (primary) ControlKind.FILLED else ControlKind.OUTLINED
+}
+
+/** The shape every control button takes: null keeps Material's circle, `THEME` uses the theme's large shape. */
+internal fun controlShapeFor(controlShape: ControlShape, shapes: Shapes): Shape? =
+    if (controlShape == ControlShape.THEME) shapes.large else null
 
 /** Title, then artist and album. */
 @Composable
