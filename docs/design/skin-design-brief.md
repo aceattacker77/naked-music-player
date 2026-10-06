@@ -230,7 +230,8 @@ use a fixed 8 dp, or the theme's small shape when the skin is `chamfer`.
 **Chamfer.** Set `shapes.cornerStyle` to `chamfer` for cut corners instead of rounded ones: the top-right and bottom-left
 corners are cut at 45°, the other two stay square. `shapes.chamferDp` (1–32, default 10) is the base cut and scales like
 the radius does: extraSmall 0.3×, small 0.5×, medium 0.8×, large 1×, extraLarge 1.4× (3, 5, 8, 10 and 14 dp at 10).
-`cornerRadiusDp` is ignored for a chamfer skin. The widget keeps square corners (it cannot clip to a path).
+`cornerRadiusDp` is ignored for the app's own shapes in a chamfer skin. The widget cannot clip to a path, so it never
+chamfers and still rounds its corners by `cornerRadiusDp`; set `cornerRadiusDp` to 0 for a square widget.
 
 Key sizes: list artwork 48 dp, mini-player artwork 44 dp, album-detail artwork 200 dp, artist avatar 48 dp (96 dp on
 the artist page), page and row padding 16 dp, the standard minimum touch target 48 dp.

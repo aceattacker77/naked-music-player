@@ -81,7 +81,7 @@ Each role font is a separate file in the archive, validated like `fontFamily`. A
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `cornerRadiusDp` | integer | 28 | Base corner radius; the app's small→large shapes scale from it. Ignored when `cornerStyle` is `chamfer`. |
+| `cornerRadiusDp` | integer | 28 | Base corner radius; the app's small→large shapes scale from it. Ignored by the app's shapes when `cornerStyle` is `chamfer`, but the home-screen widget still uses it (it cannot chamfer): set it to 0 for a square widget. |
 | `cornerStyle` | string | `round` | `round` or `chamfer`. A chamfer cuts the top-right and bottom-left corners at 45° instead of rounding them; every Material button, chip, card, menu and dialog follows it. |
 | `chamferDp` | integer 1–32 | 10 | Base cut for `chamfer`. The five Material sizes use 0.3×, 0.5×, 0.8×, 1× and 1.4× of it (3, 5, 8, 10, 14 dp at 10). Artwork shown by the app (lists, album detail, skin cards) follows the chamfer too; the Now Playing artwork stays governed by `player.artShape`. |
 

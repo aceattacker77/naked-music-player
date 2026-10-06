@@ -76,7 +76,7 @@ Equalizer labels. Accessibility descriptions keep the original text.
 ## Controls
 
 `PlayerControls` passes `MaterialTheme.shapes.large` as the `shape` of each icon button when `controlShape` is `theme`.
-`mixed`: play/pause is a `FilledIconButton`; previous and next are `OutlinedIconButton` using the `outline` colour.
+`mixed`: play/pause is a `FilledIconButton`; previous and next are `OutlinedIconButton` with Material's default outlined border (measured on a device as the content colour, high contrast; no override).
 Sizes, glow and the 48 dp minimum touch target are unchanged.
 
 ## Backward compatibility

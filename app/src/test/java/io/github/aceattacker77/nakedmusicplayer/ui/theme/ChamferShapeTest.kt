@@ -1,6 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.theme
 
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Shapes
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -58,5 +60,19 @@ class ChamferShapeTest {
         val fallback = RoundedCornerShape(8.dp)
         assertThat(shapeOr(fallback, ChamferShape(5.dp))).isEqualTo(ChamferShape(5.dp))
         assertThat(shapeOr(fallback, RoundedCornerShape(14.dp))).isEqualTo(fallback)
+    }
+
+    @Test fun polygon_withSquaredBottomLeft_hasNoNotch() {
+        assertThat(chamferPoints(Size(100f, 60f), topRightCut = 10f, bottomLeftCut = 0f)).containsExactly(
+            Offset(0f, 0f), Offset(90f, 0f), Offset(100f, 10f), Offset(100f, 60f), Offset(0f, 60f),
+        ).inOrder()
+    }
+
+    @Test fun copy_squaresTheCornersTheCallerZeroes() {
+        val sheetTop = ChamferShape(10.dp).copy(
+            topStart = CornerSize(10.dp), topEnd = CornerSize(10.dp), bottomEnd = ZeroCornerSize, bottomStart = ZeroCornerSize,
+        )
+        assertThat(sheetTop).isEqualTo(ChamferShape(10.dp, topEndCut = CornerSize(10.dp), bottomStartCut = ZeroCornerSize))
+        assertThat(sheetTop).isNotEqualTo(ChamferShape(10.dp))
     }
 }
