@@ -1,5 +1,12 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.height
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import com.google.common.truth.Truth.assertThat
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -54,5 +61,19 @@ class SongRowOrnamentTest {
         show(Ornament.OFF, current = true)
         compose.onNodeWithTag("song-edge-7", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithText("4:04").assertIsDisplayed()
+    }
+
+    @Test fun rowEdge_doesNotStretchTheRowInsideABoundedParent() {
+        compose.setContent {
+            AppTheme(Skin.FALLBACK, AppSettings(dynamicColor = false)) {
+                CompositionLocalProvider(LocalOrnament provides Ornament.OFF.copy(rowEdge = true)) {
+                    Box(Modifier.height(500.dp)) {
+                        SongRow(song, isCurrent = true, unplayable = false, onClick = {}, onLongClick = {})
+                    }
+                }
+            }
+        }
+        compose.waitForIdle()
+        assertThat(compose.onNodeWithTag("song-7").getUnclippedBoundsInRoot().height.value).isLessThan(100f)
     }
 }

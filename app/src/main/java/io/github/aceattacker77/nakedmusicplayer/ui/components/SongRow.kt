@@ -46,14 +46,18 @@ fun SongRow(
             .combinedClickable(onClick = onClick, onLongClick = onLongClick),
     ) {
         if (rowEdge && isCurrent) {
-            Box(
-                Modifier
-                    .align(Alignment.CenterStart)
-                    .width(2.dp)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.primary)
-                    .testTag("song-edge-${song.id}"),
-            )
+            // matchParentSize sizes the bar to the row's own height; fillMaxHeight would stretch the
+            // row to fill a bounded parent.
+            Box(Modifier.matchParentSize()) {
+                Box(
+                    Modifier
+                        .align(Alignment.CenterStart)
+                        .width(2.dp)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.primary)
+                        .testTag("song-edge-${song.id}"),
+                )
+            }
         }
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
