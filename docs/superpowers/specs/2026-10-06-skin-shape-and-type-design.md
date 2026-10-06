@@ -36,7 +36,7 @@ All fields optional.
 | `shapes.chamferDp` | integer 1–32 | 10 | Base cut; used only when `cornerStyle` is `chamfer`. `cornerRadiusDp` is ignored in that case. |
 | `typography.headingScaleX` | number 0.5–1.0 | 1.0 | Horizontal scale of display, headline and title text. |
 | `typography.labelCaps` | boolean | false | Uppercases app-drawn labels (below). |
-| `typography.labelLetterSpacingEm` | number 0–0.5 | 0 | Letter spacing on the three label styles. |
+| `typography.labelLetterSpacingEm` | number 0–0.5 | 0 | Letter spacing on the three label styles; 0 keeps Material's own spacing. |
 | `player.controls` | adds `mixed` | `filled` | Play filled with `primary`; previous and next outlined. |
 | `player.controlShape` | `circle` · `theme` | `circle` | `theme` uses the theme's large shape. |
 
