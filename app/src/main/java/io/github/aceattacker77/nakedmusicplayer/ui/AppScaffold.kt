@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -75,7 +76,7 @@ fun AppScaffold(
                         }
                     },
                     icon = { Icon(painterResource(tab.icon), contentDescription = null) },
-                    label = { Text(stringResource(tab.label)) },
+                    label = { Text(skinLabel(stringResource(tab.label))) },
                 )
             }
         },

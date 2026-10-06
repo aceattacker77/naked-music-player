@@ -71,7 +71,7 @@ fun AppTheme(skin: Skin, settings: AppSettings, content: @Composable () -> Unit)
     }
     val shapes = remember(skin.cornerStyle, skin.chamferDp, skin.cornerRadiusDp) { shapesFor(skin) }
 
-    CompositionLocalProvider(LocalSkin provides skin) {
+    CompositionLocalProvider(LocalSkin provides skin, LocalLabelCaps provides skin.labelCaps) {
         MaterialTheme(colorScheme = colors, typography = typography, shapes = shapes, content = content)
     }
 }

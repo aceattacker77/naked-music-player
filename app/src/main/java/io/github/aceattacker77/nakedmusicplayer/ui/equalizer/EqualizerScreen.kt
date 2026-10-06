@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import android.content.Intent
 import android.media.audiofx.AudioEffect
 import androidx.compose.foundation.clickable
@@ -212,7 +213,7 @@ private fun BandColumn(index: Int, level: Int, freqHz: Int, range: IntRange, onL
     }
     Column(Modifier.width(BAND_COLUMN_WIDTH_DP.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = stringResource(R.string.eq_db, decibelText(level)),
+            text = skinLabel(stringResource(R.string.eq_db, decibelText(level))),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -223,7 +224,7 @@ private fun BandColumn(index: Int, level: Int, freqHz: Int, range: IntRange, onL
             description = frequency,
             modifier = Modifier.height(SLIDER_HEIGHT_DP.dp).testTag("eq-band-$index"),
         )
-        Text(frequency, style = MaterialTheme.typography.labelMedium)
+        Text(skinLabel(frequency), style = MaterialTheme.typography.labelMedium)
     }
 }
 

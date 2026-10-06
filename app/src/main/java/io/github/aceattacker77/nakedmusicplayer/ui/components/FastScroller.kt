@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.lazy.LazyListState
@@ -54,7 +55,7 @@ fun FastScroller(
         letters.forEach { letter ->
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = letter.toString(),
+                    text = skinLabel(letter.toString()),
                     // Line height = font size, so a crowded strip's letters stay inside their slots.
                     style = style.copy(lineHeight = style.fontSize),
                     color = MaterialTheme.colorScheme.primary,
