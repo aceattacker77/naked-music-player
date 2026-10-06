@@ -70,6 +70,9 @@ list always win. If you do not set `primary`, unlisted roles come from the Defau
 | `headingFontFamily` | string | Font for headings: the `display`, `headline` and `title` styles (Now Playing track title, album-card titles). Falls back to `fontFamily`. |
 | `bodyFontFamily` | string | Font for the `body` styles (list titles and subtitles, durations, artist). Falls back to `fontFamily`. |
 | `labelFontFamily` | string | Font for the `label` styles (seek-bar times, queue button, fast-scroller letters, buttons). Falls back to `fontFamily`. |
+| `headingScaleX` | number 0.5–1.0 | Horizontal scale of the `display`, `headline` and `title` styles; `0.8` squeezes headings to 80% width. Default `1.0`. |
+| `labelCaps` | boolean | Uppercases the labels the app draws itself: the Songs sort label, bottom-bar tabs, Queue, seek-bar times, fast-scroller letters and Equalizer labels. Dialog and button text stays as written. Default `false`. |
+| `labelLetterSpacingEm` | number 0–0.5 | Letter spacing of the `label` styles in em; `0` keeps Material's own spacing. Default `0`. |
 
 Each role font is a separate file in the archive, validated like `fontFamily`. A role with neither its own font nor
 `fontFamily` keeps the system font.
@@ -78,7 +81,9 @@ Each role font is a separate file in the archive, validated like `fontFamily`. A
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `cornerRadiusDp` | integer | 28 | Base corner radius; the app's small→large shapes scale from it. |
+| `cornerRadiusDp` | integer | 28 | Base corner radius; the app's small→large shapes scale from it. Ignored when `cornerStyle` is `chamfer`. |
+| `cornerStyle` | string | `round` | `round` or `chamfer`. A chamfer cuts the top-right and bottom-left corners at 45° instead of rounding them; every Material button, chip, card, menu and dialog follows it. |
+| `chamferDp` | integer 1–32 | 10 | Base cut for `chamfer`. The five Material sizes use 0.3×, 0.5×, 0.8×, 1× and 1.4× of it (3, 5, 8, 10, 14 dp at 10). Artwork shown by the app (lists, album detail, skin cards) follows the chamfer too; the Now Playing artwork stays governed by `player.artShape`. |
 
 ### `player`
 
@@ -88,7 +93,8 @@ Each role font is a separate file in the archive, validated like `fontFamily`. A
 | `artShape` | object | `{"type": "square"}` · `{"type": "circle"}` · `{"type": "rounded", "radiusDp": 28}` (`radiusDp` default 28) | rounded 28 |
 | `artSpin` | boolean | rotate the artwork while playing (suits `circle`) | `false` |
 | `seekBar` | string | `wavy` · `flat` · `thin` | `wavy` |
-| `controls` | string | `filled` · `outlined` · `iconOnly` | `filled` |
+| `controls` | string | `filled` · `outlined` · `iconOnly` · `mixed` (play filled, previous and next outlined) | `filled` |
+| `controlShape` | string | `circle` · `theme` (control buttons use the theme's large shape, so a chamfer skin gets chamfered buttons) | `circle` |
 | `controlSize` | string | `small` · `medium` · `large` | `medium` |
 | `glow` | boolean | soft glow behind the play button | `false` |
 | `shadow` | boolean | drop shadow under the artwork | `false` |
@@ -118,7 +124,8 @@ An import either succeeds completely or changes nothing and shows exactly one of
 | `id` missing or invalid | `missing field 'id'` / `invalid id '<id>'` |
 | `name` missing | `missing field 'name'` |
 | Bad colour | `invalid colour '<role>': '<value>'` |
-| Unknown enum value | `invalid value '<value>' for '<field>'` (e.g. `'player.seekBar'`) |
+| Unknown enum value | `invalid value '<value>' for '<field>'` (e.g. `'player.seekBar'`, `'shapes.cornerStyle'`) |
+| Number out of range | `invalid value '<value>' for '<field>'` (e.g. `'shapes.chamferDp'`, `'typography.headingScaleX'`, `'typography.labelLetterSpacingEm'`) |
 | Image background without a path | `missing field 'player.background.path'` |
 | Referenced file has another extension than png, webp, ttf, otf | `unsupported file type '<path>'` |
 | Referenced file not in the archive | `missing file '<path>'` |

@@ -45,7 +45,7 @@ Fill the blanks from the decisions in §12.
 |---|---|
 | The whole colour scheme of the app (every Material 3 colour role), separately for light and dark | Screen structure and navigation (tabs, bars, list layouts) outside Now Playing |
 | Up to three font families (headings, body, labels) or one for all text | Icons (fixed vector set) and the strings |
-| A base corner radius that scales every shape in the app (§6) | Animations and transitions (only the optional artwork spin) |
+| A base corner radius, or a chamfered (cut-corner) style, that shapes every component in the app (§6) | Animations and transitions (only the optional artwork spin) |
 | Now Playing: background, artwork shape, artwork spin, seek bar style, control style and size, glow, shadow, whether colours follow the album art, and the layout (five choices, §7) | The widget's structure (its colours and corner radius follow the skin; its text does **not** use the skin's font) |
 | Whether the skin follows the phone's wallpaper colours (`mode: "system"`) or is fixed light, dark or both | Notification, lock screen and system UI |
 
@@ -191,7 +191,11 @@ than by this app's own code, but they appear on screen all the same.
 
 ## 5. Typography
 
-- The app uses the standard **Material 3 type scale**; a skin cannot change sizes, only the **font family**.
+- The app uses the standard **Material 3 type scale**; a skin cannot change sizes. It can change the **font family**
+  and three treatments: `headingScaleX` (0.5–1.0, default 1.0) squeezes the display, headline and title styles
+  horizontally, `labelCaps` uppercases the labels the app draws itself (sort label, bottom-bar tabs, Queue, seek-bar
+  times, fast-scroller letters, Equalizer labels; not dialog or button text), and `labelLetterSpacingEm` (0–0.5,
+  default 0 = Material's spacing) tracks the label styles. Check that a squeezed heading still reads at font scale 1.3.
 - Where each style is used: list titles `bodyLarge`, list subtitles `bodyMedium`, durations and captions `bodySmall`, album-card titles `titleSmall`,
   Now Playing track title `headlineSmall`, artist `bodyLarge`, seek-bar times `labelMedium`, the queue button
   `labelLarge`, fast-scroller letters `labelSmall`. Top bars, dialogs, chips and buttons use the Material defaults.
@@ -221,7 +225,12 @@ than by this app's own code, but they appear on screen all the same.
 
 These drive buttons, chips, cards, sheets, dialogs and menus. The **widget's corner radius is the base value
 itself**. The artwork's own corners are set separately by `player.artShape` (§7.2). Rows and the artwork placeholder
-use a fixed 8 dp.
+use a fixed 8 dp, or the theme's small shape when the skin is `chamfer`.
+
+**Chamfer.** Set `shapes.cornerStyle` to `chamfer` for cut corners instead of rounded ones: the top-right and bottom-left
+corners are cut at 45°, the other two stay square. `shapes.chamferDp` (1–32, default 10) is the base cut and scales like
+the radius does: extraSmall 0.3×, small 0.5×, medium 0.8×, large 1×, extraLarge 1.4× (3, 5, 8, 10 and 14 dp at 10).
+`cornerRadiusDp` is ignored for a chamfer skin. The widget keeps square corners (it cannot clip to a path).
 
 Key sizes: list artwork 48 dp, mini-player artwork 44 dp, album-detail artwork 200 dp, artist avatar 48 dp (96 dp on
 the artist page), page and row padding 16 dp, the standard minimum touch target 48 dp.
@@ -250,7 +259,8 @@ the top, below the status bar.
 | `artSpin` | `true` / `false` | Rotates the artwork while playing; suits a circular shape |
 | `shadow` | `true` / `false` | Drop shadow under the artwork |
 | `seekBar` | `wavy` · `flat` · `thin` | See the table below |
-| `controls` | `filled` · `outlined` · `iconOnly` | Style of previous, play/pause and next |
+| `controls` | `filled` · `outlined` · `iconOnly` · `mixed` | Style of previous, play/pause and next; `mixed` makes play solid and previous/next outlined |
+| `controlShape` | `circle` · `theme` | `theme` gives the control buttons the theme's large shape (chamfered in a chamfer skin) |
 | `controlSize` | `small` · `medium` · `large` | See the table below |
 | `glow` | `true` / `false` | A soft radial glow in `primary` behind the play button |
 | `useArtColors` | `true` / `false` | See §2: `true` regenerates the palette from the album art |
@@ -315,14 +325,15 @@ fields, which are required). Colour roles shown are a subset; the roles accepted
     "light": { "primary": "#6750A4", "onPrimary": "#FFFFFF", "background": "#FEF7FF", "surface": "#FEF7FF" },
     "dark":  { "primary": "#D0BCFF", "onPrimary": "#381E72", "background": "#141218", "surface": "#141218" }
   },
-  "typography": { "fontFamily": "fonts/MyFont.ttf" },
-  "shapes": { "cornerRadiusDp": 28 },
+  "typography": { "fontFamily": "fonts/MyFont.ttf", "headingScaleX": 1.0, "labelCaps": false, "labelLetterSpacingEm": 0 },
+  "shapes": { "cornerRadiusDp": 28, "cornerStyle": "round", "chamferDp": 10 },
   "player": {
     "background": { "type": "artGradient" },
     "artShape": { "type": "rounded", "radiusDp": 28 },
     "artSpin": false,
     "seekBar": "wavy",
     "controls": "filled",
+    "controlShape": "circle",
     "controlSize": "medium",
     "glow": false,
     "shadow": false,
@@ -392,7 +403,7 @@ of the result, and each one maps to the skin fields named beside it.
    spinning or still; shadow; whether colours follow the album art or stay fixed.
 5. **Fonts** (`typography`): one family for all text, or separate families for headings, body and labels, with the
    source and licence of each (it must allow bundling). Remember the Japanese fallback (§5).
-6. **Shape language** (`shapes.cornerRadiusDp`): crisp (radius 4–8), soft (16–24) or pill-like (28 and up).
+6. **Shape language** (`shapes.cornerRadiusDp`, `cornerStyle`): crisp (radius 4–8), soft (16–24), pill-like (28 and up) or chamfered (cut corners, `chamferDp`).
 7. **Background** (`player.background`): gradient, blurred art, flat colour, or a custom image and where it comes from.
 8. **Extras** (`player.glow`, `controls`, `controlSize`): glow behind the play button; control style and size.
 9. **Identity** (`id`, `name`, `author`): the display name, a unique `id` (see §8) and the author line.
