@@ -46,8 +46,12 @@ object SkinParser {
         val light = dto.colors?.light?.let { scheme(it, isDark = false, base = defaults.light) } ?: defaults.light
         val dark = dto.colors?.dark?.let { scheme(it, isDark = true, base = defaults.dark) } ?: defaults.dark
 
-        val fontPath = dto.typography?.fontFamily
-        fontPath?.let(referenced::add)
+        val typography = dto.typography
+        val fontPath = typography?.fontFamily
+        val headingFontPath = typography?.headingFontFamily
+        val bodyFontPath = typography?.bodyFontFamily
+        val labelFontPath = typography?.labelFontFamily
+        listOf(fontPath, headingFontPath, bodyFontPath, labelFontPath).forEach { it?.let(referenced::add) }
 
         val p = dto.player
         val background = p?.background?.let { bg ->
@@ -110,6 +114,9 @@ object SkinParser {
             player = player,
             layout = layout,
             baseDir = null,
+            headingFontPath = headingFontPath ?: defaults.headingFontPath,
+            bodyFontPath = bodyFontPath ?: defaults.bodyFontPath,
+            labelFontPath = labelFontPath ?: defaults.labelFontPath,
         )
         return SkinParseResult.Ok(skin, referenced)
     }
@@ -170,6 +177,8 @@ object SkinParser {
         "background", "onBackground", "surface", "onSurface", "surfaceVariant", "onSurfaceVariant",
         "outline", "outlineVariant", "error", "onError", "errorContainer", "onErrorContainer",
         "inverseSurface", "inverseOnSurface", "inversePrimary", "scrim",
+        "surfaceDim", "surfaceBright", "surfaceContainerLowest", "surfaceContainerLow",
+        "surfaceContainer", "surfaceContainerHigh", "surfaceContainerHighest", "surfaceTint",
     )
 
     private fun ColorScheme.withRole(role: String, c: Color): ColorScheme = when (role) {
@@ -201,6 +210,14 @@ object SkinParser {
         "inverseOnSurface" -> copy(inverseOnSurface = c)
         "inversePrimary" -> copy(inversePrimary = c)
         "scrim" -> copy(scrim = c)
+        "surfaceDim" -> copy(surfaceDim = c)
+        "surfaceBright" -> copy(surfaceBright = c)
+        "surfaceContainerLowest" -> copy(surfaceContainerLowest = c)
+        "surfaceContainerLow" -> copy(surfaceContainerLow = c)
+        "surfaceContainer" -> copy(surfaceContainer = c)
+        "surfaceContainerHigh" -> copy(surfaceContainerHigh = c)
+        "surfaceContainerHighest" -> copy(surfaceContainerHighest = c)
+        "surfaceTint" -> copy(surfaceTint = c)
         else -> this
     }
 }

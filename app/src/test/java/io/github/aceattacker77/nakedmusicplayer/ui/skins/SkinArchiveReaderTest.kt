@@ -100,6 +100,23 @@ class SkinArchiveReaderTest {
             .isEqualTo("font 'fonts/x.ttf' could not be loaded")
     }
 
+    @Test fun roleFonts_areKept() {
+        val j = skinJson(""","typography":{"headingFontFamily":"fonts/h.ttf","bodyFontFamily":"fonts/b.ttf","labelFontFamily":"fonts/l.otf"}""")
+        val valid = read(listOf(json(j), "fonts/h.ttf" to byteArrayOf(1), "fonts/b.ttf" to byteArrayOf(2), "fonts/l.otf" to byteArrayOf(3))) as SkinImportResult.Valid
+        assertThat(valid.entries.keys).containsExactly("skin.json", "fonts/h.ttf", "fonts/b.ttf", "fonts/l.otf")
+    }
+
+    @Test fun missingRoleFont_isInvalid() {
+        val j = skinJson(""","typography":{"bodyFontFamily":"fonts/b.ttf"}""")
+        assertThat(invalid(listOf(json(j)))).isEqualTo("missing file 'fonts/b.ttf'")
+    }
+
+    @Test fun badRoleFont_isInvalid() {
+        fontLoads = false
+        val j = skinJson(""","typography":{"labelFontFamily":"fonts/l.ttf"}""")
+        assertThat(invalid(listOf(json(j), "fonts/l.ttf" to byteArrayOf(1)))).isEqualTo("font 'fonts/l.ttf' could not be loaded")
+    }
+
     @Test fun disallowedExtension() {
         val gifJson = skinJson(""","player":{"background":{"type":"image","path":"images/a.gif"}}""")
         assertThat(invalid(listOf(json(gifJson), "images/a.gif" to byteArrayOf(1))))

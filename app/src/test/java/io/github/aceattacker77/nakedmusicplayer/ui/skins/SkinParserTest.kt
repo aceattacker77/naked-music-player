@@ -133,4 +133,51 @@ class SkinParserTest {
         assertThat(error(minimal(""","colors":{"mode":"neon"}""")))
             .isEqualTo("invalid value 'neon' for 'colors.mode'")
     }
+
+    @Test fun roleFonts_areParsedAndReferenced() {
+        val json = minimal(""","typography":{"fontFamily":"fonts/a.ttf","headingFontFamily":"fonts/h.ttf","bodyFontFamily":"fonts/b.otf","labelFontFamily":"fonts/l.ttf"}""")
+        val result = ok(json)
+        assertThat(result.skin.fontPath).isEqualTo("fonts/a.ttf")
+        assertThat(result.skin.headingFontPath).isEqualTo("fonts/h.ttf")
+        assertThat(result.skin.bodyFontPath).isEqualTo("fonts/b.otf")
+        assertThat(result.skin.labelFontPath).isEqualTo("fonts/l.ttf")
+        assertThat(result.referencedFiles).containsExactly("fonts/a.ttf", "fonts/h.ttf", "fonts/b.otf", "fonts/l.ttf")
+    }
+
+    @Test fun roleFonts_unspecifiedStayNull_andFallBackToFontFamily() {
+        val skin = ok(minimal(""","typography":{"fontFamily":"fonts/a.ttf","headingFontFamily":"fonts/h.ttf"}""")).skin
+        assertThat(skin.bodyFontPath).isNull()
+        assertThat(skin.labelFontPath).isNull()
+        assertThat(skin.fontPathFor(FontRole.HEADING)).isEqualTo("fonts/h.ttf")
+        assertThat(skin.fontPathFor(FontRole.BODY)).isEqualTo("fonts/a.ttf")
+        assertThat(skin.fontPathFor(FontRole.LABEL)).isEqualTo("fonts/a.ttf")
+    }
+
+    @Test fun noFonts_resolveToNull() {
+        val skin = ok(minimal()).skin
+        FontRole.entries.forEach { assertThat(skin.fontPathFor(it)).isNull() }
+    }
+
+    @Test fun surfaceContainerRoles_areSettable() {
+        val roles = listOf(
+            "surfaceDim", "surfaceBright", "surfaceContainerLowest", "surfaceContainerLow",
+            "surfaceContainer", "surfaceContainerHigh", "surfaceContainerHighest", "surfaceTint",
+        )
+        val colours = roles.mapIndexed { i, r -> r to "#%02X%02X%02X".format(i + 1, i + 2, i + 3) }
+        val body = colours.joinToString(",") { (r, c) -> "\"$r\":\"$c\"" }
+        val dark = ok(minimal(""","colors":{"dark":{$body}}""")).skin.dark!!
+        assertThat(dark.surfaceDim).isEqualTo(Color(0xFF010203))
+        assertThat(dark.surfaceBright).isEqualTo(Color(0xFF020304))
+        assertThat(dark.surfaceContainerLowest).isEqualTo(Color(0xFF030405))
+        assertThat(dark.surfaceContainerLow).isEqualTo(Color(0xFF040506))
+        assertThat(dark.surfaceContainer).isEqualTo(Color(0xFF050607))
+        assertThat(dark.surfaceContainerHigh).isEqualTo(Color(0xFF060708))
+        assertThat(dark.surfaceContainerHighest).isEqualTo(Color(0xFF070809))
+        assertThat(dark.surfaceTint).isEqualTo(Color(0xFF08090A))
+    }
+
+    @Test fun invalidContainerColour_isError() {
+        assertThat(error(minimal(""","colors":{"light":{"surfaceContainerHigh":"x"}}""")))
+            .isEqualTo("invalid colour 'surfaceContainerHigh': 'x'")
+    }
 }

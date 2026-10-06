@@ -25,7 +25,12 @@ data class ColorsJson(
 )
 
 @Serializable
-data class TypographyJson(val fontFamily: String? = null)
+data class TypographyJson(
+    val fontFamily: String? = null,
+    val headingFontFamily: String? = null,
+    val bodyFontFamily: String? = null,
+    val labelFontFamily: String? = null,
+)
 
 @Serializable
 data class ShapesJson(val cornerRadiusDp: Int? = null)

@@ -44,6 +44,9 @@ data class PlayerStyle(
 
 data class LayoutSpec(val type: LayoutType, val artPosition: ArtPosition)
 
+/** The three text roles a skin can give its own font. */
+enum class FontRole { HEADING, BODY, LABEL }
+
 data class Skin(
     val id: String,
     val name: String,
@@ -58,7 +61,17 @@ data class Skin(
     val layout: LayoutSpec,
     /** Directory holding the skin's files; null for a skin that is not installed yet. */
     val baseDir: File?,
+    val headingFontPath: String? = null,
+    val bodyFontPath: String? = null,
+    val labelFontPath: String? = null,
 ) {
+    /** The font file for [role]: its own entry when the skin sets one, else the shared `fontFamily`. */
+    fun fontPathFor(role: FontRole): String? = when (role) {
+        FontRole.HEADING -> headingFontPath
+        FontRole.BODY -> bodyFontPath
+        FontRole.LABEL -> labelFontPath
+    } ?: fontPath
+
     companion object {
         /** Hard-coded equivalent of the Default skin; only used to bootstrap parsing of `builtin.default`. */
         val FALLBACK = Skin(

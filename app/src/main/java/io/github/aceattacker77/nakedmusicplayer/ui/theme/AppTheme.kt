@@ -14,6 +14,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.aceattacker77.nakedmusicplayer.data.settings.AppSettings
@@ -21,6 +22,7 @@ import io.github.aceattacker77.nakedmusicplayer.data.settings.ThemeMode
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ColorMode
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.Skin
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.SkinAssets
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.SkinFonts
 import java.io.File
 
 /**
@@ -58,8 +60,10 @@ fun AppTheme(skin: Skin, settings: AppSettings, content: @Composable () -> Unit)
         null
     }
     val colors = selectColorScheme(skin, settings, systemDark, dynamic)
-    val fontFamily = remember(skin.id, skin.fontPath, skin.baseDir) { SkinAssets.fontFamily(skin) }
-    val typography = remember(fontFamily) { Typography().withFontFamily(fontFamily) }
+    val fonts = remember(
+        skin.id, skin.baseDir, skin.fontPath, skin.headingFontPath, skin.bodyFontPath, skin.labelFontPath,
+    ) { SkinAssets.fonts(skin) }
+    val typography = remember(fonts) { Typography().withFontFamilies(fonts) }
     val shapes = remember(skin.cornerRadiusDp) { shapesFor(skin.cornerRadiusDp) }
 
     CompositionLocalProvider(LocalSkin provides skin) {
@@ -67,10 +71,8 @@ fun AppTheme(skin: Skin, settings: AppSettings, content: @Composable () -> Unit)
     }
 }
 
-/** Loads the skin's font file, or null when it has none or the file cannot be read. */
-internal fun loadSkinFontFamily(skin: Skin): FontFamily? {
-    val path = skin.fontPath ?: return null
-    val dir = skin.baseDir ?: return null
+/** Loads a font file from a skin directory, or null when it is missing or cannot be read. */
+internal fun loadSkinFontFamily(dir: File, path: String): FontFamily? {
     val file = File(dir, path)
     if (!file.isFile) return null
     return runCatching { FontFamily(Font(file)) }.getOrNull()
@@ -87,23 +89,24 @@ private fun shapesFor(cornerRadiusDp: Int): Shapes {
     )
 }
 
-private fun Typography.withFontFamily(family: FontFamily?): Typography {
-    if (family == null) return this
+/** Display, headline and title text use the heading font; body and label text use their own. */
+internal fun Typography.withFontFamilies(fonts: SkinFonts): Typography {
+    fun TextStyle.with(family: FontFamily?) = if (family == null) this else copy(fontFamily = family)
     return copy(
-        displayLarge = displayLarge.copy(fontFamily = family),
-        displayMedium = displayMedium.copy(fontFamily = family),
-        displaySmall = displaySmall.copy(fontFamily = family),
-        headlineLarge = headlineLarge.copy(fontFamily = family),
-        headlineMedium = headlineMedium.copy(fontFamily = family),
-        headlineSmall = headlineSmall.copy(fontFamily = family),
-        titleLarge = titleLarge.copy(fontFamily = family),
-        titleMedium = titleMedium.copy(fontFamily = family),
-        titleSmall = titleSmall.copy(fontFamily = family),
-        bodyLarge = bodyLarge.copy(fontFamily = family),
-        bodyMedium = bodyMedium.copy(fontFamily = family),
-        bodySmall = bodySmall.copy(fontFamily = family),
-        labelLarge = labelLarge.copy(fontFamily = family),
-        labelMedium = labelMedium.copy(fontFamily = family),
-        labelSmall = labelSmall.copy(fontFamily = family),
+        displayLarge = displayLarge.with(fonts.heading),
+        displayMedium = displayMedium.with(fonts.heading),
+        displaySmall = displaySmall.with(fonts.heading),
+        headlineLarge = headlineLarge.with(fonts.heading),
+        headlineMedium = headlineMedium.with(fonts.heading),
+        headlineSmall = headlineSmall.with(fonts.heading),
+        titleLarge = titleLarge.with(fonts.heading),
+        titleMedium = titleMedium.with(fonts.heading),
+        titleSmall = titleSmall.with(fonts.heading),
+        bodyLarge = bodyLarge.with(fonts.body),
+        bodyMedium = bodyMedium.with(fonts.body),
+        bodySmall = bodySmall.with(fonts.body),
+        labelLarge = labelLarge.with(fonts.label),
+        labelMedium = labelMedium.with(fonts.label),
+        labelSmall = labelSmall.with(fonts.label),
     )
 }

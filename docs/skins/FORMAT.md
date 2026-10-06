@@ -53,11 +53,11 @@ A colour is `"#RRGGBB"` or `"#AARRGGBB"`. Roles you can set: `primary`, `onPrima
 `onPrimaryContainer`, `secondary`, `onSecondary`, `secondaryContainer`, `onSecondaryContainer`, `tertiary`,
 `onTertiary`, `tertiaryContainer`, `onTertiaryContainer`, `background`, `onBackground`, `surface`, `onSurface`,
 `surfaceVariant`, `onSurfaceVariant`, `outline`, `outlineVariant`, `error`, `onError`, `errorContainer`,
-`onErrorContainer`, `inverseSurface`, `inverseOnSurface`, `inversePrimary`, `scrim`.
-
-Not settable (always generated from `primary`): `surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainer`,
-`surfaceContainerHigh`, `surfaceContainerHighest`, `surfaceDim`, `surfaceBright`, `surfaceTint`. They colour the mini
-player, bottom bar, queue sheet, cards and menus, so a vivid `primary` tints those surfaces.
+`onErrorContainer`, `inverseSurface`, `inverseOnSurface`, `inversePrimary`, `scrim`, and the surface family
+`surfaceDim`, `surfaceBright`, `surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainer`,
+`surfaceContainerHigh`, `surfaceContainerHighest`, `surfaceTint`. The container roles colour the mini player, bottom
+bar, queue sheet, cards and menus. When you leave them out they are generated from `primary`, so a vivid `primary`
+tints those surfaces; list them to keep those surfaces neutral.
 
 If you set `primary`, every role you do **not** list is generated from it (Material colour generation); roles you
 list always win. If you do not set `primary`, unlisted roles come from the Default skin.
@@ -66,7 +66,13 @@ list always win. If you do not set `primary`, unlisted roles come from the Defau
 
 | Field | Type | Notes |
 |---|---|---|
-| `fontFamily` | string | Path inside the archive to a `.ttf`/`.otf` (e.g. `fonts/Orbitron.ttf`). Applied to all text. |
+| `fontFamily` | string | Path inside the archive to a `.ttf`/`.otf` (e.g. `fonts/Orbitron.ttf`). Applied to all text that has no font of its own below. |
+| `headingFontFamily` | string | Font for headings: the `display`, `headline` and `title` styles (Now Playing track title, album-card titles). Falls back to `fontFamily`. |
+| `bodyFontFamily` | string | Font for the `body` styles (list titles and subtitles, durations, artist). Falls back to `fontFamily`. |
+| `labelFontFamily` | string | Font for the `label` styles (seek-bar times, queue button, fast-scroller letters, buttons). Falls back to `fontFamily`. |
+
+Each role font is a separate file in the archive, validated like `fontFamily`. A role with neither its own font nor
+`fontFamily` keeps the system font.
 
 ### `shapes`
 
