@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
@@ -59,5 +60,26 @@ class GeoNavigationBarTest {
         show(Skin.FALLBACK.copy(labelCaps = true))
         compose.onNodeWithText("SONGS").assertExists()
         compose.onNodeWithText("PLAYLISTS").assertExists()
+    }
+
+    @Test fun largeFontScale_doesNotClipTheLongestLabel() {
+        // Tracked caps at 1.3x text size used to cut "PLAYLISTS" short in its fixed-width cell.
+        val skin = Skin.FALLBACK.copy(labelCaps = true, labelLetterSpacingEm = 0.14f)
+        compose.setContent {
+            val density = androidx.compose.ui.platform.LocalDensity.current
+            androidx.compose.runtime.CompositionLocalProvider(
+                androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(density.density, fontScale = 1.3f),
+            ) {
+                AppTheme(skin, AppSettings(dynamicColor = false)) {
+                    GeoNavigationBar(tabs, 0, onSelect = {})
+                }
+            }
+        }
+        compose.waitForIdle()
+        val results = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+        compose.onNodeWithText("PLAYLISTS").fetchSemanticsNode().config
+            .getOrNull(androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult)?.action?.invoke(results)
+        assertThat(results).isNotEmpty()
+        assertThat(results.first().hasVisualOverflow).isFalse()
     }
 }

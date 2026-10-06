@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -65,9 +66,11 @@ fun GeoNavigationBar(
                 Icon(painterResource(tab.iconRes), contentDescription = null, tint = content)
                 Text(
                     text = skinLabel(tab.label),
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
+                    style = MaterialTheme.typography.labelSmall,
                     color = content,
                     maxLines = 1,
+                    // Tracked caps in a fixed-width cell: shrink toward a floor instead of clipping the word.
+                    autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 12.sp),
                 )
             }
         }
