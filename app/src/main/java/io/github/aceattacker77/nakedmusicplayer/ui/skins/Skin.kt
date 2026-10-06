@@ -24,7 +24,7 @@ sealed interface ArtShape {
     data object Circle : ArtShape
 }
 
-enum class SeekBarStyle { WAVY, FLAT, THIN }
+enum class SeekBarStyle { WAVY, FLAT, THIN, SEGMENTED }
 enum class ControlsStyle { FILLED, OUTLINED, ICON_ONLY, MIXED }
 enum class ControlShape { CIRCLE, THEME }
 enum class CornerStyle { ROUND, CHAMFER }

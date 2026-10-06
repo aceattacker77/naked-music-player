@@ -1,5 +1,9 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import kotlin.math.floor
+import java.util.Locale
+import androidx.compose.ui.geometry.Size
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.SeekColor
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -55,6 +59,8 @@ fun SeekBar(
     onSeek: (Long) -> Unit,
     modifier: Modifier = Modifier,
     isPlaying: Boolean = true,
+    segments: Int = 40,
+    seekColor: SeekColor = SeekColor.PRIMARY,
 ) {
     val total = durationMs.coerceAtLeast(1L)
     var dragFraction by remember { mutableStateOf<Float?>(null) }
@@ -71,7 +77,8 @@ fun SeekBar(
     }
 
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
-    val activeColor = MaterialTheme.colorScheme.primary
+    val activeColor = if (seekColor == SeekColor.TERTIARY) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+    val cellBorder = MaterialTheme.colorScheme.outline
     val seekLabel = stringResource(R.string.seek)
 
     Box(
@@ -82,6 +89,7 @@ fun SeekBar(
                     SeekBarStyle.WAVY -> 32.dp
                     SeekBarStyle.FLAT -> 24.dp
                     SeekBarStyle.THIN -> 16.dp
+                    SeekBarStyle.SEGMENTED -> 32.dp
                 },
             )
             .semantics {
@@ -110,6 +118,7 @@ fun SeekBar(
                 SeekBarStyle.WAVY -> drawWavy(fraction, phase.value, trackColor, activeColor)
                 SeekBarStyle.FLAT -> drawStraight(fraction, 4.dp.toPx(), 7.dp.toPx(), trackColor, activeColor)
                 SeekBarStyle.THIN -> drawStraight(fraction, 2.dp.toPx(), 4.dp.toPx(), trackColor, activeColor)
+                SeekBarStyle.SEGMENTED -> drawSegmented(fraction, segments, cellBorder, activeColor)
             }
         }
     }
@@ -133,11 +142,31 @@ fun SeekBarWithTimes(
     onSeek: (Long) -> Unit,
     isPlaying: Boolean,
     modifier: Modifier = Modifier,
+    segments: Int = 40,
+    seekColor: SeekColor = SeekColor.PRIMARY,
+    showHeader: Boolean = false,
 ) {
     Column(modifier.fillMaxWidth()) {
-        SeekBar(style, positionMs, durationMs, onSeek, isPlaying = isPlaying)
+        if (showHeader && style == SeekBarStyle.SEGMENTED) {
+            val total = durationMs.coerceAtLeast(1L)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(skinLabel(stringResource(R.string.position_label)), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(positionPercentText(positionMs.toFloat() / total), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        SeekBar(style, positionMs, durationMs, onSeek, isPlaying = isPlaying, segments = segments, seekColor = seekColor)
         SeekTimes(positionMs, durationMs)
     }
+}
+
+/** How many of [segments] cells are filled at [fraction] (floored; out-of-range and NaN inputs are clamped). */
+internal fun segmentsFilled(fraction: Float, segments: Int): Int =
+    if (fraction.isNaN()) 0 else floor(fraction.coerceIn(0f, 1f) * segments).toInt().coerceIn(0, segments)
+
+/** The position as a percentage with one decimal, trailing zero kept: `31.3 %`. */
+internal fun positionPercentText(fraction: Float): String {
+    val clamped = if (fraction.isNaN()) 0f else fraction.coerceIn(0f, 1f)
+    return String.format(Locale.ROOT, "%.1f %%", clamped * 100f)
 }
 
 private const val TWO_PI = (2 * PI).toFloat()
@@ -158,6 +187,31 @@ private fun DrawScope.drawStraight(
     drawLine(trackColor, Offset(startX, y), Offset(endX, y), strokePx, StrokeCap.Round)
     drawLine(activeColor, Offset(startX, y), Offset(x, y), strokePx, StrokeCap.Round)
     drawCircle(activeColor, thumbRadiusPx, Offset(x, y))
+}
+
+private fun DrawScope.drawSegmented(
+    fraction: Float,
+    segments: Int,
+    borderColor: androidx.compose.ui.graphics.Color,
+    activeColor: androidx.compose.ui.graphics.Color,
+) {
+    val gap = 3.dp.toPx()
+    val stroke = 1.dp.toPx()
+    val barHeight = 16.dp.toPx()
+    val cellWidth = (size.width - gap * (segments - 1)) / segments
+    if (cellWidth <= stroke) return
+    val top = (size.height - barHeight) / 2
+    val filled = segmentsFilled(fraction, segments)
+    repeat(segments) { i ->
+        val left = i * (cellWidth + gap)
+        if (i < filled) drawRect(activeColor, Offset(left, top), Size(cellWidth, barHeight))
+        drawRect(
+            borderColor,
+            Offset(left + stroke / 2, top + stroke / 2),
+            Size(cellWidth - stroke, barHeight - stroke),
+            style = Stroke(stroke),
+        )
+    }
 }
 
 private fun DrawScope.drawWavy(

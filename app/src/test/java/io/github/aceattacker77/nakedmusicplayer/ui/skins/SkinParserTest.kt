@@ -310,4 +310,8 @@ class SkinParserTest {
         assertThat(error(minimal(""","player":{"seekSegments":"many"}""")))
             .isEqualTo("skin.json is not valid JSON")
     }
+
+    @Test fun seekBar_segmentedIsParsed() {
+        assertThat(ok(minimal(""","player":{"seekBar":"segmented"}""")).skin.player.seekBar).isEqualTo(SeekBarStyle.SEGMENTED)
+    }
 }

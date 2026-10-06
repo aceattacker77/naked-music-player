@@ -151,7 +151,7 @@ object SkinParser {
     private val COLOR_MODES = mapOf("light" to ColorMode.LIGHT, "dark" to ColorMode.DARK, "both" to ColorMode.BOTH, "system" to ColorMode.SYSTEM)
     private val BACKGROUNDS = listOf("blurredArt", "artGradient", "solid", "image")
     private val ART_SHAPES = listOf("square", "rounded", "circle")
-    private val SEEK_BARS = listOf("wavy", "flat", "thin")
+    private val SEEK_BARS = listOf("wavy", "flat", "thin", "segmented")
     private val CONTROLS = listOf("filled", "outlined", "iconOnly", "mixed")
     private val CONTROL_SHAPES = listOf("circle", "theme")
     private val ART_PLACEHOLDERS = listOf("note", "hexagon")

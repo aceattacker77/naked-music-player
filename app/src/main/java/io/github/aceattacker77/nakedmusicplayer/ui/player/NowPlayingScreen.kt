@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -150,7 +151,11 @@ private fun buildSlots(
             )
         },
         seekBar = {
-            SeekBarWithTimes(style.seekBar, positionMs, state.durationMs, actions.onSeek, isPlaying = state.isPlaying)
+            SeekBarWithTimes(
+                style.seekBar, positionMs, state.durationMs, actions.onSeek, isPlaying = state.isPlaying,
+                segments = style.seekSegments, seekColor = style.seekColor,
+                showHeader = LocalOrnament.current.segmentedMeters,
+            )
         },
         controls = {
             PlayerControls(
