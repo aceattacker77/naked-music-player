@@ -93,6 +93,12 @@ object SkinParser {
             useArtColors = p?.useArtColors ?: defaults.player.useArtColors,
             controlShape = p?.controlShape?.let { ControlShape.entries[enumIndex("player.controlShape", it, CONTROL_SHAPES)] }
                 ?: defaults.player.controlShape,
+            artPlaceholder = p?.artPlaceholder?.let { ArtPlaceholder.entries[enumIndex("player.artPlaceholder", it, ART_PLACEHOLDERS)] }
+                ?: defaults.player.artPlaceholder,
+            artBorder = p?.artBorder ?: defaults.player.artBorder,
+            seekSegments = p?.seekSegments?.also { requireIn("player.seekSegments", it, 12..60) } ?: defaults.player.seekSegments,
+            seekColor = p?.seekColor?.let { SeekColor.entries[enumIndex("player.seekColor", it, SEEK_COLORS)] }
+                ?: defaults.player.seekColor,
         )
 
         val layout = LayoutSpec(
@@ -132,6 +138,11 @@ object SkinParser {
             headingScaleX = headingScaleX,
             labelCaps = typography?.labelCaps ?: defaults.labelCaps,
             labelLetterSpacingEm = labelSpacing,
+            brackets = dto.components?.brackets ?: defaults.brackets,
+            segmentedMeters = dto.components?.segmentedMeters ?: defaults.segmentedMeters,
+            navStyle = dto.components?.navStyle?.let { NavStyle.entries[enumIndex("components.navStyle", it, NAV_STYLES)] }
+                ?: defaults.navStyle,
+            rowEdge = dto.components?.rowEdge ?: defaults.rowEdge,
         )
         return SkinParseResult.Ok(skin, referenced)
     }
@@ -143,6 +154,9 @@ object SkinParser {
     private val SEEK_BARS = listOf("wavy", "flat", "thin")
     private val CONTROLS = listOf("filled", "outlined", "iconOnly", "mixed")
     private val CONTROL_SHAPES = listOf("circle", "theme")
+    private val ART_PLACEHOLDERS = listOf("note", "hexagon")
+    private val SEEK_COLORS = listOf("primary", "tertiary")
+    private val NAV_STYLES = listOf("material", "block")
     private val CORNER_STYLES = listOf("round", "chamfer")
     private val CONTROL_SIZES = listOf("small", "medium", "large")
     private val LAYOUT_TYPES = listOf("classic", "vinyl", "minimal", "cassette", "compact")

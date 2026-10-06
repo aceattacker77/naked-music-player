@@ -252,4 +252,62 @@ class SkinParserTest {
         assertThat(skin.labelCaps).isTrue()
         assertThat(skin.chamferDp).isEqualTo(7)
     }
+
+    @Test fun ornamentFields_defaultToToday() {
+        val skin = ok(minimal()).skin
+        assertThat(skin.player.artPlaceholder).isEqualTo(ArtPlaceholder.NOTE)
+        assertThat(skin.player.artBorder).isFalse()
+        assertThat(skin.player.seekSegments).isEqualTo(40)
+        assertThat(skin.player.seekColor).isEqualTo(SeekColor.PRIMARY)
+        assertThat(skin.brackets).isFalse()
+        assertThat(skin.segmentedMeters).isFalse()
+        assertThat(skin.navStyle).isEqualTo(NavStyle.MATERIAL)
+        assertThat(skin.rowEdge).isFalse()
+    }
+
+    @Test fun ornamentFields_areParsed() {
+        val json = minimal(
+            ""","player":{"artPlaceholder":"hexagon","artBorder":true,"seekSegments":24,"seekColor":"tertiary"},""" +
+                """"components":{"brackets":true,"segmentedMeters":true,"navStyle":"block","rowEdge":true}""",
+        )
+        val skin = ok(json).skin
+        assertThat(skin.player.artPlaceholder).isEqualTo(ArtPlaceholder.HEXAGON)
+        assertThat(skin.player.artBorder).isTrue()
+        assertThat(skin.player.seekSegments).isEqualTo(24)
+        assertThat(skin.player.seekColor).isEqualTo(SeekColor.TERTIARY)
+        assertThat(skin.brackets).isTrue()
+        assertThat(skin.segmentedMeters).isTrue()
+        assertThat(skin.navStyle).isEqualTo(NavStyle.BLOCK)
+        assertThat(skin.rowEdge).isTrue()
+    }
+
+    @Test fun seekSegments_boundaries() {
+        ok(minimal(""","player":{"seekSegments":12}"""))
+        ok(minimal(""","player":{"seekSegments":60}"""))
+    }
+
+    @Test fun ornamentErrors_haveExactMessages() {
+        assertThat(error(minimal(""","player":{"artPlaceholder":"cube"}""")))
+            .isEqualTo("invalid value 'cube' for 'player.artPlaceholder'")
+        assertThat(error(minimal(""","player":{"seekColor":"blue"}""")))
+            .isEqualTo("invalid value 'blue' for 'player.seekColor'")
+        assertThat(error(minimal(""","components":{"navStyle":"rail"}""")))
+            .isEqualTo("invalid value 'rail' for 'components.navStyle'")
+        assertThat(error(minimal(""","player":{"seekSegments":11}""")))
+            .isEqualTo("invalid value '11' for 'player.seekSegments'")
+        assertThat(error(minimal(""","player":{"seekSegments":61}""")))
+            .isEqualTo("invalid value '61' for 'player.seekSegments'")
+    }
+
+    @Test fun ornamentFields_inheritFromDefaults() {
+        val base = defaults.copy(brackets = true, navStyle = NavStyle.BLOCK)
+        val skin = (SkinParser.parse(minimal(), base) as SkinParseResult.Ok).skin
+        assertThat(skin.brackets).isTrue()
+        assertThat(skin.navStyle).isEqualTo(NavStyle.BLOCK)
+    }
+
+    @Test fun seekSegments_wrongTypeIsNotValidJson() {
+        assertThat(error(minimal(""","player":{"seekSegments":"many"}""")))
+            .isEqualTo("skin.json is not valid JSON")
+    }
 }

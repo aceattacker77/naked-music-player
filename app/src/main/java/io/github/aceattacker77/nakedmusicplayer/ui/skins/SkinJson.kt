@@ -15,6 +15,7 @@ data class SkinJson(
     val shapes: ShapesJson? = null,
     val player: PlayerJson? = null,
     val layout: LayoutJson? = null,
+    val components: ComponentsJson? = null,
 )
 
 @Serializable
@@ -54,6 +55,18 @@ data class PlayerJson(
     val shadow: Boolean? = null,
     val useArtColors: Boolean? = null,
     val controlShape: String? = null,
+    val artPlaceholder: String? = null,
+    val artBorder: Boolean? = null,
+    val seekSegments: Int? = null,
+    val seekColor: String? = null,
+)
+
+@Serializable
+data class ComponentsJson(
+    val brackets: Boolean? = null,
+    val segmentedMeters: Boolean? = null,
+    val navStyle: String? = null,
+    val rowEdge: Boolean? = null,
 )
 
 @Serializable
