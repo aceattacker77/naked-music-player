@@ -33,5 +33,8 @@ family, with its copyright notice, is in [`licenses/`](licenses/), fetched from 
 
 The font files are used as published and are not renamed.
 
+The three licence texts are also inside `geofront.mskin` under `licenses/`, so they travel with the archive. The app
+ignores files that `skin.json` does not reference, so they are not installed on the phone.
+
 Shippori Mincho is a Latin-only subset here, so Japanese text in song titles falls back to the system font; that is
 expected (see the skin design brief, section 5).
