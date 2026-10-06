@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.components.cornerBrackets
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtPlaceholder
 import io.github.aceattacker77.nakedmusicplayer.ui.components.trackCode
 import io.github.aceattacker77.nakedmusicplayer.ui.components.ArtCaptions
@@ -217,6 +218,7 @@ private fun Artwork(albumId: Long?, style: PlayerStyle, spinning: Boolean, modif
         modifier
             .fillMaxSize()
             .aspectRatio(1f)
+            .then(if (LocalOrnament.current.brackets) Modifier.cornerBrackets(MaterialTheme.colorScheme.primary) else Modifier)
             .then(if (style.shadow) Modifier.shadow(12.dp, shape) else Modifier)
             .graphicsLayer { rotationZ = if (style.artSpin) rotation.value else 0f },
     ) {

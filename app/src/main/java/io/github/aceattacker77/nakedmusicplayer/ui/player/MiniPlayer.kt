@@ -1,5 +1,10 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoPanel
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -53,30 +58,31 @@ fun MiniPlayer(
     val albumId = remember(state.current) { state.current?.mediaMetadata?.artworkUri?.lastPathSegment?.toLongOrNull() }
     val duration = state.durationMs.coerceAtLeast(1L)
 
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag("mini-player")
-            .draggable(
-                state = rememberDraggableState {},
-                orientation = Orientation.Vertical,
-                onDragStopped = { velocity -> if (velocity < EXPAND_FLING_VELOCITY) onExpand() },
-            )
-            .clickable(onClick = onExpand),
-        tonalElevation = 3.dp,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
+    val brackets = LocalOrnament.current.brackets
+    val interaction = modifier
+        .fillMaxWidth()
+        .testTag("mini-player")
+        .draggable(
+            state = rememberDraggableState {},
+            orientation = Orientation.Vertical,
+            onDragStopped = { velocity -> if (velocity < EXPAND_FLING_VELOCITY) onExpand() },
+        )
+        .clickable(onClick = onExpand)
+    val fraction = (position.toFloat() / duration).coerceIn(0f, 1f)
+
+    val body: @Composable () -> Unit = {
         Column {
-            LinearProgressIndicator(
-                progress = { (position.toFloat() / duration).coerceIn(0f, 1f) },
-                modifier = Modifier.fillMaxWidth(),
-            )
+            if (brackets) {
+                ThinProgressLine(fraction)
+            } else {
+                LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
+            }
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                AlbumArt(albumId, Modifier.size(44.dp).then(artworkModifier))
+                AlbumArt(albumId, Modifier.size(44.dp).then(artworkModifier), highlighted = brackets)
                 Column(Modifier.weight(1f)) {
                     Text(
                         text = meta?.title?.toString().orEmpty(),
@@ -103,5 +109,25 @@ fun MiniPlayer(
                 }
             }
         }
+    }
+
+    if (brackets) {
+        // Inset so the brackets, which draw outside the panel, stay visible; tonal elevation 0 keeps surfaceTint off it.
+        Box(Modifier.fillMaxWidth().padding(12.dp)) { GeoPanel(modifier = interaction, content = body) }
+    } else {
+        Surface(
+            modifier = interaction,
+            tonalElevation = 3.dp,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            content = body,
+        )
+    }
+}
+
+/** A 2 dp continuous progress line, used instead of Material's 4 dp indicator in the bracketed mini player. */
+@Composable
+private fun ThinProgressLine(fraction: Float) {
+    Box(Modifier.fillMaxWidth().height(2.dp).background(MaterialTheme.colorScheme.surfaceVariant)) {
+        Box(Modifier.fillMaxWidth(fraction).height(2.dp).background(MaterialTheme.colorScheme.primary))
     }
 }
