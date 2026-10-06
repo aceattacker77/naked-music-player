@@ -69,9 +69,12 @@ fun AppTheme(skin: Skin, settings: AppSettings, content: @Composable () -> Unit)
     val typography = remember(fonts, skin.headingScaleX, skin.labelLetterSpacingEm) {
         Typography().withFontFamilies(fonts, skin.headingScaleX, skin.labelLetterSpacingEm)
     }
+    val ornament = remember(
+        skin.player.artPlaceholder, skin.player.artBorder, skin.brackets, skin.segmentedMeters, skin.navStyle, skin.rowEdge,
+    ) { ornamentOf(skin) }
     val shapes = remember(skin.cornerStyle, skin.chamferDp, skin.cornerRadiusDp) { shapesFor(skin) }
 
-    CompositionLocalProvider(LocalSkin provides skin, LocalLabelCaps provides skin.labelCaps) {
+    CompositionLocalProvider(LocalSkin provides skin, LocalLabelCaps provides skin.labelCaps, LocalOrnament provides ornament) {
         MaterialTheme(colorScheme = colors, typography = typography, shapes = shapes, content = content)
     }
 }
