@@ -10,11 +10,11 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-02-music-player-design.md` — read it alongside this plan.
 
-**Path shorthand:** `…/` = `app/src/main/java/io/github/aceattacker77/nakedmusicplayer/`; `T…/` = `app/src/test/java/io/github/aceattacker77/nakedmusicplayer/`; `AT…/` = `app/src/androidTest/java/io/github/aceattacker77/nakedmusicplayer/`.
+**Path shorthand:** `…/` = `app/src/main/java/<package path>/`; `T…/` = `app/src/test/java/<package path>/`; `AT…/` = `app/src/androidTest/java/<package path>/`.
 
 ## Global Constraints
 
-- `namespace`/`applicationId` = `io.github.aceattacker77.nakedmusicplayer` (rename allowed before Play submission only).
+- `namespace`/`applicationId` = `<applicationId>` (rename allowed before Play submission only).
 - `compileSdk = 36`, `targetSdk = 36`, `minSdk = 26`. JDK 17. Gradle version catalog `gradle/libs.versions.toml`; use latest stable versions at execution time.
 - Single runtime module `:app`. Only additional module allowed: test-only `:baselineprofile` (Task 19).
 - Runtime dependencies allowed: Media3 exoplayer + session, Compose BOM (ui, material3, material3-adaptive, material3-adaptive-navigation-suite, material-icons-core; **not** material-icons-extended — use vector XML for extra icons), navigation-compose, Room (runtime, ktx, ksp compiler), datastore-preferences, glance-appwidget + glance-material3, Coil 3 (coil-compose), kotlinx-serialization-json, `com.materialkolor:material-kolor` (color generation), `androidx.palette:palette-ktx` (art colors), `sh.calvin.reorderable:reorderable` (drag reorder), profileinstaller. Anything else needs a plan change. Test deps unrestricted.
@@ -522,7 +522,7 @@ class LibraryBuilderTest {
 ### Task 19: Performance, release build and verification
 
 **Files:**
-- Create: `baselineprofile/build.gradle.kts`, `baselineprofile/src/main/java/io/github/aceattacker77/nakedmusicplayer/baselineprofile/{BaselineProfileGenerator,StartupBenchmark,ScrollBenchmark}.kt`, `scripts/seed_library.sh`, `scripts/check_release.sh`, `docs/manual-test-checklist.md`
+- Create: `baselineprofile/build.gradle.kts`, `baselineprofile/src/main/java/<package path>/baselineprofile/{BaselineProfileGenerator,StartupBenchmark,ScrollBenchmark}.kt`, `scripts/seed_library.sh`, `scripts/check_release.sh`, `docs/manual-test-checklist.md`
 - Modify: `settings.gradle.kts`, `app/build.gradle.kts` (release: `isMinifyEnabled = true`, `isShrinkResources = true`, R8 full mode; `baselineProfile` plugin; `profileinstaller`), `app/proguard-rules.pro` (keep `@Serializable` skin DTOs)
 
 **Interfaces:**
@@ -533,7 +533,7 @@ class LibraryBuilderTest {
 - [ ] **Step 3: Generate profile** `./gradlew :app:generateBaselineProfile` → `app/src/release/generated/baselineProfiles/baseline-prof.txt` exists.
 - [ ] **Step 4: Run benchmarks** on a physical 120 Hz device (`./gradlew :baselineprofile:connectedBenchmarkAndroidTest`). Pass criteria: `timeToInitialDisplayMs` median < 400; scroll `frameOverrunMs` P99 < 0 (no dropped frames). If failing, profile and fix before continuing.
 - [ ] **Step 5: `scripts/check_release.sh`** — builds `assembleRelease`, fails if APK > 6 MB (`stat`), fails if `aapt2 dump permissions` lists `android.permission.INTERNET`. Run → PASS.
-- [ ] **Step 6: Memory check:** with 5,000 songs, browse all tabs and Now Playing, `adb shell dumpsys meminfo io.github.aceattacker77.nakedmusicplayer` TOTAL PSS < 120 MB.
+- [ ] **Step 6: Memory check:** with 5,000 songs, browse all tabs and Now Playing, `adb shell dumpsys meminfo <applicationId>` TOTAL PSS < 120 MB.
 - [ ] **Step 7: Run all tests on API 26 emulator** (`connectedDebugAndroidTest`) and API 36 → PASS.
 - [ ] **Step 8: Write `docs/manual-test-checklist.md`** (spec §12 manual list: Bluetooth buttons, incoming call, lock screen, widget, unplug headphones, predictive back, foldable/tablet, Android 8 device, process death via `adb shell am kill` then resume) and execute it once; tick results.
 - [ ] **Step 9: Commit** `perf: baseline profile, release checks, manual checklist`.

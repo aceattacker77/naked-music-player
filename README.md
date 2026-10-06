@@ -70,15 +70,16 @@ Notes:
   if your machine renders differently.
 - The instrumented tests use fixture audio files. They are checked in; `scripts/make_fixtures.sh` (needs `ffmpeg`)
   regenerates them. `scripts/seed_library.sh` puts a large test library on a device.
+- `<applicationId>` below stands for the app's package id, set as `applicationId` in `app/build.gradle.kts`.
 - On Xiaomi phones the system blocks the way Gradle installs test APKs. Install with `adb install -t` and start the
-  tests with `adb shell am instrument -w io.github.aceattacker77.nakedmusicplayer.test/androidx.test.runner.AndroidJUnitRunner`.
+  tests with `adb shell am instrument -w <applicationId>.test/androidx.test.runner.AndroidJUnitRunner`.
 - Anything done by hand (Bluetooth, calls, TalkBack, a foldable) is on the
   [manual checklist](docs/manual-test-checklist.md), which records the results of the runs so far.
 
 ## Project layout
 
 ```
-app/src/main/java/io/github/aceattacker77/nakedmusicplayer/
+app/src/main/java/<package path>/   (the package named in app/build.gradle.kts)
   playback/    PlaybackService (Media3), library tree, queue restore, skip policy, equalizer (playback/eq)
   library/     MediaStore reading, library model and sorting, folder scanner
   data/        Room (playlists, play stats), DataStore (settings, session, equalizer), M3U
