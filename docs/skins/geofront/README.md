@@ -22,16 +22,16 @@ The `id` is `com.nakedmusic.geofront`, the version is 1.2 and the author is Ace 
 
 ## Fonts and licences
 
-The archive bundles three font files. All three are published under the SIL Open Font License 1.1:
+The archive bundles three font files, all published under the SIL Open Font License 1.1. The licence text for each
+family, with its copyright notice, is in [`licenses/`](licenses/), fetched from Google's `google/fonts` repository.
 
-| File | Family | Upstream |
-|---|---|---|
-| `fonts/ShipporiMinchoB1-ExtraBold.ttf` | Shippori Mincho B1 | Google Fonts |
-| `fonts/ArchivoNarrow-Regular.ttf` | Archivo Narrow | Google Fonts |
-| `fonts/IBMPlexMono-Regular.ttf` | IBM Plex Mono | IBM, via Google Fonts |
+| File in the archive | Family | Copyright notice | Licence text |
+|---|---|---|---|
+| `fonts/ShipporiMinchoB1-ExtraBold.ttf` | Shippori Mincho B1 | 2021 The Shippori Mincho Project Authors | [`shipporiminchob1-OFL.txt`](licenses/shipporiminchob1-OFL.txt) |
+| `fonts/ArchivoNarrow-Regular.ttf` | Archivo Narrow | 2019 The Archivo Narrow Project Authors | [`archivonarrow-OFL.txt`](licenses/archivonarrow-OFL.txt) |
+| `fonts/IBMPlexMono-Regular.ttf` | IBM Plex Mono | 2017 IBM Corp., Reserved Font Name "Plex" | [`ibmplexmono-OFL.txt`](licenses/ibmplexmono-OFL.txt) |
 
-The OFL asks that its licence text and the fonts' copyright notices travel with any redistribution of the font files.
-Take the full texts from each family's upstream page and keep them with this sample before publishing the repository.
+The font files are used as published and are not renamed.
 
 Shippori Mincho is a Latin-only subset here, so Japanese text in song titles falls back to the system font; that is
 expected (see the skin design brief, section 5).
