@@ -392,3 +392,78 @@ Answer these before designing. The first four decide most of the result.
 7. **Background:** gradient, blurred art, flat colour, or a custom image (and its source).
 8. **Extras:** glow behind the play button; control style and size.
 9. **Name and identity:** the skin's display name, its `id` (see §8) and the author line.
+
+## 13. Revision brief: Geofront
+
+Use this section instead of §12 when the job is to **revise the existing Geofront skin** rather than design a new
+one. §12's questions are deferred; the owner's answers for Geofront are already in the attached `geofront.mskin`,
+which is the source of truth (`id` `com.nakedmusic.geofront`, author `Ace Attacker`). Keep its identity, mood and
+palette; change only what is listed under "What to change".
+
+### 13.1 What Geofront is today
+
+| Aspect | Current value |
+|---|---|
+| Mood | Black, hard-edged, instrument-panel look; orange primary, cyan secondary, green tertiary |
+| Colour mode | `both` (separate dark and light palettes, both fully listed: 28 roles each) |
+| Dark | `background` `#000000`, `surface` `#0B0B0E`, `surfaceVariant` `#17161C`, `primary` `#FF6A13` |
+| Light | `background` `#ECE7DA`, `surface` `#F6F2E8`, `surfaceVariant` `#FFFFFF`, `primary` `#B3400A` |
+| Shape | `cornerRadiusDp` 0 (every corner square) |
+| Now Playing | solid background, square artwork, no spin, `flat` seek bar, `outlined` controls, `medium`, no glow or shadow, `useArtColors` false, layout `classic` with artwork at the top |
+| Font | one file for everything: `fonts/ArchivoNarrow-Regular.ttf` (single weight; bold is synthesised) |
+
+### 13.2 Known problems
+
+1. **Orange-tinted surfaces.** Geofront sets `primary` but lists none of the container roles, so the app generates
+   `surfaceContainerLowest`…`surfaceContainerHighest`, `surfaceDim`, `surfaceBright` and `surfaceTint` from the orange
+   primary. The mini player, bottom bar, queue sheet, cards and menus therefore look brown instead of near-black
+   (dark) or warm paper (light). Those roles are now settable (§4.2, §4.3).
+2. **One font for everything.** Headings, body and labels all use Archivo Narrow Regular, so the hierarchy comes from
+   size alone. Separate fonts per role are now possible (§5).
+
+### 13.3 What to change
+
+1. **Add the eight surface roles to both `dark` and `light`**: `surfaceDim`, `surfaceBright`,
+   `surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainer`, `surfaceContainerHigh`,
+   `surfaceContainerHighest`, `surfaceTint`.
+   - Make them a **neutral ramp** from the skin's own `background`/`surface`/`surfaceVariant`, with no orange cast.
+     Dark ramp runs from `#000000` up to about `#1F1E25`; light ramp from white down through warm paper tones.
+   - Suggested starting point (adjust by eye): dark `Lowest #000000`, `Low #0B0B0E`, `Container #101015`,
+     `High #17161C`, `Highest #1F1E25`, `Dim #000000`, `Bright #2A2931`; light `Lowest #FFFFFF`, `Low #F6F2E8`,
+     `Container #F0EBDD`, `High #E9E3D3`, `Highest #E2DCCB`, `Dim #DDD7C8`, `Bright #F6F2E8`.
+   - `surfaceTint` is the colour Material blends over raised surfaces; keep it equal to `primary` or make it neutral.
+   - Keep the mini player (`surfaceContainerHigh`) visibly separate from the bottom bar and the screen behind it.
+2. **Split the font by role.** Propose a pairing and bundle the files: a **heading** font (display, headline, title:
+   Now Playing track title, album-card titles), a **body** font (lists, artist, durations) and a **label** font
+   (seek-bar times, queue button, fast-scroller letters, buttons). Archivo Narrow may stay for one or more roles.
+   Constraints: `.ttf`/`.otf`, Latin, a licence that allows bundling (state the licence and source for each), one
+   weight per file (bold is synthesised), and keep file sizes small because the archive limit is 10 MB / 50 files.
+   Check that a single-line title still fits at font scale 1.3 and that Japanese text falls back to the system font
+   (§5) without looking broken beside the chosen faces.
+3. **Re-check contrast** for every pairing that now changes (§4.4), especially `onSurface` on the new container
+   fills and `primary` on `surfaceContainerHigh`.
+
+### 13.4 What to keep
+
+Everything not listed above stays as it is: the 28 existing colour roles in both modes, `shapes`, `player`, `layout`,
+`id`, `name`, `author` and `version` (bump `version` to `1.1`).
+
+### 13.5 Deliverable
+
+A complete replacement `skin.json` (format 1, unknown fields are ignored but do not add any) plus the font files in
+`fonts/`, referenced by relative path, ready to zip into `geofront.mskin` (§11). With it:
+a table of the final values for the eight new roles in both modes, the chosen fonts with their sources and licences,
+and renders or notes for Songs, the mini player, the queue sheet and Now Playing in dark and light, at font scale 1.0
+and 1.3.
+
+Example of the new fields (values illustrative):
+
+```json
+"typography": {
+  "fontFamily": "fonts/ArchivoNarrow-Regular.ttf",
+  "headingFontFamily": "fonts/Heading.ttf",
+  "bodyFontFamily": "fonts/Body.ttf",
+  "labelFontFamily": "fonts/Label.ttf"
+}
+```
+
