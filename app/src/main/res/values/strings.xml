@@ -57,6 +57,7 @@
     <string name="pause">Pause</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="no_artwork">No artwork</string>
     <string name="position_label">Position</string>
     <string name="seek">Seek</string>
     <string name="shuffle_on">Shuffle: on</string>

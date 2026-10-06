@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtPlaceholder
+import androidx.compose.foundation.border
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.shapeOr
 import android.os.Build
 import androidx.compose.foundation.background
@@ -40,18 +43,25 @@ fun AlbumArt(
     albumId: Long?,
     modifier: Modifier = Modifier,
     shape: Shape? = null,
+    highlighted: Boolean = false,
+    captions: ArtCaptions? = null,
 ) {
+    val ornament = LocalOrnament.current
     val resolved = shape ?: shapeOr(RoundedCornerShape(8.dp), MaterialTheme.shapes.small)
     Box(
         modifier = modifier.clip(resolved).background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_music_note),
-            contentDescription = null,
-            modifier = Modifier.fillMaxWidth(0.5f).padding(2.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-        )
+        if (ornament.artPlaceholder == ArtPlaceholder.HEXAGON) {
+            HexagonPlaceholder(captions = captions)
+        } else {
+            Icon(
+                painter = painterResource(R.drawable.ic_music_note),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth(0.5f).padding(2.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            )
+        }
         if (albumId != null) {
             val model = remember(albumId) { albumArtModel(albumId) }
             AsyncImage(
@@ -60,6 +70,10 @@ fun AlbumArt(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
             )
+        }
+        if (ornament.artBorder) {
+            val color = if (highlighted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+            Box(Modifier.fillMaxSize().border(1.dp, color, resolved))
         }
     }
 }

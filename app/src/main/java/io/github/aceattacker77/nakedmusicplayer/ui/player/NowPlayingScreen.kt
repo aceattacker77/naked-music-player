@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtPlaceholder
+import io.github.aceattacker77.nakedmusicplayer.ui.components.trackCode
+import io.github.aceattacker77.nakedmusicplayer.ui.components.ArtCaptions
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -141,7 +144,14 @@ private fun buildSlots(
 ): NowPlayingSlots {
     val meta = state.current?.mediaMetadata
     return NowPlayingSlots(
-        artwork = { Artwork(albumId, style, spinning = state.isPlaying, modifier = artworkModifier) },
+        artwork = {
+            val captions = if (LocalOrnament.current.artPlaceholder == ArtPlaceholder.HEXAGON) {
+                ArtCaptions(stringResource(R.string.no_artwork), trackCode(state.currentIndex))
+            } else {
+                null
+            }
+            Artwork(albumId, style, spinning = state.isPlaying, modifier = artworkModifier, captions = captions)
+        },
         trackInfo = {
             TrackInfo(
                 title = meta?.title?.toString().orEmpty(),
@@ -185,7 +195,7 @@ private fun buildSlots(
 
 /** The artwork in the skin's shape, optionally shadowed and slowly spinning while [spinning]. */
 @Composable
-private fun Artwork(albumId: Long?, style: PlayerStyle, spinning: Boolean, modifier: Modifier = Modifier) {
+private fun Artwork(albumId: Long?, style: PlayerStyle, spinning: Boolean, modifier: Modifier = Modifier, captions: ArtCaptions? = null) {
     val shape: Shape = when (val s = style.artShape) {
         ArtShape.Square -> RectangleShape
         ArtShape.Circle -> CircleShape
@@ -210,6 +220,6 @@ private fun Artwork(albumId: Long?, style: PlayerStyle, spinning: Boolean, modif
             .then(if (style.shadow) Modifier.shadow(12.dp, shape) else Modifier)
             .graphicsLayer { rotationZ = if (style.artSpin) rotation.value else 0f },
     ) {
-        AlbumArt(albumId, Modifier.fillMaxSize(), shape)
+        AlbumArt(albumId, Modifier.fillMaxSize(), shape, captions = captions)
     }
 }
