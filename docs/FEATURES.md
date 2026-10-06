@@ -71,7 +71,7 @@ decisions taken while building, and every bug found on a device, are in
 | Import | **Settings → Skins → Import skin** reads a `.mskin` (a zip with `skin.json`, optional images and fonts). Partial skins are fine: unspecified values come from Default. | Device |
 | Validation | Rejects path traversal, oversized archives, unsupported file types and bad values with a specific message; nothing changes on failure. | Tests |
 | Export and delete | Long-press a card: Export (any skin, including built-ins) or Delete (imported skins). Deleting the active skin falls back to Default. | Device |
-| Specification | [`skins/FORMAT.md`](skins/FORMAT.md) documents every field; [`skins/example/`](skins/example/README.md) is a complete example. | Reviewed |
+| Specification | [`skins/FORMAT.md`](skins/FORMAT.md) documents every field; [`skins/example/`](skins/example/README.md) is a complete example and [`skins/geofront/`](skins/geofront/README.md) a full sample skin with fonts. | Reviewed |
 
 ## Playlists
 
