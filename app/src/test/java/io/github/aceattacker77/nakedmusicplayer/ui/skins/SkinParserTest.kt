@@ -180,4 +180,76 @@ class SkinParserTest {
         assertThat(error(minimal(""","colors":{"light":{"surfaceContainerHigh":"x"}}""")))
             .isEqualTo("invalid colour 'surfaceContainerHigh': 'x'")
     }
+
+    @Test fun newFields_defaultToToday() {
+        val skin = ok(minimal()).skin
+        assertThat(skin.cornerStyle).isEqualTo(CornerStyle.ROUND)
+        assertThat(skin.chamferDp).isEqualTo(10)
+        assertThat(skin.headingScaleX).isEqualTo(1f)
+        assertThat(skin.labelCaps).isFalse()
+        assertThat(skin.labelLetterSpacingEm).isEqualTo(0f)
+        assertThat(skin.player.controlShape).isEqualTo(ControlShape.CIRCLE)
+        assertThat(skin.player.controls).isEqualTo(ControlsStyle.FILLED)
+    }
+
+    @Test fun newFields_areParsed() {
+        val json = minimal(
+            ""","shapes":{"cornerRadiusDp":28,"cornerStyle":"chamfer","chamferDp":12},""" +
+                """"typography":{"headingScaleX":0.8,"labelCaps":true,"labelLetterSpacingEm":0.14},""" +
+                """"player":{"controls":"mixed","controlShape":"theme"}""",
+        )
+        val skin = ok(json).skin
+        assertThat(skin.cornerStyle).isEqualTo(CornerStyle.CHAMFER)
+        assertThat(skin.chamferDp).isEqualTo(12)
+        assertThat(skin.cornerRadiusDp).isEqualTo(28)
+        assertThat(skin.headingScaleX).isEqualTo(0.8f)
+        assertThat(skin.labelCaps).isTrue()
+        assertThat(skin.labelLetterSpacingEm).isEqualTo(0.14f)
+        assertThat(skin.player.controls).isEqualTo(ControlsStyle.MIXED)
+        assertThat(skin.player.controlShape).isEqualTo(ControlShape.THEME)
+    }
+
+    @Test fun boundaries_areAccepted() {
+        listOf(
+            ""","typography":{"headingScaleX":0.5,"labelLetterSpacingEm":0.0}""",
+            ""","typography":{"headingScaleX":1.0,"labelLetterSpacingEm":0.5}""",
+            ""","shapes":{"chamferDp":1}""",
+            ""","shapes":{"chamferDp":32}""",
+        ).forEach { ok(minimal(it)) }
+    }
+
+    @Test fun outOfRange_isError() {
+        assertThat(error(minimal(""","typography":{"headingScaleX":0.49}""")))
+            .isEqualTo("invalid value '0.49' for 'typography.headingScaleX'")
+        assertThat(error(minimal(""","typography":{"headingScaleX":1.01}""")))
+            .isEqualTo("invalid value '1.01' for 'typography.headingScaleX'")
+        assertThat(error(minimal(""","shapes":{"chamferDp":0}""")))
+            .isEqualTo("invalid value '0' for 'shapes.chamferDp'")
+        assertThat(error(minimal(""","shapes":{"chamferDp":33}""")))
+            .isEqualTo("invalid value '33' for 'shapes.chamferDp'")
+        assertThat(error(minimal(""","typography":{"labelLetterSpacingEm":0.51}""")))
+            .isEqualTo("invalid value '0.51' for 'typography.labelLetterSpacingEm'")
+        assertThat(error(minimal(""","typography":{"labelLetterSpacingEm":-0.1}""")))
+            .isEqualTo("invalid value '-0.1' for 'typography.labelLetterSpacingEm'")
+    }
+
+    @Test fun unknownNewEnums_areErrors() {
+        assertThat(error(minimal(""","shapes":{"cornerStyle":"smooth"}""")))
+            .isEqualTo("invalid value 'smooth' for 'shapes.cornerStyle'")
+        assertThat(error(minimal(""","player":{"controlShape":"square"}""")))
+            .isEqualTo("invalid value 'square' for 'player.controlShape'")
+    }
+
+    @Test fun wrongType_isNotValidJson() {
+        assertThat(error(minimal(""","typography":{"headingScaleX":"wide"}""")))
+            .isEqualTo("skin.json is not valid JSON")
+    }
+
+    @Test fun newFields_inheritFromDefaults() {
+        val base = defaults.copy(cornerStyle = CornerStyle.CHAMFER, labelCaps = true, chamferDp = 7)
+        val skin = (SkinParser.parse(minimal(), base) as SkinParseResult.Ok).skin
+        assertThat(skin.cornerStyle).isEqualTo(CornerStyle.CHAMFER)
+        assertThat(skin.labelCaps).isTrue()
+        assertThat(skin.chamferDp).isEqualTo(7)
+    }
 }

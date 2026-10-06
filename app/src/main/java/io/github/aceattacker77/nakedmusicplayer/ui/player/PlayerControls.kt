@@ -115,6 +115,12 @@ private fun ControlButton(
             }
         ControlsStyle.OUTLINED -> OutlinedIconButton(onClick = onClick, modifier = modifier, content = content)
         ControlsStyle.ICON_ONLY -> IconButton(onClick = onClick, modifier = modifier, content = content)
+        ControlsStyle.MIXED ->
+            if (primary) {
+                FilledIconButton(onClick = onClick, modifier = modifier, content = content)
+            } else {
+                OutlinedIconButton(onClick = onClick, modifier = modifier, content = content)
+            }
     }
 }
 

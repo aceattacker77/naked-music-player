@@ -30,10 +30,17 @@ data class TypographyJson(
     val headingFontFamily: String? = null,
     val bodyFontFamily: String? = null,
     val labelFontFamily: String? = null,
+    val headingScaleX: Float? = null,
+    val labelCaps: Boolean? = null,
+    val labelLetterSpacingEm: Float? = null,
 )
 
 @Serializable
-data class ShapesJson(val cornerRadiusDp: Int? = null)
+data class ShapesJson(
+    val cornerRadiusDp: Int? = null,
+    val cornerStyle: String? = null,
+    val chamferDp: Int? = null,
+)
 
 @Serializable
 data class PlayerJson(
@@ -46,6 +53,7 @@ data class PlayerJson(
     val glow: Boolean? = null,
     val shadow: Boolean? = null,
     val useArtColors: Boolean? = null,
+    val controlShape: String? = null,
 )
 
 @Serializable

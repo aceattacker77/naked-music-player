@@ -91,6 +91,8 @@ object SkinParser {
             glow = p?.glow ?: defaults.player.glow,
             shadow = p?.shadow ?: defaults.player.shadow,
             useArtColors = p?.useArtColors ?: defaults.player.useArtColors,
+            controlShape = p?.controlShape?.let { ControlShape.entries[enumIndex("player.controlShape", it, CONTROL_SHAPES)] }
+                ?: defaults.player.controlShape,
         )
 
         val layout = LayoutSpec(
@@ -100,6 +102,14 @@ object SkinParser {
                 ?.let { ArtPosition.entries[enumIndex("layout.slots.artPosition", it, ART_POSITIONS)] }
                 ?: defaults.layout.artPosition,
         )
+
+        val cornerStyle = dto.shapes?.cornerStyle?.let { CornerStyle.entries[enumIndex("shapes.cornerStyle", it, CORNER_STYLES)] }
+            ?: defaults.cornerStyle
+        val chamferDp = dto.shapes?.chamferDp?.also { requireIn("shapes.chamferDp", it, 1..32) } ?: defaults.chamferDp
+        val headingScaleX = typography?.headingScaleX?.also { requireIn("typography.headingScaleX", it, 0.5f..1f) }
+            ?: defaults.headingScaleX
+        val labelSpacing = typography?.labelLetterSpacingEm?.also { requireIn("typography.labelLetterSpacingEm", it, 0f..0.5f) }
+            ?: defaults.labelLetterSpacingEm
 
         val skin = Skin(
             id = id,
@@ -117,6 +127,11 @@ object SkinParser {
             headingFontPath = headingFontPath ?: defaults.headingFontPath,
             bodyFontPath = bodyFontPath ?: defaults.bodyFontPath,
             labelFontPath = labelFontPath ?: defaults.labelFontPath,
+            cornerStyle = cornerStyle,
+            chamferDp = chamferDp,
+            headingScaleX = headingScaleX,
+            labelCaps = typography?.labelCaps ?: defaults.labelCaps,
+            labelLetterSpacingEm = labelSpacing,
         )
         return SkinParseResult.Ok(skin, referenced)
     }
@@ -126,7 +141,9 @@ object SkinParser {
     private val BACKGROUNDS = listOf("blurredArt", "artGradient", "solid", "image")
     private val ART_SHAPES = listOf("square", "rounded", "circle")
     private val SEEK_BARS = listOf("wavy", "flat", "thin")
-    private val CONTROLS = listOf("filled", "outlined", "iconOnly")
+    private val CONTROLS = listOf("filled", "outlined", "iconOnly", "mixed")
+    private val CONTROL_SHAPES = listOf("circle", "theme")
+    private val CORNER_STYLES = listOf("round", "chamfer")
     private val CONTROL_SIZES = listOf("small", "medium", "large")
     private val LAYOUT_TYPES = listOf("classic", "vinyl", "minimal", "cassette", "compact")
     private val ART_POSITIONS = listOf("top", "left", "center")
@@ -138,6 +155,10 @@ object SkinParser {
     private fun enumOf(field: String, value: String, options: List<String>): String {
         if (value !in options) throw SkinError("invalid value '$value' for '$field'")
         return value
+    }
+
+    private fun <T : Comparable<T>> requireIn(field: String, value: T, range: ClosedRange<T>) {
+        if (value !in range) throw SkinError("invalid value '$value' for '$field'")
     }
 
     private fun enumIndex(field: String, value: String, options: List<String>): Int {

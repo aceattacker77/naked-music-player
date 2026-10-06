@@ -25,7 +25,9 @@ sealed interface ArtShape {
 }
 
 enum class SeekBarStyle { WAVY, FLAT, THIN }
-enum class ControlsStyle { FILLED, OUTLINED, ICON_ONLY }
+enum class ControlsStyle { FILLED, OUTLINED, ICON_ONLY, MIXED }
+enum class ControlShape { CIRCLE, THEME }
+enum class CornerStyle { ROUND, CHAMFER }
 enum class ControlSize { SMALL, MEDIUM, LARGE }
 enum class LayoutType { CLASSIC, VINYL, MINIMAL, CASSETTE, COMPACT }
 enum class ArtPosition { TOP, LEFT, CENTER }
@@ -40,6 +42,7 @@ data class PlayerStyle(
     val glow: Boolean,
     val shadow: Boolean,
     val useArtColors: Boolean,
+    val controlShape: ControlShape = ControlShape.CIRCLE,
 )
 
 data class LayoutSpec(val type: LayoutType, val artPosition: ArtPosition)
@@ -64,6 +67,11 @@ data class Skin(
     val headingFontPath: String? = null,
     val bodyFontPath: String? = null,
     val labelFontPath: String? = null,
+    val cornerStyle: CornerStyle = CornerStyle.ROUND,
+    val chamferDp: Int = 10,
+    val headingScaleX: Float = 1f,
+    val labelCaps: Boolean = false,
+    val labelLetterSpacingEm: Float = 0f,
 ) {
     /** The font file for [role]: its own entry when the skin sets one, else the shared `fontFamily`. */
     fun fontPathFor(role: FontRole): String? = when (role) {
