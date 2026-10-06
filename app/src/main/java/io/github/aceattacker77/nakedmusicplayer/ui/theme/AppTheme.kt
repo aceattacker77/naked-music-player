@@ -16,6 +16,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextGeometricTransform
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.dp
 import io.github.aceattacker77.nakedmusicplayer.data.settings.AppSettings
 import io.github.aceattacker77.nakedmusicplayer.data.settings.ThemeMode
@@ -64,7 +66,9 @@ fun AppTheme(skin: Skin, settings: AppSettings, content: @Composable () -> Unit)
     val fonts = remember(
         skin.id, skin.baseDir, skin.fontPath, skin.headingFontPath, skin.bodyFontPath, skin.labelFontPath,
     ) { SkinAssets.fonts(skin) }
-    val typography = remember(fonts) { Typography().withFontFamilies(fonts) }
+    val typography = remember(fonts, skin.headingScaleX, skin.labelLetterSpacingEm) {
+        Typography().withFontFamilies(fonts, skin.headingScaleX, skin.labelLetterSpacingEm)
+    }
     val shapes = remember(skin.cornerStyle, skin.chamferDp, skin.cornerRadiusDp) { shapesFor(skin) }
 
     CompositionLocalProvider(LocalSkin provides skin) {
@@ -94,24 +98,38 @@ internal fun shapesFor(skin: Skin): Shapes {
     )
 }
 
-/** Display, headline and title text use the heading font; body and label text use their own. */
-internal fun Typography.withFontFamilies(fonts: SkinFonts): Typography {
+/**
+ * Display, headline and title text use the heading font; body and label text use their own. Headings are
+ * squeezed horizontally by [headingScaleX] and labels get [labelLetterSpacingEm] of tracking; the defaults
+ * (1 and 0) leave the Material styles untouched.
+ */
+internal fun Typography.withFontFamilies(
+    fonts: SkinFonts,
+    headingScaleX: Float = 1f,
+    labelLetterSpacingEm: Float = 0f,
+): Typography {
     fun TextStyle.with(family: FontFamily?) = if (family == null) this else copy(fontFamily = family)
+    fun TextStyle.heading() = with(fonts.heading).let {
+        if (headingScaleX == 1f) it else it.copy(textGeometricTransform = TextGeometricTransform(scaleX = headingScaleX))
+    }
+    fun TextStyle.label() = with(fonts.label).let {
+        if (labelLetterSpacingEm > 0f) it.copy(letterSpacing = labelLetterSpacingEm.em) else it
+    }
     return copy(
-        displayLarge = displayLarge.with(fonts.heading),
-        displayMedium = displayMedium.with(fonts.heading),
-        displaySmall = displaySmall.with(fonts.heading),
-        headlineLarge = headlineLarge.with(fonts.heading),
-        headlineMedium = headlineMedium.with(fonts.heading),
-        headlineSmall = headlineSmall.with(fonts.heading),
-        titleLarge = titleLarge.with(fonts.heading),
-        titleMedium = titleMedium.with(fonts.heading),
-        titleSmall = titleSmall.with(fonts.heading),
+        displayLarge = displayLarge.heading(),
+        displayMedium = displayMedium.heading(),
+        displaySmall = displaySmall.heading(),
+        headlineLarge = headlineLarge.heading(),
+        headlineMedium = headlineMedium.heading(),
+        headlineSmall = headlineSmall.heading(),
+        titleLarge = titleLarge.heading(),
+        titleMedium = titleMedium.heading(),
+        titleSmall = titleSmall.heading(),
         bodyLarge = bodyLarge.with(fonts.body),
         bodyMedium = bodyMedium.with(fonts.body),
         bodySmall = bodySmall.with(fonts.body),
-        labelLarge = labelLarge.with(fonts.label),
-        labelMedium = labelMedium.with(fonts.label),
-        labelSmall = labelSmall.with(fonts.label),
+        labelLarge = labelLarge.label(),
+        labelMedium = labelMedium.label(),
+        labelSmall = labelSmall.label(),
     )
 }
