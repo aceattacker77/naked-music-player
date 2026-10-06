@@ -21,8 +21,8 @@ an equalizer, playlists and a home-screen widget.
 - **Playback:** MP3, FLAC, Ogg Vorbis, Opus, AAC/M4A and WAV, gapless between tracks. Background playback with a
   media notification, lock-screen controls and headset or Bluetooth buttons. The queue and position are restored
   after the app is closed, and it never starts playing by itself. Unplayable files are skipped with a message.
-- **Now Playing:** a mini player that expands into a full screen with a queue sheet, in Classic, Compact or
-  Cassette layouts depending on the skin.
+- **Now Playing:** a mini player that expands into a full screen with a queue sheet, in one of five
+  layouts (Classic, Compact, Minimal, Vinyl or Cassette) depending on the skin.
 - **Skins:** Default (wallpaper colours on Android 12+), Vinyl, Minimal and AMOLED Black. Switching is instant.
   Import, export and delete `.mskin` files. The format is documented in [`docs/skins/FORMAT.md`](docs/skins/FORMAT.md).
 - **Playlists:** create, rename, delete, drag to reorder, swipe to remove with Undo, smart playlists (Recently
@@ -103,6 +103,7 @@ Dependencies are wired by hand through `AppContainer` (no DI framework); tests s
 |---|---|
 | [`docs/FEATURES.md`](docs/FEATURES.md) | Every feature, how it behaves, and how far it has been verified; performance results; known limitations |
 | [`docs/skins/FORMAT.md`](docs/skins/FORMAT.md) | The `.mskin` skin format, with an [example skin](docs/skins/example/README.md) |
+| [`docs/design/skin-design-brief.md`](docs/design/skin-design-brief.md) | A UI reference for designing a custom skin: screens, colour roles, sizes, limits, reference screenshots |
 | [`docs/manual-test-checklist.md`](docs/manual-test-checklist.md) | What automated tests cannot reach, with the results of each run on a phone |
 | [`docs/superpowers/specs/`](docs/superpowers/specs/2026-10-02-music-player-design.md) | The design spec: intent, architecture, targets |
 | [`docs/superpowers/plans/`](docs/superpowers/plans/2026-10-02-music-player.md) | The implementation plan the app was built from |

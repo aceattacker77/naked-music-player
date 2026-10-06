@@ -58,7 +58,7 @@ decisions taken while building, and every bug found on a device, are in
 | Mini player | Sits above the bottom bar; play/pause and next; tap or swipe up to expand. | Device |
 | Now Playing | Artwork, title and artist (scrolls if long), seek bar, previous/play/next, shuffle, equalizer shortcut, add to playlist, repeat, queue. | Device |
 | Expand and collapse | Shared-element transition of the artwork; the collapse button and the system Back both collapse it. | Device (button, Back), Tests (transition); swipe down and the drag-back animation **not verified** |
-| Layouts | Three arrangements chosen by the skin: Classic, Compact and Cassette; artwork on top or on the side. Landscape puts the artwork on the left. | Device (Classic, landscape), Tests |
+| Layouts | Five arrangements chosen by the skin: Classic, Compact, Minimal, Vinyl and Cassette; artwork on top, centre or side where the layout allows. Landscape puts the artwork on the left. | Device (Classic, Vinyl, landscape), Tests |
 | Seek bar styles | Wavy, flat or thin, by skin. | Device (wavy), Tests |
 | Edge-to-edge | Content stays clear of the status bar, camera cutout and navigation bar; screens draw behind the bars where intended (for example the Now Playing gradient). | Device (portrait, 3-button navigation); gesture navigation **not verified** |
 
