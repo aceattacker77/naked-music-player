@@ -259,7 +259,9 @@ the top, below the status bar.
 | `artShape` | `square` · `rounded` (+ `radiusDp`, default 28) · `circle` | `circle` is meant for `artSpin` |
 | `artSpin` | `true` / `false` | Rotates the artwork while playing; suits a circular shape |
 | `shadow` | `true` / `false` | Drop shadow under the artwork |
-| `seekBar` | `wavy` · `flat` · `thin` | See the table below |
+| `seekBar` | `wavy` · `flat` · `thin` · `segmented` | See the table below; `segmented` is a row of bordered cells, `seekSegments` (12–60, default 40) sets how many, `seekColor` (`primary` or `tertiary`) their fill |
+| `artPlaceholder` | `note` · `hexagon` | What tiles show without artwork; `hexagon` draws three nested hexagons and the note, with "No artwork" and a `TRK 0002` track code on the Now Playing artwork |
+| `artBorder` | `true` / `false` | A 1 dp `outline` border on artwork and tiles (`primary` on the playing row's tile) |
 | `controls` | `filled` · `outlined` · `iconOnly` · `mixed` | Style of previous, play/pause and next; `mixed` makes play solid and previous/next outlined |
 | `controlShape` | `circle` · `theme` | `theme` gives the control buttons the theme's large shape (chamfered in a chamfer skin) |
 | `controlSize` | `small` · `medium` · `large` | See the table below |
@@ -271,6 +273,12 @@ the top, below the status bar.
 | `wavy` | 4 dp stroke, 4 dp amplitude, 28 dp wavelength | 7 dp radius | 32 dp |
 | `flat` | 4 dp | 7 dp radius | 24 dp |
 | `thin` | 2 dp | 4 dp | 16 dp |
+| `segmented` | 16 dp cells, 3 dp gaps, 1 dp `outline` cell border, no thumb | n/a | 32 dp |
+
+The `components` object switches on ornament, each field optional and `false`/`material` by default: `brackets` (corner
+brackets on the Now Playing artwork and a bracketed, inset mini player), `segmentedMeters` (a `POSITION` / percentage
+header above a segmented seek bar), `navStyle: "block"` (a bottom bar whose selected tab is a chamfered block; compact
+widths only) and `rowEdge` (a 2 dp bar on the playing row, a `primary` tile border and label-font durations).
 
 | Control size | Play button | Previous / next | Play icon | Side icons |
 |---|---|---|---|---|
@@ -333,6 +341,10 @@ fields, which are required). Colour roles shown are a subset; the roles accepted
     "artShape": { "type": "rounded", "radiusDp": 28 },
     "artSpin": false,
     "seekBar": "wavy",
+    "seekSegments": 40,
+    "seekColor": "primary",
+    "artPlaceholder": "note",
+    "artBorder": false,
     "controls": "filled",
     "controlShape": "circle",
     "controlSize": "medium",
@@ -340,7 +352,8 @@ fields, which are required). Colour roles shown are a subset; the roles accepted
     "shadow": false,
     "useArtColors": true
   },
-  "layout": { "type": "classic", "slots": { "artPosition": "top" } }
+  "layout": { "type": "classic", "slots": { "artPosition": "top" } },
+  "components": { "brackets": false, "segmentedMeters": false, "navStyle": "material", "rowEdge": false }
 }
 ```
 

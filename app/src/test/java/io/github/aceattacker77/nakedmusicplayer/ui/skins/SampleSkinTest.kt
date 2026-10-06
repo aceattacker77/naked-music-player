@@ -18,6 +18,14 @@ class SampleSkinTest {
         assertThat(valid.skin.id).isEqualTo("com.nakedmusic.geofront")
         assertThat(valid.skin.cornerStyle).isEqualTo(CornerStyle.CHAMFER)
         assertThat(valid.skin.player.controls).isEqualTo(ControlsStyle.MIXED)
+        assertThat(valid.skin.player.artPlaceholder).isEqualTo(ArtPlaceholder.HEXAGON)
+        assertThat(valid.skin.player.artBorder).isTrue()
+        assertThat(valid.skin.player.seekBar).isEqualTo(SeekBarStyle.SEGMENTED)
+        assertThat(valid.skin.player.seekColor).isEqualTo(SeekColor.TERTIARY)
+        assertThat(valid.skin.brackets).isTrue()
+        assertThat(valid.skin.segmentedMeters).isTrue()
+        assertThat(valid.skin.rowEdge).isTrue()
+        assertThat(valid.skin.navStyle).isEqualTo(NavStyle.BLOCK)
         assertThat(valid.entries.keys).containsExactly(
             "skin.json",
             "fonts/ArchivoNarrow-Regular.ttf",

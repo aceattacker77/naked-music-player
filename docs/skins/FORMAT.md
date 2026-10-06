@@ -92,7 +92,11 @@ Each role font is a separate file in the archive, validated like `fontFamily`. A
 | `background` | object | `{"type": "blurredArt"}` · `{"type": "artGradient"}` · `{"type": "solid"}` · `{"type": "image", "path": "images/bg.webp"}` | `artGradient` |
 | `artShape` | object | `{"type": "square"}` · `{"type": "circle"}` · `{"type": "rounded", "radiusDp": 28}` (`radiusDp` default 28) | rounded 28 |
 | `artSpin` | boolean | rotate the artwork while playing (suits `circle`) | `false` |
-| `seekBar` | string | `wavy` · `flat` · `thin` | `wavy` |
+| `seekBar` | string | `wavy` · `flat` · `thin` · `segmented` (a row of bordered cells) | `wavy` |
+| `seekSegments` | integer 12–60 | number of cells in the `segmented` seek bar | `40` |
+| `seekColor` | string | `primary` · `tertiary`: colour of the filled cells | `primary` |
+| `artPlaceholder` | string | `note` · `hexagon`: what tiles show when there is no artwork (three nested hexagons and the note) | `note` |
+| `artBorder` | boolean | a 1 dp `outline` border around artwork and tiles (`primary` on the playing row's tile) | `false` |
 | `controls` | string | `filled` · `outlined` · `iconOnly` · `mixed` (play filled, previous and next outlined) | `filled` |
 | `controlShape` | string | `circle` · `theme` (control buttons use the theme's large shape, so a chamfer skin gets chamfered buttons) | `circle` |
 | `controlSize` | string | `small` · `medium` · `large` | `medium` |
@@ -108,6 +112,15 @@ Each role font is a separate file in the archive, validated like `fontFamily`. A
 | `slots.artPosition` | string | `top` · `left` · `center` (where it makes sense for the layout) | `top` |
 
 On landscape and large screens the artwork is always placed on the left.
+
+### `components`
+
+| Field | Type | Values | Default |
+|---|---|---|---|
+| `brackets` | boolean | corner brackets (top-left and bottom-right) on the Now Playing artwork; the mini player becomes a bracketed panel inset 12 dp from the screen edges | `false` |
+| `segmentedMeters` | boolean | a `POSITION` label and the percentage (`31.3 %`) above a `segmented` seek bar | `false` |
+| `navStyle` | string | `material` · `block`: `block` replaces the compact bottom bar with one whose selected tab is a block in the theme's medium shape (a chamfer in a chamfer skin). Tablets keep Material's rail | `material` |
+| `rowEdge` | boolean | the playing row in lists gets a 2 dp `primary` bar on its leading edge and a `primary` tile border, and durations use the label font | `false` |
 
 ## Import limits and error messages
 
@@ -125,7 +138,7 @@ An import either succeeds completely or changes nothing and shows exactly one of
 | `name` missing | `missing field 'name'` |
 | Bad colour | `invalid colour '<role>': '<value>'` |
 | Unknown enum value | `invalid value '<value>' for '<field>'` (e.g. `'player.seekBar'`, `'shapes.cornerStyle'`) |
-| Number out of range | `invalid value '<value>' for '<field>'` (e.g. `'shapes.chamferDp'`, `'typography.headingScaleX'`, `'typography.labelLetterSpacingEm'`) |
+| Number out of range | `invalid value '<value>' for '<field>'` (e.g. `'player.seekSegments'`, `'shapes.chamferDp'`, `'typography.headingScaleX'`, `'typography.labelLetterSpacingEm'`) |
 | Image background without a path | `missing field 'player.background.path'` |
 | Referenced file has another extension than png, webp, ttf, otf | `unsupported file type '<path>'` |
 | Referenced file not in the archive | `missing file '<path>'` |

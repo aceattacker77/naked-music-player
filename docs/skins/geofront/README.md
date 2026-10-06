@@ -14,10 +14,11 @@ field the skin format offers for shape and type, so it doubles as a worked examp
 | Shape | `cornerStyle` `chamfer`, `chamferDp` 10 (top-right and bottom-left corners cut) |
 | Fonts | headings Shippori Mincho B1 ExtraBold, body Archivo Narrow Regular, labels IBM Plex Mono Regular |
 | Type treatment | `headingScaleX` 0.8, `labelCaps` true, `labelLetterSpacingEm` 0.14 |
-| Now Playing | solid background, square artwork, flat seek bar, `mixed` controls (play solid, previous and next outlined), `controlShape` `theme` |
+| Now Playing | solid background, square artwork with a border and a hexagon "No artwork" placeholder, segmented seek bar (40 green cells, with a `POSITION` header), `mixed` controls (play solid, previous and next outlined), `controlShape` `theme` |
+| Chrome | `brackets` (bracketed mini player and artwork), `navStyle` `block` (chamfered selected tab), `rowEdge` (playing-row bar) |
 | Layout | `classic`, artwork on top |
 
-The `id` is `com.nakedmusic.geofront`, the version is 1.2 and the author is Ace Attacker. See
+The `id` is `com.nakedmusic.geofront`, the version is 1.3 and the author is Ace Attacker. See
 [`../FORMAT.md`](../FORMAT.md) for every field.
 
 ## Fonts and licences
