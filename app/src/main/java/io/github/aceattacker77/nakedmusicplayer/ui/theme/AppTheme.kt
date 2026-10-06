@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import io.github.aceattacker77.nakedmusicplayer.data.settings.AppSettings
 import io.github.aceattacker77.nakedmusicplayer.data.settings.ThemeMode
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ColorMode
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.CornerStyle
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.Skin
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.SkinAssets
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.SkinFonts
@@ -64,7 +65,7 @@ fun AppTheme(skin: Skin, settings: AppSettings, content: @Composable () -> Unit)
         skin.id, skin.baseDir, skin.fontPath, skin.headingFontPath, skin.bodyFontPath, skin.labelFontPath,
     ) { SkinAssets.fonts(skin) }
     val typography = remember(fonts) { Typography().withFontFamilies(fonts) }
-    val shapes = remember(skin.cornerRadiusDp) { shapesFor(skin.cornerRadiusDp) }
+    val shapes = remember(skin.cornerStyle, skin.chamferDp, skin.cornerRadiusDp) { shapesFor(skin) }
 
     CompositionLocalProvider(LocalSkin provides skin) {
         MaterialTheme(colorScheme = colors, typography = typography, shapes = shapes, content = content)
@@ -78,8 +79,12 @@ internal fun loadSkinFontFamily(dir: File, path: String): FontFamily? {
     return runCatching { FontFamily(Font(file)) }.getOrNull()
 }
 
-private fun shapesFor(cornerRadiusDp: Int): Shapes {
-    fun shape(factor: Float) = RoundedCornerShape((cornerRadiusDp * factor).dp)
+internal fun shapesFor(skin: Skin): Shapes {
+    if (skin.cornerStyle == CornerStyle.CHAMFER) {
+        val (xs, sm, md, lg, xl) = chamferCutsDp(skin.chamferDp).map(::ChamferShape)
+        return Shapes(extraSmall = xs, small = sm, medium = md, large = lg, extraLarge = xl)
+    }
+    fun shape(factor: Float) = RoundedCornerShape((skin.cornerRadiusDp * factor).dp)
     return Shapes(
         extraSmall = shape(0.25f),
         small = shape(0.5f),
