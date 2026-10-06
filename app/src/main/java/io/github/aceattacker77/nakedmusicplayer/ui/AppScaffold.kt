@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoTab
+import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoNavigationBar
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +44,14 @@ private val tabs = listOf(
     Tab(Playlists, Playlists::class, R.string.library_playlists, R.drawable.ic_playlist_play),
 )
 
+private fun navigateToTab(nav: NavHostController, tab: Tab) {
+    nav.navigate(tab.route) {
+        popUpTo(nav.graph.findStartDestination().id) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
 /**
  * Bottom bar on phones, rail on tablets/foldables. Tabs and the app bar only appear on the four
  * top-level destinations; [miniPlayer] sits directly above the bar.
@@ -62,25 +73,22 @@ fun AppScaffold(
     } else {
         NavigationSuiteType.None
     }
+    // The chamfered-block bar replaces Material's bottom bar on compact widths only; rails stay Material.
+    val useGeoBar = layoutType == NavigationSuiteType.NavigationBar && LocalOrnament.current.navBlock
+    val geoTabs = tabs.map { GeoTab(it.icon, stringResource(it.label), "geo-tab-${it.routeClass.simpleName}") }
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             tabs.forEach { tab ->
                 item(
                     selected = destination?.hasRoute(tab.routeClass) == true,
-                    onClick = {
-                        nav.navigate(tab.route) {
-                            popUpTo(nav.graph.findStartDestination().id) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
+                    onClick = { navigateToTab(nav, tab) },
                     icon = { Icon(painterResource(tab.icon), contentDescription = null) },
                     label = { Text(skinLabel(stringResource(tab.label))) },
                 )
             }
         },
-        layoutType = layoutType,
+        layoutType = if (useGeoBar) NavigationSuiteType.None else layoutType,
     ) {
         Scaffold(
             topBar = { if (topLevel) LibraryTopBar(onSearch = onSearch, onSettings = onSettings) },
@@ -88,6 +96,13 @@ fun AppScaffold(
             Column(Modifier.fillMaxSize().padding(padding)) {
                 Box(Modifier.weight(1f)) { content() }
                 miniPlayer()
+                if (useGeoBar) {
+                    GeoNavigationBar(
+                        tabs = geoTabs,
+                        selectedIndex = tabs.indexOfFirst { destination?.hasRoute(it.routeClass) == true },
+                        onSelect = { navigateToTab(nav, tabs[it]) },
+                    )
+                }
             }
         }
     }
