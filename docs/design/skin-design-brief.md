@@ -152,6 +152,11 @@ The built-in Default skin uses `system`. A custom skin with a fixed palette shou
   mode. Roles you list always win.
 - If you do not set `primary`, unlisted roles come from the Default skin.
 - Colours are `"#RRGGBB"` or `"#AARRGGBB"`.
+- **Roles a skin cannot set:** the container family (`surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainer`,
+  `surfaceContainerHigh`, `surfaceContainerHighest`), `surfaceDim`, `surfaceBright` and `surfaceTint` are **always generated
+  from `primary`**, whatever else the skin lists. The mini player, the bottom bar, the queue sheet, cards and menus use them,
+  so a strongly coloured `primary` (for example orange) tints those surfaces towards that hue even when `surface` and
+  `background` are neutral. Pick `primary` knowing this; a skin that needs neutral containers cannot get them in format 1.
 - Because generation is automatic, a skin can be as small as one accent per mode. A designer who wants control should
   list at least `primary`, `onPrimary`, `background`, `onBackground`, `surface`, `onSurface`, `surfaceVariant`,
   `onSurfaceVariant` and `outline`, and check the rest visually.
@@ -166,7 +171,7 @@ than by this app's own code, but they appear on screen all the same.
 | `background` / `onBackground` | Screen background; Now Playing text and icons; the end of the Now Playing gradient and the solid background |
 | `surface` / `onSurface` | Top bars, dialogs, sheets (default); primary text in lists; playlist and layout surfaces |
 | `surfaceVariant` / `onSurfaceVariant` | Secondary text (artist, album, duration), secondary icons, seek bar track, artwork placeholder tile |
-| `surfaceContainerLow` / `surfaceContainerHigh` | Queue sheet / mini player; bottom bar and cards use the container family *(default)* |
+| `surfaceContainerLow` / `surfaceContainerHigh` | Queue sheet / mini player; bottom bar and cards use the container family *(default)*. **Not settable by a skin**: generated from `primary` (§4.2) |
 | `primary` / `onPrimary` | Playing-song title, fast-scroller letters, play button fill, seek bar progress, "on" states of shuffle and repeat, buttons, switches, filled chips *(default)*, section headers, the glow, the gradient start |
 | `primaryContainer` / `onPrimaryContainer` | Tonal buttons and selected controls *(default)* |
 | `secondaryContainer` / `onSecondaryContainer` | Artist avatars; the selected-tab pill in the bottom bar *(default)* |
@@ -294,7 +299,7 @@ layouts are in [`reference/`](reference/): `layout_classic.png`, `layout_compact
 ## 9. The skin file: every field
 
 A complete `skin.json` with **every field set to its default** (anything you omit takes this value, except the identity
-fields, which are required). Colour roles shown are a subset; all roles in §4.3 are accepted.
+fields, which are required). Colour roles shown are a subset; the roles accepted are the 28 listed in `FORMAT.md` (the container family in §4.3 is not among them).
 
 ```json
 {

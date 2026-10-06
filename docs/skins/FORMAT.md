@@ -55,6 +55,10 @@ A colour is `"#RRGGBB"` or `"#AARRGGBB"`. Roles you can set: `primary`, `onPrima
 `surfaceVariant`, `onSurfaceVariant`, `outline`, `outlineVariant`, `error`, `onError`, `errorContainer`,
 `onErrorContainer`, `inverseSurface`, `inverseOnSurface`, `inversePrimary`, `scrim`.
 
+Not settable (always generated from `primary`): `surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainer`,
+`surfaceContainerHigh`, `surfaceContainerHighest`, `surfaceDim`, `surfaceBright`, `surfaceTint`. They colour the mini
+player, bottom bar, queue sheet, cards and menus, so a vivid `primary` tints those surfaces.
+
 If you set `primary`, every role you do **not** list is generated from it (Material colour generation); roles you
 list always win. If you do not set `primary`, unlisted roles come from the Default skin.
 
