@@ -458,6 +458,28 @@ of the result, and each one maps to the skin fields named beside it.
 8. **Extras** (`player.glow`, `controls`, `controlSize`): glow behind the play button; control style and size.
 9. **Identity** (`id`, `name`, `author`): the display name, a unique `id` (see §8) and the author line.
 
+Skins can also change how the app's own chrome looks, not only its colours. These choices are optional; a skin that
+makes none of them looks like a plain recolour. Decide them after the first nine, because they depend on the mood.
+
+10. **Type roles** (`typography`): whether headings, body and labels share one font or get their own. If headings
+    should look squeezed or labels should be tracked capitals, set `headingScaleX`, `labelCaps` and
+    `labelLetterSpacingEm`. Bundle only fonts whose licence allows it, and subset a heading font to the kana and kanji
+    your strings use (§5).
+11. **Corner language, beyond radius** (`shapes.cornerStyle`, `chamferDp`): round or chamfered corners, and how large the
+    cut is. A chamfered skin also changes buttons, tiles, artwork and menus, so check them all.
+12. **Ornament** (`components`): corner brackets, segmented meters, a bottom bar style (`navStyle`), a marked playing row
+    (`rowEdge`), status tags, title cards, panel headers, a square switch, and a glow (`glow`: off, always or dark).
+    Pick the few that carry the mood; each one adds visual weight on every screen.
+13. **Player details** (`player.artPlaceholder`, `artBorder`, `seekBar`, `seekSegments`, `seekColor`, `controls`,
+    `controlShape`): what an album without artwork shows, whether artwork gets a border, a segmented seek bar and how
+    many cells, and a mixed control style (a solid play button with outlined previous and next).
+14. **Text accents** (`strings`): whether fixed words such as kickers, tag words and button accents get a second line
+    of text, written `"English|Kana"` or any second script. The English half is always the accessible name, so it must
+    stand on its own. At most 20 entries, 64 characters each.
+15. **The home-screen widget**: it follows the skin's colours, corner radius and the ornament fields above, but never
+    chamfers and always uses the system font. Decide whether you want brackets, a hexagon tile and a segmented bar there
+    too, and whether a square widget (`cornerRadiusDp` 0) suits the skin.
+
 ## 13. Worked example: revising an existing skin (Geofront)
 
 Use this pattern when the job is to **revise a skin that already exists** rather than start from §12. The decisions in
