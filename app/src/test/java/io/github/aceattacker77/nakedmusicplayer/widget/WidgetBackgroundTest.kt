@@ -38,4 +38,13 @@ class WidgetBackgroundTest {
         val colour = widgetBackground(widgetColorProviders(skin)).getColor(context(night = true))
         assertThat(colour.toArgb()).isEqualTo(Color(0xFF0B0B0E).toArgb())
     }
+
+    @Test fun dynamicColours_keepGlancesOwnWallpaperTintedBackground() {
+        val providers = widgetColorProviders(skin)
+        val ctx = context(night = false)
+        assertThat(widgetBackground(providers, dynamic = true).getColor(ctx))
+            .isEqualTo(providers.widgetBackground.getColor(ctx))
+        assertThat(widgetBackground(providers, dynamic = false).getColor(ctx))
+            .isEqualTo(providers.surface.getColor(ctx))
+    }
 }

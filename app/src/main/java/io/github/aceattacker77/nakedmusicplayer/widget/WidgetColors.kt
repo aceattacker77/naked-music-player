@@ -17,7 +17,9 @@ fun widgetColorProviders(skin: Skin): ColorProviders = ColorProviders(
 )
 
 /**
- * The widget's background: the skin's `surface`. Glance's own `widgetBackground` role is a fixed system colour that ignores the skin, so a
- * skin's widget would show a pale tint that is in none of its schemes.
+ * The widget's background. For a skin's own colours it is the skin's `surface`: Glance's `widgetBackground` role is a fixed system colour
+ * that ignores the skin, so a skin's widget would show a tint from none of its schemes. With dynamic (wallpaper) colours Glance's own role
+ * is the wallpaper-tinted container the widget has always used, so it stays.
  */
-fun widgetBackground(colors: ColorProviders): ColorProvider = colors.surface
+fun widgetBackground(colors: ColorProviders, dynamic: Boolean = false): ColorProvider =
+    if (dynamic) colors.widgetBackground else colors.surface

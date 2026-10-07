@@ -94,7 +94,7 @@ class PlayerWidget : GlanceAppWidget() {
                 value = albumId?.let { loadArtwork(context, it) }
             }
             if (dynamic) {
-                GlanceTheme { StatefulPlayerWidgetContent(art, skin.cornerRadiusDp.dp, widgetStyleOf(skin)) }
+                GlanceTheme { StatefulPlayerWidgetContent(art, skin.cornerRadiusDp.dp, widgetStyleOf(skin), dynamicColors = true) }
             } else {
                 GlanceTheme(colors = widgetColorProviders(skin)) { StatefulPlayerWidgetContent(art, skin.cornerRadiusDp.dp, widgetStyleOf(skin)) }
             }
@@ -104,8 +104,13 @@ class PlayerWidget : GlanceAppWidget() {
 
 /** The widget body for the widget's current saved state (re-read on every recomposition). */
 @Composable
-internal fun StatefulPlayerWidgetContent(art: Bitmap?, cornerRadius: Dp = 16.dp, style: WidgetStyle = WidgetStyle.PLAIN) {
-    PlayerWidgetContent(WidgetState.readFrom(currentState<Preferences>()), art, cornerRadius, style)
+internal fun StatefulPlayerWidgetContent(
+    art: Bitmap?,
+    cornerRadius: Dp = 16.dp,
+    style: WidgetStyle = WidgetStyle.PLAIN,
+    dynamicColors: Boolean = false,
+) {
+    PlayerWidgetContent(WidgetState.readFrom(currentState<Preferences>()), art, cornerRadius, style, dynamicColors)
 }
 
 /** Small thumbnail of an album's art, or null when it has none. */
@@ -122,7 +127,13 @@ private suspend fun loadArtwork(context: Context, albumId: Long): Bitmap? = with
 }
 
 @Composable
-fun PlayerWidgetContent(state: WidgetState, art: Bitmap?, cornerRadius: Dp = 16.dp, style: WidgetStyle = WidgetStyle.PLAIN) {
+fun PlayerWidgetContent(
+    state: WidgetState,
+    art: Bitmap?,
+    cornerRadius: Dp = 16.dp,
+    style: WidgetStyle = WidgetStyle.PLAIN,
+    dynamicColors: Boolean = false,
+) {
     val context = LocalContext.current
     val colors = GlanceTheme.colors
     val open = actionStartActivity(Intent(context, MainActivity::class.java))
@@ -132,7 +143,7 @@ fun PlayerWidgetContent(state: WidgetState, art: Bitmap?, cornerRadius: Dp = 16.
             modifier = GlanceModifier
                 .fillMaxSize()
                 .appWidgetBackground()
-                .background(widgetBackground(colors))
+                .background(widgetBackground(colors, dynamicColors))
                 .cornerRadius(cornerRadius)
                 .padding(8.dp)
                 .clickable(open),
@@ -152,12 +163,13 @@ fun PlayerWidgetContent(state: WidgetState, art: Bitmap?, cornerRadius: Dp = 16.
             .padding(1.dp)
             .semantics { testTag = "widget-frame" },
     ) {
-        Box(modifier = GlanceModifier.fillMaxSize().background(widgetBackground(colors)).cornerRadius(cornerRadius)) {
+        Box(modifier = GlanceModifier.fillMaxSize().background(widgetBackground(colors, dynamicColors)).cornerRadius(cornerRadius)) {
             Column(
                 modifier = GlanceModifier.fillMaxSize().padding(8.dp).clickable(open),
                 verticalAlignment = Alignment.CenterVertically,
             ) { WidgetBody(state, art, style, inset = 18.dp) }
-            Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
+            val inset = bracketInset(cornerRadius)
+            Box(modifier = GlanceModifier.fillMaxSize().padding(inset), contentAlignment = Alignment.TopStart) {
                 Image(
                     provider = ImageProvider(R.drawable.widget_bracket_tl),
                     contentDescription = null,
@@ -165,7 +177,7 @@ fun PlayerWidgetContent(state: WidgetState, art: Bitmap?, cornerRadius: Dp = 16.
                     colorFilter = ColorFilter.tint(colors.primary),
                 )
             }
-            Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+            Box(modifier = GlanceModifier.fillMaxSize().padding(inset), contentAlignment = Alignment.BottomEnd) {
                 Image(
                     provider = ImageProvider(R.drawable.widget_bracket_br),
                     contentDescription = null,

@@ -129,4 +129,12 @@ class PlayerWidgetContentTest {
         provideComposable { GlanceTheme { PlayerWidgetContent(playing, art = null, style = ornate) } }
         listOf("Previous", "Pause", "Next", "Shuffle: on", "Repeat: one").forEach { onNode(hasContentDescription(it)).assertExists() }
     }
+
+    @Test fun ornateStyle_withRoundedCorners_stillDrawsTheBrackets() = runGlanceAppWidgetUnitTest {
+        setContext(ApplicationProvider.getApplicationContext())
+        setAppWidgetSize(small)
+        provideComposable { GlanceTheme { PlayerWidgetContent(playing, art = null, cornerRadius = 28.dp, style = ornate) } }
+        onNode(hasTestTag("widget-bracket-tl")).assertExists()
+        onNode(hasTestTag("widget-bracket-br")).assertExists()
+    }
 }
