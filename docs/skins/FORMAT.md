@@ -148,7 +148,7 @@ A map from a slot name to `"English"` or `"English|Kana"` (the first `|` splits 
 | `library_kicker`, `albums_kicker`, `artists_kicker`, `playlists_kicker`, `eq_kicker`, `skins_kicker` | the kicker above each screen title |
 | `sort_kana`, `import_kana`, `save_kana` | the accent on the sort, import and save-preset buttons: the kana half of `"English\|Kana"`, or the whole value when it has no `\|`, so `"順"` and `"Sort\|順"` both show `順` (`queue_kana` is reserved) |
 
-Kana glyphs use the system font until a font that includes them is bundled.
+The app draws kana and kanji from the `strings` pack in the skin's heading font. Glyphs that font lacks fall back to the system font, so a skin that wants them in its own typeface should bundle a heading font subset that includes them.
 
 ## Import limits and error messages
 

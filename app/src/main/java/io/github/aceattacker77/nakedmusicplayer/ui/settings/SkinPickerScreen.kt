@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.settings
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalKanaFont
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.withKanaFont
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinAccent
 import androidx.compose.foundation.layout.padding
@@ -226,7 +228,7 @@ internal fun ImportSkinButton(onClick: () -> Unit, accent: Boolean) {
             Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(6.dp))
             Text(skinLabel(label), modifier = Modifier.originalLabel(label))
-            if (kana != null) Text(" $kana", modifier = Modifier.clearAndSetSemantics {})
+            if (kana != null) Text(withKanaFont(" $kana", LocalKanaFont.current), modifier = Modifier.clearAndSetSemantics {})
         }
     } else {
         TextButton(onClick = onClick) { Text(label) }

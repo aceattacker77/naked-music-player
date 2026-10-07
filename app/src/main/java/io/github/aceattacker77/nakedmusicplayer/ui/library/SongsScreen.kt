@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.library
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalKanaFont
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.withKanaFont
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinAccent
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
@@ -151,7 +153,7 @@ internal fun SortBar(sort: SongSort, onSort: (SongSort) -> Unit, trackCount: Int
                 ) {
                     Text(skinLabel(sortLabel), style = MaterialTheme.typography.labelLarge)
                     if (kana != null) {
-                        Text(" $kana", style = MaterialTheme.typography.labelLarge, modifier = Modifier.clearAndSetSemantics {})
+                        Text(withKanaFont(" $kana", LocalKanaFont.current), style = MaterialTheme.typography.labelLarge, modifier = Modifier.clearAndSetSemantics {})
                     }
                 }
             } else {

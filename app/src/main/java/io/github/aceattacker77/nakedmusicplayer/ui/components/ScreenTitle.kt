@@ -19,7 +19,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.SkinString
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalKanaFont
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.withKanaFont
 
 /** `Library // 曲目`, or just the English word when the skin gives no kana. */
 internal fun kickerText(kicker: SkinString): String =
@@ -33,7 +35,7 @@ internal fun kickerText(kicker: SkinString): String =
 fun ScreenTitle(kicker: SkinString, title: String, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
         Text(
-            text = skinLabel(kickerText(kicker)),
+            text = withKanaFont(skinLabel(kickerText(kicker)), LocalKanaFont.current),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
             maxLines = 1,
