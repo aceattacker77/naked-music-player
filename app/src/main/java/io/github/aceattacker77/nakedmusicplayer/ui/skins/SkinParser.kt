@@ -184,7 +184,7 @@ object SkinParser {
     private fun parseStrings(raw: Map<String, String>): Map<String, SkinString> {
         if (raw.size > MAX_STRINGS) throw SkinError("strings has more than $MAX_STRINGS entries")
         return raw.filterKeys { it in SKIN_STRING_KEYS }.mapValues { (key, value) ->
-            if (value.length > MAX_STRING_LENGTH) {
+            if (value.codePointCount(0, value.length) > MAX_STRING_LENGTH) {
                 throw SkinError("invalid value for 'strings.$key': longer than $MAX_STRING_LENGTH characters")
             }
             val bar = value.indexOf('|')

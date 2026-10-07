@@ -380,6 +380,14 @@ class SkinParserTest {
         assertThat(error(strings(*twentyOne))).isEqualTo("strings has more than 20 entries")
     }
 
+    @Test fun strings_lengthCountsCharactersNotUtf16Units() {
+        // 64 supplementary characters are 128 UTF-16 units but 64 characters.
+        val note = String(Character.toChars(0x1F3B5))
+        ok(strings("library_kicker" to note.repeat(64)))
+        assertThat(error(strings("library_kicker" to note.repeat(65))))
+            .isEqualTo("invalid value for 'strings.library_kicker': longer than 64 characters")
+    }
+
     @Test fun strings_valueLengthBoundary() {
         ok(strings("library_kicker" to "x".repeat(64)))
         assertThat(error(strings("library_kicker" to "x".repeat(65))))
