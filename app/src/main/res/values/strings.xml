@@ -182,6 +182,7 @@
     </string-array>
 
     <!-- Widget -->
+    <string name="widget_progress">Progress: %1$d%%</string>
     <string name="widget_description">Control playback from your home screen</string>
 
     <!-- Permissions -->

@@ -16,6 +16,7 @@ field the skin format offers for shape and type, so it doubles as a worked examp
 | Type treatment | `headingScaleX` 0.8, `labelCaps` true, `labelLetterSpacingEm` 0.14 |
 | Now Playing | solid background, square artwork with a border and a hexagon "No artwork" placeholder, segmented seek bar (40 green cells, with a `POSITION` header), `mixed` controls (play solid, previous and next outlined), `controlShape` `theme` |
 | Chrome | `brackets` (bracketed mini player and artwork), `navStyle` `block` (chamfered selected tab), `rowEdge` (playing-row bar), `glow` `dark` (a soft glow on the live panels in dark mode) |
+| Widget | the home-screen widget gets the frame and corner brackets, the hexagon tile, the tile border and a segmented progress bar from the same fields; it stays rectangular and in the system font |
 | Accents | `statusTags`, `titleCards`, `panelHeader` and `squareSwitch` on, with a strings pack giving the kicker and tag words their kana (for example `Playing\|再生`, `Library\|曲目`, `Audio\|音響`) |
 | Layout | `classic`, artwork on top |
 
