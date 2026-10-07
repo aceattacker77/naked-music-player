@@ -26,6 +26,17 @@ class SampleSkinTest {
         assertThat(valid.skin.segmentedMeters).isTrue()
         assertThat(valid.skin.rowEdge).isTrue()
         assertThat(valid.skin.navStyle).isEqualTo(NavStyle.BLOCK)
+        assertThat(valid.skin.statusTags).isTrue()
+        assertThat(valid.skin.titleCards).isTrue()
+        assertThat(valid.skin.panelHeader).isTrue()
+        assertThat(valid.skin.squareSwitch).isTrue()
+        assertThat(valid.skin.glow).isEqualTo(GlowMode.DARK)
+        assertThat(valid.skin.strings["now_playing_status"]).isEqualTo(SkinString("Playing", "再生"))
+        assertThat(valid.skin.strings["unplayable_tag"]).isEqualTo(SkinString("Unplayable", "否決"))
+        assertThat(valid.skin.strings["eq_enabled_tag"]).isEqualTo(SkinString("Enabled", "稼働"))
+        assertThat(valid.skin.strings["skin_active_tag"]).isEqualTo(SkinString("Active", "適用"))
+        assertThat(valid.skin.strings["library_kicker"]).isEqualTo(SkinString("Library", "曲目"))
+        assertThat(valid.skin.strings["eq_kicker"]).isEqualTo(SkinString("Audio", "音響"))
         assertThat(valid.entries.keys).containsExactly(
             "skin.json",
             "fonts/ArchivoNarrow-Regular.ttf",

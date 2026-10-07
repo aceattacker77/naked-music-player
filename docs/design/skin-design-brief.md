@@ -281,6 +281,14 @@ brackets on the Now Playing artwork and a bracketed, inset mini player), `segmen
 header above a segmented seek bar), `navStyle: "block"` (a bottom bar whose selected tab is a chamfered block; compact
 widths only) and `rowEdge` (a 2 dp bar on the playing row, a `primary` tile border and label-font durations).
 
+Five more switches add text accents and screens: `statusTags` (a lamp, the status word in tracked caps and optional kana, in place
+of the red "can't play" icon, plus Playing/Paused, Enabled and Active tags), `titleCards` (a kicker, a large squeezed heading and a
+rule on the four tabs, Equalizer and Skins screens), `panelHeader` (a title-and-code strip on panels such as the Equalizer's Bands),
+`squareSwitch` (a square Equalizer switch) and `glow` (`off`, `always` or `dark`: a tinted glow on live panels, API 28 and later).
+`segmentedMeters` also gives the Equalizer segmented columns and a preamp readout. A `strings` map supplies `"English|Kana"` text
+for fixed slots (kickers, tag words and button accents; see `FORMAT.md`); the English half is the accessible name and the kana is
+decoration. Plan for the kana to fall back to the system font until the heading font is re-subset.
+
 | Control size | Play button | Previous / next | Play icon | Side icons |
 |---|---|---|---|---|
 | `small` | 44 dp | 40 dp | 24 dp | 22 dp |
@@ -354,7 +362,11 @@ fields, which are required). Colour roles shown are a subset; the roles accepted
     "useArtColors": true
   },
   "layout": { "type": "classic", "slots": { "artPosition": "top" } },
-  "components": { "brackets": false, "segmentedMeters": false, "navStyle": "material", "rowEdge": false }
+  "components": {
+    "brackets": false, "segmentedMeters": false, "navStyle": "material", "rowEdge": false,
+    "statusTags": false, "titleCards": false, "panelHeader": false, "squareSwitch": false, "glow": "off"
+  },
+  "strings": { "library_kicker": "Library|曲目" }
 }
 ```
 

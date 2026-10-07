@@ -40,7 +40,8 @@ Unknown fields are ignored, which keeps skins forward-compatible.
 | `shapes` | object | no | See below. |
 | `player` | object | no | Now Playing look. |
 | `layout` | object | no | Now Playing arrangement. |
-| `components` | object | no | Optional ornament switches (brackets, segmented meters, bottom bar style, playing-row edge). See below. |
+| `components` | object | no | Optional ornament switches (brackets, segmented meters, bottom bar style, playing-row edge, status tags, title cards, panel header, square switch, glow). See below. |
+| `strings` | object | no | Short `"English\|Kana"` strings for a fixed set of slots. See below. |
 
 ### `colors`
 
@@ -122,6 +123,28 @@ On landscape and large screens the artwork is always placed on the left.
 | `segmentedMeters` | boolean | a `POSITION` label and the percentage (`31.3 %`) above a `segmented` seek bar | `false` |
 | `navStyle` | string | `material` · `block`: `block` replaces the compact bottom bar with one whose selected tab is a block in the theme's medium shape (a chamfer in a chamfer skin). Windows wider than a phone held upright, including landscape phones and tablets, keep Material's rail | `material` |
 | `rowEdge` | boolean | the playing row in lists gets a 2 dp `primary` bar on its leading edge and a `primary` tile border (even when `artBorder` is off), and durations use the label font | `false` |
+| `statusTags` | boolean | status tags (a lamp, the status word in tracked caps, optional kana) replace the red "can't play" icon in song, album, playlist and queue rows (with the title struck through), and appear as Playing/Paused on Now Playing, Enabled in the Equalizer and Active on the selected skin card. The word is always shown and stays the accessible name | `false` |
+| `titleCards` | boolean | a title card (a small kicker, a large squeezed heading and a 1 dp rule) replaces the app-name top bar on Songs, Albums, Artists and Playlists, and heads the Equalizer and Skins screens. Songs also shows the track count and a themed sort button. The heading shrinks toward 24 sp rather than clipping at large font sizes | `false` |
+| `panelHeader` | boolean | panels (the Equalizer's Bands panel) get a header strip: the title on the left, a code such as `05 CH` (taken from the device's band count) on the right, and a rule beneath | `false` |
+| `squareSwitch` | boolean | the Equalizer switch is a square 52 by 28 dp control with a 1 dp border, `tertiary` when on; it keeps the switch semantics | `false` |
+| `glow` | string | `off` · `always` · `dark`: a soft tinted glow around live panels (the bracketed mini player and the active skin card); `dark` draws it only in a dark scheme. It needs Android 9 (API 28) or later and does nothing on older devices | `off` |
+
+With `segmentedMeters` the Equalizer also draws segmented band columns (12 cells), a segmented bass boost meter with a percentage, and a large preamp readout that keeps trailing zeros (`-3.0`). Cell counts come from the device's reported range, never a fixed ±12 dB.
+
+### `strings`
+
+A map from a slot name to `"English"` or `"English|Kana"` (the first `|` splits them). The English half is the visible word and the accessible name; the kana is decoration and hidden from accessibility. A slot the skin leaves out shows plain English. At most 20 entries, each value at most 64 characters, the English half not empty; names outside this list are ignored.
+
+| Slot | Where it shows |
+|---|---|
+| `now_playing_status`, `now_playing_paused` | the Playing / Paused tag on Now Playing |
+| `unplayable_tag` | the Unplayable tag that replaces the red icon |
+| `eq_enabled_tag` | the Equalizer's Enabled tag |
+| `skin_active_tag` | the Active tag on the selected skin card |
+| `library_kicker`, `albums_kicker`, `artists_kicker`, `playlists_kicker`, `eq_kicker`, `skins_kicker` | the kicker above each screen title |
+| `sort_kana`, `import_kana`, `save_kana` | the kana accent on the sort, import and save-preset buttons (`queue_kana` is reserved) |
+
+Kana glyphs use the system font until a font that includes them is bundled.
 
 ## Import limits and error messages
 
@@ -139,6 +162,7 @@ An import either succeeds completely or changes nothing and shows exactly one of
 | `name` missing | `missing field 'name'` |
 | Bad colour | `invalid colour '<role>': '<value>'` |
 | Unknown enum value | `invalid value '<value>' for '<field>'` (e.g. `'player.seekBar'`, `'shapes.cornerStyle'`) |
+| Strings pack too large / too long / empty | `strings has more than 20 entries` / `invalid value for 'strings.<key>': longer than 64 characters` / `invalid value '<value>' for 'strings.<key>'` |
 | Number out of range | `invalid value '<value>' for '<field>'` (e.g. `'player.seekSegments'`, `'shapes.chamferDp'`, `'typography.headingScaleX'`, `'typography.labelLetterSpacingEm'`) |
 | Image background without a path | `missing field 'player.background.path'` |
 | Referenced file has another extension than png, webp, ttf, otf | `unsupported file type '<path>'` |
