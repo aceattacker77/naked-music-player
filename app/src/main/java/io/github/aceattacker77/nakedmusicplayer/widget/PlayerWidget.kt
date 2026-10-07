@@ -131,7 +131,7 @@ fun PlayerWidgetContent(state: WidgetState, art: Bitmap?, cornerRadius: Dp = 16.
             modifier = GlanceModifier
                 .fillMaxSize()
                 .appWidgetBackground()
-                .background(colors.widgetBackground)
+                .background(widgetBackground(colors))
                 .cornerRadius(cornerRadius)
                 .padding(8.dp)
                 .clickable(open),
@@ -151,7 +151,7 @@ fun PlayerWidgetContent(state: WidgetState, art: Bitmap?, cornerRadius: Dp = 16.
             .padding(1.dp)
             .semantics { testTag = "widget-frame" },
     ) {
-        Box(modifier = GlanceModifier.fillMaxSize().background(colors.widgetBackground).cornerRadius(cornerRadius)) {
+        Box(modifier = GlanceModifier.fillMaxSize().background(widgetBackground(colors)).cornerRadius(cornerRadius)) {
             Column(
                 modifier = GlanceModifier.fillMaxSize().padding(8.dp).clickable(open),
                 verticalAlignment = Alignment.CenterVertically,
