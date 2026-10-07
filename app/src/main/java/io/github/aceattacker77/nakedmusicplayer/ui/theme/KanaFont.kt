@@ -10,7 +10,7 @@ import androidx.compose.ui.text.withStyle
 /** The active skin's heading font, used for its kana and kanji accents; null outside [AppTheme] or when the skin sets none. */
 val LocalKanaFont = staticCompositionLocalOf<FontFamily?> { null }
 
-private fun isJapanese(cp: Int) = cp in 0x3040..0x30FF || cp in 0x4E00..0x9FFF
+private fun isJapanese(cp: Int) = cp in 0x3000..0x30FF || cp in 0x3400..0x4DBF || cp in 0x4E00..0x9FFF || cp in 0xFF65..0xFF9F
 
 /** [text] with every run of kana and kanji in [family], so the accents use the skin's heading font. */
 fun withKanaFont(text: String, family: FontFamily?): AnnotatedString = buildAnnotatedString {

@@ -21,4 +21,10 @@ class KanaFontTest {
     @Test fun textWithoutJapanese_isUnstyled() {
         assertThat(withKanaFont("Playing", mincho).spanStyles).isEmpty()
     }
+
+    @Test fun japanesePunctuationIterationMarkAndHalfWidthKatakana_takeTheHeadingFamilyToo() {
+        val text = withKanaFont("Mix 色々。「ｶﾅ」", mincho)
+        val styled = text.spanStyles.filter { it.item.fontFamily == mincho }
+        assertThat(styled.map { text.text.substring(it.start, it.end) }).containsExactly("色々。「ｶﾅ」")
+    }
 }

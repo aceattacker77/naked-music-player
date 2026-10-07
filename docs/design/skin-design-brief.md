@@ -227,8 +227,9 @@ than by this app's own code, but they appear on screen all the same.
   styles). A role without its own file uses `fontFamily`; with neither it keeps the system font. Each file is one weight:
   any bold or medium weight Material asks for is **synthesised** from it, so choose a family whose single weight reads well both as
   regular and as artificially emboldened, or accept regular weight throughout.
-- Fonts bundled with a skin should be Latin. **Japanese (and other non-Latin) text falls back to the system font**,
-  which will not match, so a decorative Latin font will sit beside system CJK in the same list. Prefer a font with
+- Fonts bundled with a skin should be Latin, plus any kana and kanji its `strings` accents use (subset the heading font to add them;
+  the app draws those accents in the heading font). **Other Japanese (and other non-Latin) text, such as song titles, falls back to the
+  system font**, which will not match, so a decorative Latin font will sit beside system CJK in the same list. Prefer a font with
   neutral metrics, or tell whoever the skin is for that this is expected.
 - The widget does not use the skin font.
 - Test at the system font scale up to **1.3×**: long titles are single-line with an ellipsis, and the Now Playing title
@@ -504,7 +505,7 @@ title cards, panel headers, the square switch, a dark-mode glow and a strings pa
 2. **Split the font by role.** Propose a pairing and bundle the files: a **heading** font (display, headline, title:
    Now Playing track title, album-card titles), a **body** font (lists, artist, durations) and a **label** font
    (seek-bar times, queue button, fast-scroller letters, buttons). Archivo Narrow may stay for one or more roles.
-   Constraints: `.ttf`/`.otf`, Latin, a licence that allows bundling (state the licence and source for each), one
+   Constraints: `.ttf`/`.otf`, Latin (plus the kana and kanji of any strings accents), a licence that allows bundling (state the licence and source for each), one
    weight per file (bold is synthesised), and keep file sizes small because the archive limit is 10 MB / 50 files.
    Check that a single-line title still fits at font scale 1.3 and that Japanese text falls back to the system font
    (§5) without looking broken beside the chosen faces.
