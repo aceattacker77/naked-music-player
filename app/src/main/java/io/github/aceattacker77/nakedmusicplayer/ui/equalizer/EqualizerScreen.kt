@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalKanaFont
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.withKanaFont
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinAccent
 import androidx.compose.material3.ButtonDefaults
@@ -232,7 +234,7 @@ private fun EqualizerControls(caps: EqCapabilities, state: EqState, controller: 
             val kana = skinAccent("save_kana")
             Button(onClick = { savingPreset = true }, shape = buttonShape, modifier = saveModifier) {
                 Text(saveLabel)
-                if (kana != null) Text(" $kana", modifier = Modifier.clearAndSetSemantics {})
+                if (kana != null) Text(withKanaFont(" $kana", LocalKanaFont.current), modifier = Modifier.clearAndSetSemantics {})
             }
         } else {
             OutlinedButton(onClick = { savingPreset = true }, shape = buttonShape, modifier = saveModifier) { Text(saveLabel) }

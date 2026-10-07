@@ -20,7 +20,7 @@ field the skin format offers for shape and type, so it doubles as a worked examp
 | Accents | `statusTags`, `titleCards`, `panelHeader` and `squareSwitch` on, with a strings pack giving the kicker and tag words their kana (for example `Playing\|再生`, `Library\|曲目`, `Audio\|音響`) |
 | Layout | `classic`, artwork on top |
 
-The `id` is `com.nakedmusic.geofront`, the version is 1.4 and the author is Ace Attacker. See
+The `id` is `com.nakedmusic.geofront`, the version is 1.5 and the author is Ace Attacker. See
 [`../FORMAT.md`](../FORMAT.md) for every field.
 
 ## Fonts and licences
@@ -39,5 +39,7 @@ The font files are used as published and are not renamed.
 The three licence texts are also inside `geofront.mskin` under `licenses/`, so they travel with the archive. The app
 ignores files that `skin.json` does not reference, so they are not installed on the phone.
 
-Shippori Mincho is a Latin-only subset here, so Japanese text in song titles falls back to the system font; that is
-expected (see the skin design brief, section 5).
+Shippori Mincho is a subset here: Latin, hiragana, katakana and the 20 kanji the strings pack uses (298 KB instead of 15 MB).
+The app draws the kana accents in the heading font, so they appear in Mincho. Any other Japanese text, such as song
+titles, still falls back to the system font; that is expected (see the skin design brief, section 5). The subset keeps
+the font's name because the Shippori Mincho licence declares no Reserved Font Name; its licence text ships with it.

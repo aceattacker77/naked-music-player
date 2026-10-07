@@ -218,7 +218,7 @@ than by this app's own code, but they appear on screen all the same.
 - Phase 3 adds three typographic elements built from those roles: the **kicker** above a title card (label font, tracked caps,
   `primary`, with an optional `// kana` suffix), the **title** itself (heading font at about 44 sp, squeezed by `headingScaleX`,
   shrinking toward 24 sp instead of clipping), and the **status tag word** (label font, tracked caps, in the tag's colour). Kana
-  from the `strings` map uses the system font until a font that includes the glyphs is bundled.
+  from the `strings` map is drawn in the heading font; glyphs that font lacks fall back to the system font.
 - Where each style is used: list titles `bodyLarge`, list subtitles `bodyMedium`, durations and captions `bodySmall`, album-card titles `titleSmall`,
   Now Playing track title `headlineSmall`, artist `bodyLarge`, seek-bar times `labelMedium`, the queue button
   `labelLarge`, fast-scroller letters `labelSmall`. Top bars, dialogs, chips and buttons use the Material defaults.
@@ -309,7 +309,7 @@ rule on the four tabs, Equalizer and Skins screens), `panelHeader` (a title-and-
 `squareSwitch` (a square Equalizer switch) and `glow` (`off`, `always` or `dark`: a tinted glow on live panels, API 28 and later).
 `segmentedMeters` also gives the Equalizer segmented columns and a preamp readout. A `strings` map supplies `"English|Kana"` text
 for fixed slots (kickers, tag words and button accents; see `FORMAT.md`); the English half is the accessible name and the kana is
-decoration. Plan for the kana to fall back to the system font until the heading font is re-subset.
+decoration. The kana is drawn in the heading font, so subset that font to include the kana and kanji your strings use; missing glyphs fall back to the system font.
 
 | Control size | Play button | Previous / next | Play icon | Side icons |
 |---|---|---|---|---|
@@ -465,7 +465,7 @@ palette, and change only what the brief lists under "What to change". The exampl
 (`id` `com.nakedmusic.geofront`), a hard-edged black-and-orange skin, to use the container roles and separate fonts
 that format 1 now supports. Supply the existing `.mskin` alongside this brief.
 
-The current Geofront sample (version 1.4, `docs/skins/geofront/`) also uses the text accents described in §3 and §9: status tags,
+The current Geofront sample (version 1.5, `docs/skins/geofront/`) also uses the text accents described in §3 and §9: status tags,
 title cards, panel headers, the square switch, a dark-mode glow and a strings pack that gives the kickers and tags their kana.
 
 ### 13.1 What Geofront is today

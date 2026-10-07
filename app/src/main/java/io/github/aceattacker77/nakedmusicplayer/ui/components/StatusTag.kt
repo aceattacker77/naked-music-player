@@ -24,9 +24,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.aceattacker77.nakedmusicplayer.R
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalKanaFont
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.withKanaFont
 
 /** What a [StatusTag] reports; the word always says it too, so colour is never the only carrier. */
 enum class StatusKind { GOOD, BAD, PENDING, INFO }
@@ -65,7 +67,7 @@ fun StatusTag(
         Text(skinLabel(word), style = MaterialTheme.typography.labelSmall, color = colour, maxLines = 1)
         if (kana != null) {
             Box(Modifier.width(1.dp).height(10.dp).background(MaterialTheme.colorScheme.outlineVariant))
-            Text(kana, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+            Text(withKanaFont(kana, LocalKanaFont.current), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
         }
     }
 }
