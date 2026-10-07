@@ -34,12 +34,12 @@ family, with its copyright notice, is in [`licenses/`](licenses/), fetched from 
 | `fonts/ArchivoNarrow-Regular.ttf` | Archivo Narrow | 2019 The Archivo Narrow Project Authors | [`archivonarrow-OFL.txt`](licenses/archivonarrow-OFL.txt) |
 | `fonts/IBMPlexMono-Regular.ttf` | IBM Plex Mono | 2017 IBM Corp., Reserved Font Name "Plex" | [`ibmplexmono-OFL.txt`](licenses/ibmplexmono-OFL.txt) |
 
-The font files are used as published and are not renamed.
+Archivo Narrow and IBM Plex Mono are used as published and are not renamed; Shippori Mincho is a subset (below).
 
 The three licence texts are also inside `geofront.mskin` under `licenses/`, so they travel with the archive. The app
 ignores files that `skin.json` does not reference, so they are not installed on the phone.
 
-Shippori Mincho is a subset here: Latin, hiragana, katakana and the 20 kanji the strings pack uses (298 KB instead of 15 MB).
+Shippori Mincho is a subset here: Latin, hiragana, katakana and 22 kanji (the 20 the strings pack uses, plus 承 and 認 for spare slots) (298 KB instead of 15 MB).
 The app draws the kana accents in the heading font, so they appear in Mincho. Any other Japanese text, such as song
 titles, still falls back to the system font; that is expected (see the skin design brief, section 5). The subset keeps
 the font's name because the Shippori Mincho licence declares no Reserved Font Name; its licence text ships with it.
