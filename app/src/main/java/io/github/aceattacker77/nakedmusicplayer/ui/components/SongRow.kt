@@ -70,6 +70,7 @@ fun SongRow(
                     text = song.title,
                     style = MaterialTheme.typography.bodyLarge,
                     color = accent,
+                    textDecoration = unplayableDecoration(unplayable, LocalOrnament.current.statusTags),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -81,14 +82,7 @@ fun SongRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            if (unplayable) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_error_outline),
-                    contentDescription = stringResource(R.string.cant_play),
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
+            if (unplayable) UnplayableMarker()
             Text(
                 text = formatDuration(song.durationMs),
                 style = if (rowEdge) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall,

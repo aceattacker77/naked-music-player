@@ -1,5 +1,9 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import io.github.aceattacker77.nakedmusicplayer.R
+import androidx.test.core.app.ApplicationProvider
+import androidx.compose.ui.test.onNodeWithContentDescription
+import android.content.Context
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
@@ -75,5 +79,30 @@ class SongRowOrnamentTest {
         }
         compose.waitForIdle()
         assertThat(compose.onNodeWithTag("song-7").getUnclippedBoundsInRoot().height.value).isLessThan(100f)
+    }
+
+    private val cantPlay get() = ApplicationProvider.getApplicationContext<Context>().getString(R.string.cant_play)
+
+    private fun showUnplayable(ornament: Ornament) {
+        compose.setContent {
+            AppTheme(Skin.FALLBACK, AppSettings(dynamicColor = false)) {
+                CompositionLocalProvider(LocalOrnament provides ornament) {
+                    SongRow(song, isCurrent = false, unplayable = true, onClick = {}, onLongClick = {})
+                }
+            }
+        }
+        compose.waitForIdle()
+    }
+
+    @Test fun statusTags_replaceTheUnplayableIconWithATag() {
+        showUnplayable(Ornament.OFF.copy(statusTags = true))
+        compose.onNodeWithTag("status-tag", useUnmergedTree = true).assertExists()
+        compose.onNodeWithContentDescription(cantPlay, useUnmergedTree = true).assertExists()
+    }
+
+    @Test fun withoutStatusTags_theUnplayableIconStays() {
+        showUnplayable(Ornament.OFF)
+        compose.onNodeWithTag("status-tag", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithContentDescription(cantPlay, useUnmergedTree = true).assertExists()
     }
 }

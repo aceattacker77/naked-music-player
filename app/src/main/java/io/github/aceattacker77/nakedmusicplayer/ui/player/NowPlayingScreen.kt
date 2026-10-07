@@ -1,5 +1,9 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
+import io.github.aceattacker77.nakedmusicplayer.ui.components.StatusTag
+import io.github.aceattacker77.nakedmusicplayer.ui.components.StatusKind
+import androidx.compose.foundation.layout.Spacer
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.components.cornerBrackets
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtPlaceholder
@@ -109,7 +113,7 @@ fun NowPlayingScreen(
             Box(Modifier.fillMaxSize()) {
                 PlayerBackground(style.background, skin, albumId)
                 Column(Modifier.fillMaxSize().then(if (applyWindowInsets) Modifier.systemBarsPadding() else Modifier)) {
-                    CollapseBar(actions.onCollapse)
+                    CollapseBar(actions.onCollapse, state.isPlaying)
                     // Layouts that put a small thumbnail beside the title read better left-aligned.
                     val centeredInfo = skin.layout.type != LayoutType.COMPACT &&
                         !(skin.layout.type == LayoutType.MINIMAL && skin.layout.artPosition == ArtPosition.LEFT)
@@ -126,10 +130,17 @@ fun NowPlayingScreen(
 private const val OPAQUE = 0xFF000000.toInt()
 
 @Composable
-private fun CollapseBar(onCollapse: () -> Unit) {
+private fun CollapseBar(onCollapse: () -> Unit, isPlaying: Boolean) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = onCollapse) {
             Icon(painterResource(R.drawable.ic_keyboard_arrow_down), contentDescription = stringResource(R.string.collapse_player))
+        }
+        Spacer(Modifier.weight(1f))
+        if (LocalOrnament.current.statusTags) {
+            val playing = skinText("now_playing_status", stringResource(R.string.now_playing_playing))
+            val paused = skinText("now_playing_paused", stringResource(R.string.now_playing_paused))
+            val text = if (isPlaying) playing else paused
+            StatusTag(if (isPlaying) StatusKind.GOOD else StatusKind.INFO, text.english, text.kana, Modifier.padding(end = 8.dp))
         }
     }
 }

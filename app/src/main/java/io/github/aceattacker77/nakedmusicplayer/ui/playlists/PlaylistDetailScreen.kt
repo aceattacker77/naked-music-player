@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.playlists
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.unplayableDecoration
+import io.github.aceattacker77.nakedmusicplayer.ui.components.UnplayableMarker
 import androidx.compose.foundation.background
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -275,6 +278,7 @@ private fun PlaylistSongRow(
                 Text(
                     text = song.title,
                     style = MaterialTheme.typography.bodyLarge,
+                    textDecoration = unplayableDecoration(unplayable, LocalOrnament.current.statusTags),
                     color = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -287,14 +291,7 @@ private fun PlaylistSongRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            if (unplayable) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_error_outline),
-                    contentDescription = stringResource(R.string.cant_play),
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
+            if (unplayable) UnplayableMarker()
             Box(
                 modifier = Modifier.size(48.dp).testTag("playlist-drag-$position").then(dragHandle),
                 contentAlignment = Alignment.Center,

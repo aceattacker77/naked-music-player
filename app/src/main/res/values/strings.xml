@@ -57,6 +57,11 @@
     <string name="pause">Pause</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="unplayable_tag">Unplayable</string>
+    <string name="now_playing_playing">Playing</string>
+    <string name="now_playing_paused">Paused</string>
+    <string name="eq_enabled_tag">Enabled</string>
+    <string name="skin_active_tag">Active</string>
     <string name="no_artwork">No artwork</string>
     <string name="position_label">Position</string>
     <string name="seek">Seek</string>

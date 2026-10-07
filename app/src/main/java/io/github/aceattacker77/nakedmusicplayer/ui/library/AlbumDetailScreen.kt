@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.library
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.unplayableDecoration
+import io.github.aceattacker77.nakedmusicplayer.ui.components.UnplayableMarker
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.shapeOr
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -192,18 +195,12 @@ private fun TrackRow(
             text = song.title,
             style = MaterialTheme.typography.bodyLarge,
             color = accent,
+            textDecoration = unplayableDecoration(unplayable, LocalOrnament.current.statusTags),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
-        if (unplayable) {
-            Icon(
-                painter = painterResource(R.drawable.ic_error_outline),
-                contentDescription = stringResource(R.string.cant_play),
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(20.dp),
-            )
-        }
+        if (unplayable) UnplayableMarker()
         Text(
             text = formatDuration(song.durationMs),
             style = MaterialTheme.typography.bodySmall,

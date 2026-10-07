@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.unplayableDecoration
+import io.github.aceattacker77.nakedmusicplayer.ui.components.UnplayableMarker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -190,6 +193,7 @@ private fun QueueRow(
                     Text(
                         text = meta.title?.toString().orEmpty(),
                         style = MaterialTheme.typography.bodyLarge,
+                        textDecoration = unplayableDecoration(unplayable, LocalOrnament.current.statusTags),
                         color = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -203,14 +207,7 @@ private fun QueueRow(
                     )
                 }
             }
-            if (unplayable) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_error_outline),
-                    contentDescription = stringResource(R.string.cant_play),
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
+            if (unplayable) UnplayableMarker()
             Box(
                 modifier = Modifier.size(48.dp).testTag("queue-drag-$index").then(dragHandle),
                 contentAlignment = Alignment.Center,
