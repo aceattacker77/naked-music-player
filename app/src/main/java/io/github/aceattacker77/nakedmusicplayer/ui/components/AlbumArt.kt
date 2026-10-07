@@ -1,5 +1,9 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import androidx.compose.ui.platform.testTag
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtPlaceholder
 import androidx.compose.foundation.border
@@ -52,8 +56,9 @@ fun AlbumArt(
         modifier = modifier.clip(resolved).background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
+        var loadFailed by remember(albumId) { mutableStateOf(false) }
         if (ornament.artPlaceholder == ArtPlaceholder.HEXAGON) {
-            HexagonPlaceholder(captions = captions)
+            HexagonPlaceholder(captions = captions?.takeIf { captionsVisible(albumId, loadFailed) })
         } else {
             Icon(
                 painter = painterResource(R.drawable.ic_music_note),
@@ -68,12 +73,17 @@ fun AlbumArt(
                 model = model,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
+                onSuccess = { loadFailed = false },
+                onError = { loadFailed = true },
                 modifier = Modifier.fillMaxSize(),
             )
         }
-        if (ornament.artBorder) {
+        if (ornament.artBorder || highlighted) {
             val color = if (highlighted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-            Box(Modifier.fillMaxSize().border(1.dp, color, resolved))
+            Box(Modifier.fillMaxSize().border(1.dp, color, resolved).testTag("art-border"))
         }
     }
 }
+
+/** The "No artwork" captions belong to a tile with no artwork: no album, or artwork that failed to load (not while it loads). */
+internal fun captionsVisible(albumId: Long?, loadFailed: Boolean): Boolean = albumId == null || loadFailed

@@ -112,9 +112,9 @@ object SkinParser {
         val cornerStyle = dto.shapes?.cornerStyle?.let { CornerStyle.entries[enumIndex("shapes.cornerStyle", it, CORNER_STYLES)] }
             ?: defaults.cornerStyle
         val chamferDp = dto.shapes?.chamferDp?.also { requireIn("shapes.chamferDp", it, 1..32) } ?: defaults.chamferDp
-        val headingScaleX = typography?.headingScaleX?.also { requireIn("typography.headingScaleX", it, 0.5f..1f) }
+        val headingScaleX = typography?.headingScaleX?.also { requireIn("typography.headingScaleX", it, 0.5..1.0) }?.toFloat()
             ?: defaults.headingScaleX
-        val labelSpacing = typography?.labelLetterSpacingEm?.also { requireIn("typography.labelLetterSpacingEm", it, 0f..0.5f) }
+        val labelSpacing = typography?.labelLetterSpacingEm?.also { requireIn("typography.labelLetterSpacingEm", it, 0.0..0.5) }?.toFloat()
             ?: defaults.labelLetterSpacingEm
 
         val skin = Skin(

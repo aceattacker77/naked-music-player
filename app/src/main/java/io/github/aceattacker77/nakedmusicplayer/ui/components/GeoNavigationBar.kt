@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,7 +49,9 @@ fun GeoNavigationBar(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .selectableGroup()
+            .testTag("geo-nav"),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         tabs.forEachIndexed { index, tab ->
@@ -56,7 +61,8 @@ fun GeoNavigationBar(
                 modifier = Modifier
                     .weight(1f)
                     .testTag(tab.tag)
-                    .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent, shape)
+                    .clip(shape)
+                    .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
                     .selectable(selected = selected, role = Role.Tab, onClick = { onSelect(index) })
                     .heightIn(min = 56.dp)
                     .padding(vertical = 6.dp),
@@ -66,6 +72,7 @@ fun GeoNavigationBar(
                 Icon(painterResource(tab.iconRes), contentDescription = null, tint = content)
                 Text(
                     text = skinLabel(tab.label),
+                    modifier = Modifier.originalLabel(tab.label),
                     style = MaterialTheme.typography.labelSmall,
                     color = content,
                     maxLines = 1,

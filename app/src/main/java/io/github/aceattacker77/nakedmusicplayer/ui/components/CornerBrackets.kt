@@ -31,6 +31,6 @@ fun Modifier.cornerBrackets(color: Color, length: Dp = 14.dp, stroke: Dp = 2.dp)
     drawContent()
     val strokePx = stroke.toPx()
     bracketLines(size, length.toPx(), strokePx / 2f).forEach { (from, to) ->
-        drawLine(color, from, to, strokePx, StrokeCap.Butt)
+        drawLine(color, from, to, strokePx, StrokeCap.Square)
     }
 }

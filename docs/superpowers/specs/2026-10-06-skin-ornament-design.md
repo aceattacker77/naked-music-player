@@ -94,8 +94,7 @@ type is set to none and the custom bar is placed in the existing `Scaffold` bott
 
 ## Rows
 
-With `rowEdge`, the playing `SongRow` shows a 2 dp `primary` bar on its leading edge (leading padding drops by the bar
-width so alignment is unchanged), a `primary` tile border, and the duration uses the label style so it takes the
+With `rowEdge`, the playing `SongRow` shows a 2 dp `primary` bar on its leading edge (drawn over the existing 16 dp leading padding, so alignment is unchanged), a `primary` tile border, and the duration uses the label style so it takes the
 label font. Without the flag the row is unchanged.
 
 ## Backward compatibility

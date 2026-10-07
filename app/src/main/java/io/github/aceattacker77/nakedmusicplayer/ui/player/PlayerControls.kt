@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ControlShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.material3.Shapes
@@ -236,6 +237,11 @@ fun QueueHandle(onOpenQueue: () -> Unit, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(painterResource(R.drawable.ic_queue_music), contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(skinLabel(stringResource(R.string.queue)), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            skinLabel(stringResource(R.string.queue)),
+            Modifier.originalLabel(stringResource(R.string.queue)),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

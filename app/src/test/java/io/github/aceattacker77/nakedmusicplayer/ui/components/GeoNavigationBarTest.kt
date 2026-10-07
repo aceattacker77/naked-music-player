@@ -1,6 +1,10 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
@@ -81,5 +85,16 @@ class GeoNavigationBarTest {
             .getOrNull(androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult)?.action?.invoke(results)
         assertThat(results).isNotEmpty()
         assertThat(results.first().hasVisualOverflow).isFalse()
+    }
+
+    @Test fun uppercasedLabels_keepTheirOriginalAccessibleText() {
+        show(Skin.FALLBACK.copy(labelCaps = true))
+        compose.onNodeWithText("SONGS").assertExists()
+        compose.onNodeWithContentDescription("Songs", useUnmergedTree = true).assertExists()
+    }
+
+    @Test fun bar_isASelectableGroup() {
+        show()
+        compose.onNodeWithTag("geo-nav").assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.SelectableGroup))
     }
 }

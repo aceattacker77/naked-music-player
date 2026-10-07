@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -94,7 +95,10 @@ fun AppScaffold(
                     selected = destination?.hasRoute(tab.routeClass) == true,
                     onClick = { navigateToTab(nav, tab) },
                     icon = { Icon(painterResource(tab.icon), contentDescription = null) },
-                    label = { Text(skinLabel(stringResource(tab.label))) },
+                    label = {
+                        val name = stringResource(tab.label)
+                        Text(skinLabel(name), Modifier.originalLabel(name))
+                    },
                 )
             }
         },

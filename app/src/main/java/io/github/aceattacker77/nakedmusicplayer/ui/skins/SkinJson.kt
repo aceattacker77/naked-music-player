@@ -31,9 +31,9 @@ data class TypographyJson(
     val headingFontFamily: String? = null,
     val bodyFontFamily: String? = null,
     val labelFontFamily: String? = null,
-    val headingScaleX: Float? = null,
+    val headingScaleX: Double? = null,
     val labelCaps: Boolean? = null,
-    val labelLetterSpacingEm: Float? = null,
+    val labelLetterSpacingEm: Double? = null,
 )
 
 @Serializable

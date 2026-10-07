@@ -40,6 +40,7 @@ Unknown fields are ignored, which keeps skins forward-compatible.
 | `shapes` | object | no | See below. |
 | `player` | object | no | Now Playing look. |
 | `layout` | object | no | Now Playing arrangement. |
+| `components` | object | no | Optional ornament switches (brackets, segmented meters, bottom bar style, playing-row edge). See below. |
 
 ### `colors`
 
@@ -71,7 +72,7 @@ list always win. If you do not set `primary`, unlisted roles come from the Defau
 | `bodyFontFamily` | string | Font for the `body` styles (list titles and subtitles, durations, artist). Falls back to `fontFamily`. |
 | `labelFontFamily` | string | Font for the `label` styles (seek-bar times, queue button, fast-scroller letters, buttons). Falls back to `fontFamily`. |
 | `headingScaleX` | number 0.5–1.0 | Horizontal scale of the `display`, `headline` and `title` styles; `0.8` squeezes headings to 80% width. Default `1.0`. |
-| `labelCaps` | boolean | Uppercases the labels the app draws itself: the Songs sort label, bottom-bar tabs, Queue, seek-bar times, fast-scroller letters and Equalizer labels. Dialog and button text stays as written. Default `false`. |
+| `labelCaps` | boolean | Uppercases the labels the app draws itself: the Songs sort label, bottom-bar tabs, Queue, seek-bar times, fast-scroller letters and the "No artwork" caption. Dialog and button text and unit labels (such as the Equalizer's `Hz` and `dB`) stay as written; the original text remains the accessible name. Default `false`. |
 | `labelLetterSpacingEm` | number 0–0.5 | Letter spacing of the `label` styles in em; `0` keeps Material's own spacing. Default `0`. |
 
 Each role font is a separate file in the archive, validated like `fontFamily`. A role with neither its own font nor
@@ -96,7 +97,7 @@ Each role font is a separate file in the archive, validated like `fontFamily`. A
 | `seekSegments` | integer 12–60 | number of cells in the `segmented` seek bar | `40` |
 | `seekColor` | string | `primary` · `tertiary`: colour of the filled cells | `primary` |
 | `artPlaceholder` | string | `note` · `hexagon`: what tiles show when there is no artwork (three nested hexagons and the note) | `note` |
-| `artBorder` | boolean | a 1 dp `outline` border around artwork and tiles (`primary` on the playing row's tile) | `false` |
+| `artBorder` | boolean | a 1 dp `outline` border around every artwork tile; the highlighted tile (the playing row, the bracketed mini player) is always bordered in `primary`, even when this is off | `false` |
 | `controls` | string | `filled` · `outlined` · `iconOnly` · `mixed` (play filled, previous and next outlined) | `filled` |
 | `controlShape` | string | `circle` · `theme` (control buttons use the theme's large shape, so a chamfer skin gets chamfered buttons) | `circle` |
 | `controlSize` | string | `small` · `medium` · `large` | `medium` |
@@ -119,8 +120,8 @@ On landscape and large screens the artwork is always placed on the left.
 |---|---|---|---|
 | `brackets` | boolean | corner brackets (top-left and bottom-right) on the Now Playing artwork; the mini player becomes a bracketed panel inset 12 dp from the screen edges | `false` |
 | `segmentedMeters` | boolean | a `POSITION` label and the percentage (`31.3 %`) above a `segmented` seek bar | `false` |
-| `navStyle` | string | `material` · `block`: `block` replaces the compact bottom bar with one whose selected tab is a block in the theme's medium shape (a chamfer in a chamfer skin). Tablets keep Material's rail | `material` |
-| `rowEdge` | boolean | the playing row in lists gets a 2 dp `primary` bar on its leading edge and a `primary` tile border, and durations use the label font | `false` |
+| `navStyle` | string | `material` · `block`: `block` replaces the compact bottom bar with one whose selected tab is a block in the theme's medium shape (a chamfer in a chamfer skin). Windows wider than a phone held upright, including landscape phones and tablets, keep Material's rail | `material` |
+| `rowEdge` | boolean | the playing row in lists gets a 2 dp `primary` bar on its leading edge and a `primary` tile border (even when `artBorder` is off), and durations use the label font | `false` |
 
 ## Import limits and error messages
 

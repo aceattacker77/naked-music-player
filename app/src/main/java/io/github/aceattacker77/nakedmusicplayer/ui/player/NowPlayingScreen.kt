@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.components.cornerBrackets
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtPlaceholder
 import io.github.aceattacker77.nakedmusicplayer.ui.components.trackCode
@@ -147,7 +148,7 @@ private fun buildSlots(
     return NowPlayingSlots(
         artwork = {
             val captions = if (LocalOrnament.current.artPlaceholder == ArtPlaceholder.HEXAGON && style.artShape != ArtShape.Circle) {
-                ArtCaptions(stringResource(R.string.no_artwork), trackCode(state.currentIndex))
+                ArtCaptions(skinLabel(stringResource(R.string.no_artwork)), trackCode(state.currentIndex))
             } else {
                 null
             }

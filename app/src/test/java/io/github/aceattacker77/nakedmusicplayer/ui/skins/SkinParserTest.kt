@@ -314,4 +314,13 @@ class SkinParserTest {
     @Test fun seekBar_segmentedIsParsed() {
         assertThat(ok(minimal(""","player":{"seekBar":"segmented"}""")).skin.player.seekBar).isEqualTo(SeekBarStyle.SEGMENTED)
     }
+
+    @Test fun valuesJustOutsideTheRange_areRejectedNotRounded() {
+        assertThat(error(minimal(""","typography":{"headingScaleX":1.00000001}""")))
+            .isEqualTo("invalid value '1.00000001' for 'typography.headingScaleX'")
+        assertThat(error(minimal(""","typography":{"headingScaleX":0.4999999999}""")))
+            .isEqualTo("invalid value '0.4999999999' for 'typography.headingScaleX'")
+        assertThat(error(minimal(""","typography":{"labelLetterSpacingEm":0.5000000001}""")))
+            .isEqualTo("invalid value '0.5000000001' for 'typography.labelLetterSpacingEm'")
+    }
 }

@@ -36,12 +36,15 @@ class EqualizerScreenTest {
     private val scope = TestScope(UnconfinedTestDispatcher())
     private val volumes = mutableListOf<Float>()
 
-    private fun launch(capabilities: EqCapabilities? = FakeAudioEffectsBackend.DEFAULT_CAPS): EqualizerController {
+    private fun launch(
+        capabilities: EqCapabilities? = FakeAudioEffectsBackend.DEFAULT_CAPS,
+        skin: Skin = Skin.FALLBACK,
+    ): EqualizerController {
         backend.capabilities = capabilities
         val controller = EqualizerController(backend, EqRepository(InMemoryPreferencesStore()), scope.backgroundScope) { volumes += it }
         controller.onAudioSessionId(1)
         compose.setContent {
-            AppTheme(Skin.FALLBACK, AppSettings(dynamicColor = false)) { EqualizerScreen(controller, onBack = {}) }
+            AppTheme(skin, AppSettings(dynamicColor = false)) { EqualizerScreen(controller, onBack = {}) }
         }
         compose.waitForIdle()
         return controller
@@ -111,5 +114,10 @@ class EqualizerScreenTest {
         launch(capabilities = null)
         compose.onNodeWithText("Equalizer unavailable").assertIsDisplayed()
         compose.onNodeWithTag("eq-switch").assertDoesNotExist()
+    }
+
+    @Test fun labelCaps_doesNotUppercaseTheUnits() {
+        launch(skin = Skin.FALLBACK.copy(labelCaps = true))
+        listOf("60 Hz", "3.6 kHz").forEach { compose.onNodeWithText(it).assertIsDisplayed() }
     }
 }

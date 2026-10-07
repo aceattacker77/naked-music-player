@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.library
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -114,6 +115,7 @@ private fun SortBar(sort: SongSort, onSort: (SongSort) -> Unit) {
     ) {
         Text(
             text = skinLabel(stringResource(sort.labelRes())),
+            modifier = Modifier.originalLabel(stringResource(sort.labelRes())),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

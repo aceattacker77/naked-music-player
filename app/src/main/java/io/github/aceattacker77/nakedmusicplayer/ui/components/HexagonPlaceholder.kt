@@ -1,7 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
@@ -57,21 +57,30 @@ fun HexagonPlaceholder(modifier: Modifier = Modifier, captions: ArtCaptions? = n
     val innerColor = MaterialTheme.colorScheme.primary
     BoxWithConstraints(modifier.fillMaxSize().clearAndSetSemantics {}, contentAlignment = Alignment.Center) {
         val showCaptions = captions != null && shouldShowCaptions(minOf(maxWidth, maxHeight).value, circular = false)
-        Canvas(Modifier.fillMaxSize()) {
-            val half = min(size.width, size.height) / 2f
-            fun outline(scale: Float, color: Color, widthDp: Float) {
-                val points = hexagonPoints(size, half * (1f - scale))
-                val path = Path().apply {
-                    moveTo(points.first().x, points.first().y)
-                    points.drop(1).forEach { lineTo(it.x, it.y) }
-                    close()
+        // The three outlines are built once per size, not on every draw pass.
+        Spacer(
+            Modifier.fillMaxSize().drawWithCache {
+                val half = min(size.width, size.height) / 2f
+                fun hexagon(scale: Float): Path {
+                    val points = hexagonPoints(size, half * (1f - scale))
+                    return Path().apply {
+                        moveTo(points.first().x, points.first().y)
+                        for (i in 1 until points.size) lineTo(points[i].x, points[i].y)
+                        close()
+                    }
                 }
-                drawPath(path, color, style = Stroke(widthDp.dp.toPx()))
-            }
-            outline(0.92f, outerColor, 1f)
-            outline(0.68f, middleColor, 1f)
-            outline(0.44f, innerColor, 2f)
-        }
+                val outer = hexagon(0.92f)
+                val middle = hexagon(0.68f)
+                val inner = hexagon(0.44f)
+                val thin = Stroke(1.dp.toPx())
+                val thick = Stroke(2.dp.toPx())
+                onDrawBehind {
+                    drawPath(outer, outerColor, style = thin)
+                    drawPath(middle, middleColor, style = thin)
+                    drawPath(inner, innerColor, style = thick)
+                }
+            },
+        )
         Icon(
             painter = painterResource(R.drawable.ic_music_note),
             contentDescription = null,

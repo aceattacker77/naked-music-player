@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import kotlin.math.floor
 import java.util.Locale
 import androidx.compose.ui.geometry.Size
@@ -61,10 +62,12 @@ fun SeekBar(
     isPlaying: Boolean = true,
     segments: Int = 40,
     seekColor: SeekColor = SeekColor.PRIMARY,
+    onDragFraction: (Float?) -> Unit = {},
 ) {
     val total = durationMs.coerceAtLeast(1L)
     var dragFraction by remember { mutableStateOf<Float?>(null) }
     val fraction = dragFraction ?: (positionMs.toFloat() / total).coerceIn(0f, 1f)
+    LaunchedEffect(dragFraction) { onDragFraction(dragFraction) }
 
     val phase = remember { Animatable(0f) }
     LaunchedEffect(style, isPlaying) {
@@ -146,15 +149,16 @@ fun SeekBarWithTimes(
     seekColor: SeekColor = SeekColor.PRIMARY,
     showHeader: Boolean = false,
 ) {
+    var dragging by remember { mutableStateOf<Float?>(null) }
     Column(modifier.fillMaxWidth()) {
         if (showHeader && style == SeekBarStyle.SEGMENTED) {
             val total = durationMs.coerceAtLeast(1L)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(skinLabel(stringResource(R.string.position_label)), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(positionPercentText(positionMs.toFloat() / total), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(skinLabel(stringResource(R.string.position_label)), Modifier.originalLabel(stringResource(R.string.position_label)), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(positionPercentText(dragging ?: (positionMs.toFloat() / total)), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        SeekBar(style, positionMs, durationMs, onSeek, isPlaying = isPlaying, segments = segments, seekColor = seekColor)
+        SeekBar(style, positionMs, durationMs, onSeek, isPlaying = isPlaying, segments = segments, seekColor = seekColor, onDragFraction = { dragging = it })
         SeekTimes(positionMs, durationMs)
     }
 }
@@ -163,9 +167,17 @@ fun SeekBarWithTimes(
 internal fun segmentsFilled(fraction: Float, segments: Int): Int =
     if (fraction.isNaN()) 0 else floor(fraction.coerceIn(0f, 1f) * segments).toInt().coerceIn(0, segments)
 
+/** How many cells fit when each needs at least [minCellPx] plus a gap; never more than [segments], 0 when none fit. */
+internal fun segmentCountFor(segments: Int, widthPx: Float, gapPx: Float, minCellPx: Float): Int {
+    if (widthPx <= 0f) return 0
+    return floor((widthPx + gapPx) / (minCellPx + gapPx)).toInt().coerceIn(0, segments)
+}
+
 /** The position as a percentage with one decimal, trailing zero kept: `31.3 %`. */
 internal fun positionPercentText(fraction: Float): String {
     val clamped = if (fraction.isNaN()) 0f else fraction.coerceIn(0f, 1f)
+    // 100.0 % is reserved for the very end, so a nearly-full bar never reads as complete.
+    if (clamped < 1f && clamped * 100f >= 99.95f) return "99.9 %"
     return String.format(Locale.ROOT, "%.1f %%", clamped * 100f)
 }
 
@@ -198,18 +210,20 @@ private fun DrawScope.drawSegmented(
     val gap = 3.dp.toPx()
     val stroke = 1.dp.toPx()
     val barHeight = 16.dp.toPx()
-    val cellWidth = (size.width - gap * (segments - 1)) / segments
-    if (cellWidth <= stroke) return
+    val count = segmentCountFor(segments, size.width, gap, minCellPx = 4.dp.toPx())
+    if (count == 0) return
+    val cellWidth = (size.width - gap * (count - 1)) / count
     val top = (size.height - barHeight) / 2
-    val filled = segmentsFilled(fraction, segments)
-    repeat(segments) { i ->
+    val filled = segmentsFilled(fraction, count)
+    val border = Stroke(stroke)
+    repeat(count) { i ->
         val left = i * (cellWidth + gap)
         if (i < filled) drawRect(activeColor, Offset(left, top), Size(cellWidth, barHeight))
         drawRect(
             borderColor,
             Offset(left + stroke / 2, top + stroke / 2),
             Size(cellWidth - stroke, barHeight - stroke),
-            style = Stroke(stroke),
+            style = border,
         )
     }
 }

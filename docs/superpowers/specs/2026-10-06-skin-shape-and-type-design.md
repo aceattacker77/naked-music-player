@@ -71,7 +71,8 @@ styles. With default values the produced `Typography` equals today's.
 
 Caps: one helper turns a label string uppercase when the skin has `labelCaps`; it is used at the app-drawn label sites:
 the Songs sort label, bottom-bar tab labels, the Queue label, seek-bar times, the fast-scroller letters and the
-Equalizer labels. Accessibility descriptions keep the original text.
+"No artwork" caption (added in Phase 2). The Equalizer's unit labels (`Hz`, `dB`) are not uppercased, and uppercased labels
+keep their original text as the accessible name.
 
 ## Controls
 

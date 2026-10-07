@@ -43,7 +43,7 @@ Fill the blanks from the decisions in §12.
 
 | A skin **can** change | A skin **cannot** change |
 |---|---|
-| The whole colour scheme of the app (every Material 3 colour role), separately for light and dark | Screen structure and navigation (tabs, bars, list layouts) outside Now Playing |
+| The whole colour scheme of the app (every Material 3 colour role), separately for light and dark | The set of screens and the navigation routes (a skin can restyle the bottom bar, the mini player and the playing row through `components`, but not add, remove or reorder them) |
 | Up to three font families (headings, body, labels) or one for all text | Icons (fixed vector set) and the strings |
 | A base corner radius, or a chamfered (cut-corner) style, that shapes every component in the app (§6) | Animations and transitions (only the optional artwork spin) |
 | Now Playing: background, artwork shape, artwork spin, seek bar style, control style and size, glow, shadow, whether colours follow the album art, and the layout (five choices, §7) | The widget's structure (its colours and corner radius follow the skin; its text does **not** use the skin's font) |
@@ -71,7 +71,7 @@ Layouts are shown schematically; the numbers are in density-independent pixels (
 │ ┌──────────────────────────┐ │
 │ │▢ Title  Artist     ▶  ⏭ │ │  mini player (§3.2)
 │ └──────────────────────────┘ │
-│  ♪Songs ◉Albums ☺Artists ≡Playlists │  bottom navigation, selected tab in a pill
+│  ♪Songs ◉Albums ☺Artists ≡Playlists │  bottom navigation, selected tab in a pill (a chamfered block with `navStyle: block`)
 └──────────────────────────────┘
 ```
 
@@ -87,7 +87,8 @@ Layouts are shown schematically; the numbers are in density-independent pixels (
 
 A bar docked above the bottom navigation, with `surfaceContainerHigh` fill and 3 dp tonal elevation: 44 dp artwork,
 title `bodyLarge`, artist `bodySmall` (`onSurfaceVariant`), play/pause and next icons, and a thin progress line on top.
-Tap or swipe up to expand into Now Playing (the artwork animates between the two).
+Tap or swipe up to expand into Now Playing (the artwork animates between the two). With `components.brackets` it becomes a
+bracketed panel inset 12 dp from the screen edges (no tonal elevation, a 2 dp progress line and a `primary`-bordered tile).
 
 ### 3.3 Albums, Artists and their detail screens
 
@@ -194,7 +195,7 @@ than by this app's own code, but they appear on screen all the same.
 - The app uses the standard **Material 3 type scale**; a skin cannot change sizes. It can change the **font family**
   and three treatments: `headingScaleX` (0.5–1.0, default 1.0) squeezes the display, headline and title styles
   horizontally, `labelCaps` uppercases the labels the app draws itself (sort label, bottom-bar tabs, Queue, seek-bar
-  times, fast-scroller letters, Equalizer labels; not dialog or button text), and `labelLetterSpacingEm` (0–0.5,
+  times, fast-scroller letters, the "No artwork" caption; not dialog or button text or unit labels such as the Equalizer's `Hz` and `dB`), and `labelLetterSpacingEm` (0–0.5,
   default 0 = Material's spacing) tracks the label styles. Check that a squeezed heading still reads at font scale 1.3.
 - Where each style is used: list titles `bodyLarge`, list subtitles `bodyMedium`, durations and captions `bodySmall`, album-card titles `titleSmall`,
   Now Playing track title `headlineSmall`, artist `bodyLarge`, seek-bar times `labelMedium`, the queue button
