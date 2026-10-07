@@ -1,5 +1,10 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.settings
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.StatusTag
+import io.github.aceattacker77.nakedmusicplayer.ui.components.StatusKind
+import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoPanel
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.shapeOr
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -57,19 +62,26 @@ fun SkinPreviewCard(
     modifier: Modifier = Modifier,
 ) {
     val shape = shapeOr(RoundedCornerShape(16.dp), MaterialTheme.shapes.large)
+    val ornament = LocalOrnament.current
+    val previewBox: @Composable () -> Unit = {
+        Box(Modifier.fillMaxWidth().aspectRatio(PREVIEW_WIDTH_DP.toFloat() / PREVIEW_HEIGHT_DP).clipToBounds()) {
+            SkinPreview(skin, settings)
+            // The preview is only a picture; this layer on top is what receives the gestures.
+            Box(Modifier.fillMaxSize().combinedClickable(onClick = onClick, onLongClick = onLongClick))
+        }
+    }
     Column(modifier.testTag("skin-card-${skin.id}")) {
-        Surface(
-            shape = shape,
-            border = BorderStroke(
-                width = if (selected) 3.dp else 1.dp,
-                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
-            ),
-        ) {
-            Box(Modifier.fillMaxWidth().aspectRatio(PREVIEW_WIDTH_DP.toFloat() / PREVIEW_HEIGHT_DP).clipToBounds()) {
-                SkinPreview(skin, settings)
-                // The preview is only a picture; this layer on top is what receives the gestures.
-                Box(Modifier.fillMaxSize().combinedClickable(onClick = onClick, onLongClick = onLongClick))
-            }
+        if (selected && ornament.brackets) {
+            // The active card is a bracketed live panel in a skin that uses brackets.
+            GeoPanel(live = true, content = previewBox)
+        } else {
+            Surface(
+                shape = shape,
+                border = BorderStroke(
+                    width = if (selected) 3.dp else 1.dp,
+                    color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                ),
+            ) { previewBox() }
         }
         Text(
             text = skin.name,
@@ -78,6 +90,10 @@ fun SkinPreviewCard(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = 6.dp, start = 4.dp),
         )
+        if (selected && ornament.statusTags) {
+            val active = skinText("skin_active_tag", stringResource(R.string.skin_active_tag))
+            StatusTag(StatusKind.GOOD, active.english, active.kana, Modifier.padding(top = 4.dp, start = 4.dp))
+        }
     }
 }
 
@@ -100,7 +116,9 @@ private fun SkinPreview(skin: Skin, settings: AppSettings) {
     }
     BoxWithConstraints(Modifier.fillMaxSize().clearAndSetSemantics {}) {
         val scale = maxWidth.value / PREVIEW_WIDTH_DP
-        AppTheme(skin, settings) {
+        // A small card has no room for 40 cells, so the preview draws a coarser segmented bar.
+        val shown = remember(skin) { skin.copy(player = skin.player.copy(seekSegments = PREVIEW_CELLS)) }
+        AppTheme(shown, settings) {
             Box(
                 Modifier
                     // Anchored top-left (and allowed to overflow) so scaling about the origin fits the card.
@@ -122,3 +140,5 @@ private fun SkinPreview(skin: Skin, settings: AppSettings) {
         }
     }
 }
+
+private const val PREVIEW_CELLS = 14

@@ -1,5 +1,12 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.settings
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
+import io.github.aceattacker77.nakedmusicplayer.ui.components.themedButtonShape
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import io.github.aceattacker77.nakedmusicplayer.ui.components.ScreenTitle
@@ -105,7 +112,7 @@ fun SkinPickerScreen(
                 }
             },
             actions = {
-                TextButton(onClick = { importLauncher.launch(arrayOf("*/*")) }) { Text(stringResource(R.string.skin_import)) }
+                ImportSkinButton(onClick = { importLauncher.launch(arrayOf("*/*")) }, accent = titleCards)
             },
             windowInsets = WindowInsets(0),
         )
@@ -205,3 +212,20 @@ private suspend fun writeSkin(
             true
         }.getOrDefault(false)
     }
+
+/** The import action: a text button, or with [accent] a themed outlined button with a plus icon and the skin's kana. */
+@Composable
+internal fun ImportSkinButton(onClick: () -> Unit, accent: Boolean) {
+    val label = stringResource(R.string.skin_import)
+    if (accent) {
+        val kana = skinText("import_kana", "").kana
+        OutlinedButton(onClick = onClick, shape = themedButtonShape()) {
+            Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(skinLabel(label))
+            if (kana != null) Text(" $kana", modifier = Modifier.clearAndSetSemantics {})
+        }
+    } else {
+        TextButton(onClick = onClick) { Text(label) }
+    }
+}
