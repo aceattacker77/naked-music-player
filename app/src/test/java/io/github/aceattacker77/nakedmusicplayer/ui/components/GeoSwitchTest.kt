@@ -63,4 +63,9 @@ class GeoSwitchTest {
         show(checked = false)
         compose.onNodeWithTag("geo-switch").assertIsEnabled().assertTouchHeightIsEqualTo(48.dp)
     }
+
+    @Test fun disabledSwitch_isDimmed() {
+        assertThat(geoSwitchAlpha(enabled = true)).isEqualTo(1f)
+        assertThat(geoSwitchAlpha(enabled = false)).isLessThan(0.5f)
+    }
 }
