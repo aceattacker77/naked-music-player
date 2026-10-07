@@ -16,6 +16,7 @@ data class SkinJson(
     val player: PlayerJson? = null,
     val layout: LayoutJson? = null,
     val components: ComponentsJson? = null,
+    val strings: Map<String, String>? = null,
 )
 
 @Serializable
@@ -67,6 +68,11 @@ data class ComponentsJson(
     val segmentedMeters: Boolean? = null,
     val navStyle: String? = null,
     val rowEdge: Boolean? = null,
+    val statusTags: Boolean? = null,
+    val titleCards: Boolean? = null,
+    val panelHeader: Boolean? = null,
+    val squareSwitch: Boolean? = null,
+    val glow: String? = null,
 )
 
 @Serializable

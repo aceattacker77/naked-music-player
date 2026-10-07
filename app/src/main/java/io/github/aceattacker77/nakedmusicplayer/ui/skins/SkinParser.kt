@@ -143,6 +143,12 @@ object SkinParser {
             navStyle = dto.components?.navStyle?.let { NavStyle.entries[enumIndex("components.navStyle", it, NAV_STYLES)] }
                 ?: defaults.navStyle,
             rowEdge = dto.components?.rowEdge ?: defaults.rowEdge,
+            statusTags = dto.components?.statusTags ?: defaults.statusTags,
+            titleCards = dto.components?.titleCards ?: defaults.titleCards,
+            panelHeader = dto.components?.panelHeader ?: defaults.panelHeader,
+            squareSwitch = dto.components?.squareSwitch ?: defaults.squareSwitch,
+            glow = dto.components?.glow?.let { GlowMode.entries[enumIndex("components.glow", it, GLOW_MODES)] } ?: defaults.glow,
+            strings = dto.strings?.let(::parseStrings) ?: defaults.strings,
         )
         return SkinParseResult.Ok(skin, referenced)
     }
@@ -157,6 +163,9 @@ object SkinParser {
     private val ART_PLACEHOLDERS = listOf("note", "hexagon")
     private val SEEK_COLORS = listOf("primary", "tertiary")
     private val NAV_STYLES = listOf("material", "block")
+    private val GLOW_MODES = listOf("off", "always", "dark")
+    private const val MAX_STRINGS = 20
+    private const val MAX_STRING_LENGTH = 64
     private val CORNER_STYLES = listOf("round", "chamfer")
     private val CONTROL_SIZES = listOf("small", "medium", "large")
     private val LAYOUT_TYPES = listOf("classic", "vinyl", "minimal", "cassette", "compact")
@@ -169,6 +178,21 @@ object SkinParser {
     private fun enumOf(field: String, value: String, options: List<String>): String {
         if (value !in options) throw SkinError("invalid value '$value' for '$field'")
         return value
+    }
+
+    /** The strings pack: at most [MAX_STRINGS] entries, whitelisted keys only, `English|Kana` split at the first bar. */
+    private fun parseStrings(raw: Map<String, String>): Map<String, SkinString> {
+        if (raw.size > MAX_STRINGS) throw SkinError("strings has more than $MAX_STRINGS entries")
+        return raw.filterKeys { it in SKIN_STRING_KEYS }.mapValues { (key, value) ->
+            if (value.length > MAX_STRING_LENGTH) {
+                throw SkinError("invalid value for 'strings.$key': longer than $MAX_STRING_LENGTH characters")
+            }
+            val bar = value.indexOf('|')
+            val english = (if (bar < 0) value else value.substring(0, bar)).trim()
+            if (english.isEmpty()) throw SkinError("invalid value '$value' for 'strings.$key'")
+            val kana = if (bar < 0) null else value.substring(bar + 1).trim().ifEmpty { null }
+            SkinString(english, kana)
+        }
     }
 
     private fun <T : Comparable<T>> requireIn(field: String, value: T, range: ClosedRange<T>) {

@@ -31,6 +31,17 @@ enum class CornerStyle { ROUND, CHAMFER }
 enum class ArtPlaceholder { NOTE, HEXAGON }
 enum class SeekColor { PRIMARY, TERTIARY }
 enum class NavStyle { MATERIAL, BLOCK }
+enum class GlowMode { OFF, ALWAYS, DARK }
+
+/** A short string a skin supplies for a fixed slot: the English word (also the accessible name) and optional kana. */
+data class SkinString(val english: String, val kana: String?)
+
+/** The only keys a skin's `strings` map may set; anything else is ignored. */
+internal val SKIN_STRING_KEYS = setOf(
+    "now_playing_status", "now_playing_paused", "unplayable_tag", "eq_enabled_tag", "skin_active_tag",
+    "library_kicker", "albums_kicker", "artists_kicker", "playlists_kicker", "eq_kicker", "skins_kicker",
+    "queue_kana", "sort_kana", "import_kana", "save_kana",
+)
 enum class ControlSize { SMALL, MEDIUM, LARGE }
 enum class LayoutType { CLASSIC, VINYL, MINIMAL, CASSETTE, COMPACT }
 enum class ArtPosition { TOP, LEFT, CENTER }
@@ -83,6 +94,12 @@ data class Skin(
     val segmentedMeters: Boolean = false,
     val navStyle: NavStyle = NavStyle.MATERIAL,
     val rowEdge: Boolean = false,
+    val statusTags: Boolean = false,
+    val titleCards: Boolean = false,
+    val panelHeader: Boolean = false,
+    val squareSwitch: Boolean = false,
+    val glow: GlowMode = GlowMode.OFF,
+    val strings: Map<String, SkinString> = emptyMap(),
 ) {
     /** The font file for [role]: its own entry when the skin sets one, else the shared `fontFamily`. */
     fun fontPathFor(role: FontRole): String? = when (role) {

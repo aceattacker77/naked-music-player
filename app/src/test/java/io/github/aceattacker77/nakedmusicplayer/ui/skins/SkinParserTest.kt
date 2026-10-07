@@ -323,4 +323,85 @@ class SkinParserTest {
         assertThat(error(minimal(""","typography":{"labelLetterSpacingEm":0.5000000001}""")))
             .isEqualTo("invalid value '0.5000000001' for 'typography.labelLetterSpacingEm'")
     }
+
+    private fun strings(vararg pairs: Pair<String, String>) =
+        minimal(""","strings":{""" + pairs.joinToString(",") { (k, v) -> "\"$k\":\"$v\"" } + "}")
+
+    @Test fun accentFields_defaultToToday() {
+        val skin = ok(minimal()).skin
+        assertThat(skin.statusTags).isFalse()
+        assertThat(skin.titleCards).isFalse()
+        assertThat(skin.panelHeader).isFalse()
+        assertThat(skin.squareSwitch).isFalse()
+        assertThat(skin.glow).isEqualTo(GlowMode.OFF)
+        assertThat(skin.strings).isEmpty()
+    }
+
+    @Test fun accentFields_areParsed() {
+        val skin = ok(
+            minimal(""","components":{"statusTags":true,"titleCards":true,"panelHeader":true,"squareSwitch":true,"glow":"dark"}"""),
+        ).skin
+        assertThat(skin.statusTags).isTrue()
+        assertThat(skin.titleCards).isTrue()
+        assertThat(skin.panelHeader).isTrue()
+        assertThat(skin.squareSwitch).isTrue()
+        assertThat(skin.glow).isEqualTo(GlowMode.DARK)
+    }
+
+    @Test fun glow_unknownValueIsError() {
+        assertThat(error(minimal(""","components":{"glow":"sometimes"}""")))
+            .isEqualTo("invalid value 'sometimes' for 'components.glow'")
+    }
+
+    @Test fun strings_areParsedAndSplitAtTheFirstBar() {
+        val skin = ok(
+            strings(
+                "now_playing_status" to "Playing|再生",
+                "library_kicker" to "A|B|C",
+                "eq_kicker" to "Word|",
+                "skins_kicker" to "Plain",
+            ),
+        ).skin
+        assertThat(skin.strings["now_playing_status"]).isEqualTo(SkinString("Playing", "再生"))
+        assertThat(skin.strings["library_kicker"]).isEqualTo(SkinString("A", "B|C"))
+        assertThat(skin.strings["eq_kicker"]).isEqualTo(SkinString("Word", null))
+        assertThat(skin.strings["skins_kicker"]).isEqualTo(SkinString("Plain", null))
+    }
+
+    @Test fun strings_unknownKeysAreIgnored() {
+        val skin = ok(strings("library_kicker" to "Library", "not_a_key" to "x")).skin
+        assertThat(skin.strings.keys).containsExactly("library_kicker")
+    }
+
+    @Test fun strings_twentyEntriesAccepted_twentyOneRejected() {
+        val twenty = (1..20).map { "unknown_$it" to "x" }.toTypedArray()
+        ok(strings(*twenty))
+        val twentyOne = (1..21).map { "unknown_$it" to "x" }.toTypedArray()
+        assertThat(error(strings(*twentyOne))).isEqualTo("strings has more than 20 entries")
+    }
+
+    @Test fun strings_valueLengthBoundary() {
+        ok(strings("library_kicker" to "x".repeat(64)))
+        assertThat(error(strings("library_kicker" to "x".repeat(65))))
+            .isEqualTo("invalid value for 'strings.library_kicker': longer than 64 characters")
+    }
+
+    @Test fun strings_emptyEnglishIsRejected() {
+        assertThat(error(strings("library_kicker" to "|x")))
+            .isEqualTo("invalid value '|x' for 'strings.library_kicker'")
+        assertThat(error(strings("library_kicker" to "  |x")))
+            .isEqualTo("invalid value '  |x' for 'strings.library_kicker'")
+    }
+
+    @Test fun strings_inheritFromDefaultsUnlessThePackIsPresent() {
+        val base = defaults.copy(strings = mapOf("library_kicker" to SkinString("Base", null)))
+        val inherited = (SkinParser.parse(minimal(), base) as SkinParseResult.Ok).skin
+        assertThat(inherited.strings).containsExactly("library_kicker", SkinString("Base", null))
+        val replaced = (SkinParser.parse(strings("eq_kicker" to "Audio"), base) as SkinParseResult.Ok).skin
+        assertThat(replaced.strings.keys).containsExactly("eq_kicker")
+    }
+
+    @Test fun strings_wrongTypeIsNotValidJson() {
+        assertThat(error(minimal(""","strings":"x""""))).isEqualTo("skin.json is not valid JSON")
+    }
 }
