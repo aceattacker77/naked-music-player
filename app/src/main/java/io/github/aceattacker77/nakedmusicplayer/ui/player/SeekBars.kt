@@ -1,7 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.player
 
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
-import kotlin.math.floor
 import java.util.Locale
 import androidx.compose.ui.geometry.Size
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.SeekColor
@@ -161,16 +160,6 @@ fun SeekBarWithTimes(
         SeekBar(style, positionMs, durationMs, onSeek, isPlaying = isPlaying, segments = segments, seekColor = seekColor, onDragFraction = { dragging = it })
         SeekTimes(positionMs, durationMs)
     }
-}
-
-/** How many of [segments] cells are filled at [fraction] (floored; out-of-range and NaN inputs are clamped). */
-internal fun segmentsFilled(fraction: Float, segments: Int): Int =
-    if (fraction.isNaN()) 0 else floor(fraction.coerceIn(0f, 1f) * segments).toInt().coerceIn(0, segments)
-
-/** How many cells fit when each needs at least [minCellPx] plus a gap; never more than [segments], 0 when none fit. */
-internal fun segmentCountFor(segments: Int, widthPx: Float, gapPx: Float, minCellPx: Float): Int {
-    if (widthPx <= 0f) return 0
-    return floor((widthPx + gapPx) / (minCellPx + gapPx)).toInt().coerceIn(0, segments)
 }
 
 /** The position as a percentage with one decimal, trailing zero kept: `31.3 %`. */

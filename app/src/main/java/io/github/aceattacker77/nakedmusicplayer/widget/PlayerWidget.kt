@@ -1,6 +1,5 @@
 package io.github.aceattacker77.nakedmusicplayer.widget
 
-import kotlin.math.roundToInt
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.SeekColor
 import io.github.aceattacker77.nakedmusicplayer.ui.player.segmentsFilled
 import io.github.aceattacker77.nakedmusicplayer.ui.player.segmentCountFor
@@ -265,7 +264,7 @@ private fun SegmentedProgress(progress: Float, style: WidgetStyle, widthDp: Dp) 
     }
     Image(
         provider = ImageProvider(bitmap),
-        contentDescription = context.getString(R.string.widget_progress, (progress * 100).roundToInt()),
+        contentDescription = context.getString(R.string.widget_progress, progressPercent(progress)),
         modifier = GlanceModifier.fillMaxWidth().height(SEGMENT_BAR_HEIGHT_DP.dp).semantics { testTag = "widget-segmented-progress" },
         // Glance lays the widget out for a size from its responsive set, which can be narrower than the real widget; stretch
         // the bitmap to the width it is given rather than letting it keep its aspect ratio and float in the middle.

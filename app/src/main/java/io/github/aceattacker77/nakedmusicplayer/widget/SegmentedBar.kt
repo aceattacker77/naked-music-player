@@ -5,6 +5,11 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import io.github.aceattacker77.nakedmusicplayer.ui.player.segmentCountFor
+import kotlin.math.floor
+
+/** The progress as a whole percentage, rounded down like the filled cells; out-of-range and NaN inputs are clamped. */
+internal fun progressPercent(progress: Float): Int =
+    if (progress.isNaN()) 0 else floor(progress.coerceIn(0f, 1f) * 100f).toInt()
 
 /**
  * The cells of a segmented bar: equal widths separated by [gapPx], spanning [widthPx]. Fewer than [cells] are used when
