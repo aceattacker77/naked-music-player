@@ -41,4 +41,14 @@ class OrnamentTest {
             ),
         )
     }
+
+    @Test fun accents_areOnlyThePhaseThreeFields() {
+        assertThat(Ornament.OFF.accents).isFalse()
+        assertThat(Ornament.OFF.copy(statusTags = true).accents).isTrue()
+        assertThat(Ornament.OFF.copy(titleCards = true).accents).isTrue()
+        assertThat(Ornament.OFF.copy(panelHeader = true).accents).isTrue()
+        assertThat(Ornament.OFF.copy(squareSwitch = true).accents).isTrue()
+        // Fields from earlier phases do not switch the Phase 3 restyles on.
+        assertThat(Ornament.OFF.copy(brackets = true, segmentedMeters = true, rowEdge = true, navBlock = true).accents).isFalse()
+    }
 }

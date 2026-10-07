@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.library
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinAccent
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import io.github.aceattacker77.nakedmusicplayer.ui.components.themedButtonShape
@@ -124,8 +125,10 @@ internal fun SortBar(sort: SongSort, onSort: (SongSort) -> Unit, trackCount: Int
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (titleCards) {
+            val countText = pluralStringResource(R.plurals.songs_count, trackCount, trackCount)
             Text(
-                text = skinLabel(pluralStringResource(R.plurals.songs_count, trackCount, trackCount)),
+                text = skinLabel(countText),
+                modifier = Modifier.originalLabel(countText),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -140,7 +143,7 @@ internal fun SortBar(sort: SongSort, onSort: (SongSort) -> Unit, trackCount: Int
         Box {
             if (titleCards) {
                 val sortName = stringResource(R.string.sort)
-                val kana = skinText("sort_kana", "").kana
+                val kana = skinAccent("sort_kana")
                 OutlinedButton(
                     onClick = { open = true },
                     shape = themedButtonShape(),

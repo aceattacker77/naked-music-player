@@ -71,9 +71,9 @@ fun SkinPreviewCard(
         }
     }
     Column(modifier.testTag("skin-card-${skin.id}")) {
-        if (selected && ornament.brackets) {
-            // The active card is a bracketed live panel in a skin that uses brackets.
-            GeoPanel(live = true, content = previewBox)
+        if (selected && ornament.brackets && ornament.accents) {
+            // The active card is a bracketed live panel in a skin that uses brackets and the Phase 3 accents.
+            GeoPanel(modifier = Modifier.testTag("active-panel"), live = true, content = previewBox)
         } else {
             Surface(
                 shape = shape,

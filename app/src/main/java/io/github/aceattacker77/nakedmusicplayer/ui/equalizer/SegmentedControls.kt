@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +30,7 @@ import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 @Composable
 internal fun SegmentedTrack(filled: Int, cells: Int, fill: Color, modifier: Modifier = Modifier) {
     val border = MaterialTheme.colorScheme.outline
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     Canvas(modifier.fillMaxWidth().height(14.dp)) {
         if (cells <= 0) return@Canvas
         val gap = 3.dp.toPx()
@@ -36,7 +40,7 @@ internal fun SegmentedTrack(filled: Int, cells: Int, fill: Color, modifier: Modi
         val outline = Stroke(stroke)
         repeat(cells) { i ->
             val left = i * (cellWidth + gap)
-            if (i < filled) drawRect(fill, Offset(left, 0f), Size(cellWidth, size.height))
+            if (cellFilled(i, filled, cells, rtl)) drawRect(fill, Offset(left, 0f), Size(cellWidth, size.height))
             drawRect(border, Offset(left + stroke / 2, stroke / 2), Size(cellWidth - stroke, size.height - stroke), style = outline)
         }
     }
@@ -46,7 +50,12 @@ internal fun SegmentedTrack(filled: Int, cells: Int, fill: Color, modifier: Modi
 @Composable
 internal fun Readout(label: String, value: String, unit: String, modifier: Modifier = Modifier, rule: Color = MaterialTheme.colorScheme.secondary) {
     Column(modifier.semantics(mergeDescendants = true) {}) {
-        Text(skinLabel(label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = skinLabel(label),
+            modifier = Modifier.originalLabel(label),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
                 text = value,

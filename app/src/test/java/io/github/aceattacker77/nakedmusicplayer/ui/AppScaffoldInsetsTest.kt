@@ -14,4 +14,8 @@ class AppScaffoldInsetsTest {
         assertThat(scaffoldContentInsetSides(useGeoBar = true))
             .isEqualTo(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     }
+
+    @Test fun titleCardBar_padsTheTopAndBothSidesLikeTheMaterialBar() {
+        assertThat(titleBarInsetSides()).isEqualTo(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+    }
 }

@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinAccent
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.TextAutoSize
 import io.github.aceattacker77.nakedmusicplayer.ui.player.segmentsFilled
@@ -224,14 +227,15 @@ private fun EqualizerControls(caps: EqCapabilities, state: EqState, controller: 
 
         val saveLabel = stringResource(R.string.eq_save_preset)
         val saveModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        if (ornament.squareSwitch || ornament.panelHeader || ornament.segmentedMeters) {
-            val kana = skinText("save_kana", "").kana
-            Button(onClick = { savingPreset = true }, shape = themedButtonShape(), modifier = saveModifier) {
+        val buttonShape = if (ornament.accents) themedButtonShape() else ButtonDefaults.outlinedShape
+        if (ornament.accents) {
+            val kana = skinAccent("save_kana")
+            Button(onClick = { savingPreset = true }, shape = buttonShape, modifier = saveModifier) {
                 Text(saveLabel)
                 if (kana != null) Text(" $kana", modifier = Modifier.clearAndSetSemantics {})
             }
         } else {
-            OutlinedButton(onClick = { savingPreset = true }, shape = themedButtonShape(), modifier = saveModifier) { Text(saveLabel) }
+            OutlinedButton(onClick = { savingPreset = true }, shape = buttonShape, modifier = saveModifier) { Text(saveLabel) }
         }
 
         SystemEqualizerRow()
@@ -262,7 +266,8 @@ private fun PresetPicker(caps: EqCapabilities, state: EqState, controller: Equal
     } ?: stringResource(R.string.eq_preset_custom)
 
     Box(Modifier.padding(horizontal = 16.dp)) {
-        OutlinedButton(onClick = { open = true }, shape = themedButtonShape(), modifier = Modifier.testTag("eq-preset-button")) {
+        val presetShape = if (LocalOrnament.current.accents) themedButtonShape() else ButtonDefaults.outlinedShape
+        OutlinedButton(onClick = { open = true }, shape = presetShape, modifier = Modifier.testTag("eq-preset-button")) {
             Text("${stringResource(R.string.eq_preset)}: $current")
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
@@ -321,7 +326,11 @@ private fun SliderRow(
     val fraction = ((value - range.start) / (range.endInclusive - range.start)).coerceIn(0f, 1f)
     Column(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(if (segmented) skinLabel(label) else label, style = if (segmented) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyLarge)
+            Text(
+                text = if (segmented) skinLabel(label) else label,
+                modifier = if (segmented) Modifier.originalLabel(label) else Modifier,
+                style = if (segmented) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyLarge,
+            )
             Text(
                 text = if (segmented) positionPercentText(fraction) else valueText,
                 style = if (segmented) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyMedium,

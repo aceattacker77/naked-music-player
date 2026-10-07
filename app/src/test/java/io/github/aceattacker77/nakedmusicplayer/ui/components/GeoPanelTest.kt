@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -58,4 +59,14 @@ class GeoPanelTest {
     @Test fun livePanel_glowAlways_keepsItsContent() = livePanelShows(GlowMode.ALWAYS)
 
     @Test fun livePanel_glowDark_keepsItsContent() = livePanelShows(GlowMode.DARK)
+
+    @Test fun title_keepsItsOriginalAccessibleTextUnderLabelCaps() {
+        compose.setContent {
+            AppTheme(Skin.FALLBACK.copy(labelCaps = true), AppSettings(dynamicColor = false)) {
+                GeoPanel(title = "Bands", code = "05 CH") { Text("body") }
+            }
+        }
+        compose.onNodeWithText("BANDS").assertExists()
+        compose.onNodeWithContentDescription("Bands", useUnmergedTree = true).assertExists()
+    }
 }

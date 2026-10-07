@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui
 
+import androidx.compose.foundation.layout.systemBars
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
 import io.github.aceattacker77.nakedmusicplayer.ui.components.ScreenTitle
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,6 +64,9 @@ private val tabs = listOf(
  */
 internal fun scaffoldContentInsetSides(useGeoBar: Boolean): WindowInsetsSides? =
     if (useGeoBar) WindowInsetsSides.Top + WindowInsetsSides.Horizontal else null
+
+/** The insets the title-card header pads: the top and both sides, like the Material top bar it replaces. */
+internal fun titleBarInsetSides(): WindowInsetsSides = WindowInsetsSides.Top + WindowInsetsSides.Horizontal
 
 private fun navigateToTab(nav: NavHostController, tab: Tab) {
     nav.navigate(tab.route) {
@@ -186,7 +190,7 @@ private fun TitleCardBar(tab: Tab?, onSearch: () -> Unit, onSettings: () -> Unit
         Playlists::class -> "playlists_kicker" to R.string.kicker_playlists
         else -> "library_kicker" to R.string.kicker_library
     }
-    Column(Modifier.windowInsetsPadding(WindowInsets.statusBars)) {
+    Column(Modifier.windowInsetsPadding(WindowInsets.systemBars.only(titleBarInsetSides()))) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.End) {
             LibraryActions(onSearch, onSettings)
         }

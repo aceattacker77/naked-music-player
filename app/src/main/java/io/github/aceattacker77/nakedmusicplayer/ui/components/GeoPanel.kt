@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import android.os.Build
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -55,7 +56,7 @@ fun GeoPanel(
                     Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text(skinLabel(title), style = MaterialTheme.typography.labelMedium, color = tone, maxLines = 1)
+                    Text(skinLabel(title), Modifier.originalLabel(title), style = MaterialTheme.typography.labelMedium, color = tone, maxLines = 1)
                     if (code != null) {
                         Text(code, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                     }

@@ -142,7 +142,7 @@ A map from a slot name to `"English"` or `"English|Kana"` (the first `|` splits 
 | `eq_enabled_tag` | the Equalizer's Enabled tag |
 | `skin_active_tag` | the Active tag on the selected skin card |
 | `library_kicker`, `albums_kicker`, `artists_kicker`, `playlists_kicker`, `eq_kicker`, `skins_kicker` | the kicker above each screen title |
-| `sort_kana`, `import_kana`, `save_kana` | the kana accent on the sort, import and save-preset buttons (`queue_kana` is reserved) |
+| `sort_kana`, `import_kana`, `save_kana` | the accent on the sort, import and save-preset buttons: the kana half of `"English\|Kana"`, or the whole value when it has no `\|`, so `"順"` and `"Sort\|順"` both show `順` (`queue_kana` is reserved) |
 
 Kana glyphs use the system font until a font that includes them is bundled.
 

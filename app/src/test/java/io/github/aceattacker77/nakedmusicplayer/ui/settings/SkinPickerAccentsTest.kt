@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.settings
 
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -70,5 +71,21 @@ class SkinPickerAccentsTest {
         }
         compose.onNodeWithText("Import skin").performClick()
         assertThat(clicks).isEqualTo(1)
+    }
+
+    @Test fun selectedCard_withBracketsOnly_keepsTheClassicBorder() {
+        showCard(Ornament.OFF.copy(brackets = true), selected = true)
+        compose.onNodeWithTag("active-panel", useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test fun selectedCard_withBracketsAndAccents_isABracketedPanel() {
+        showCard(Ornament.OFF.copy(brackets = true, statusTags = true), selected = true)
+        compose.onNodeWithTag("active-panel", useUnmergedTree = true).assertExists()
+    }
+
+    @Test fun importButton_keepsItsOriginalAccessibleTextUnderLabelCaps() {
+        val skin = Skin.FALLBACK.copy(labelCaps = true)
+        compose.setContent { AppTheme(skin, settings) { ImportSkinButton(onClick = {}, accent = true) } }
+        compose.onNodeWithContentDescription("Import skin", useUnmergedTree = true).assertExists()
     }
 }

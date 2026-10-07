@@ -20,6 +20,9 @@ data class Ornament(
     val squareSwitch: Boolean = false,
     val glow: GlowMode = GlowMode.OFF,
 ) {
+    /** True when the skin sets any Phase 3 field (status tags, title cards, panel header, square switch). */
+    val accents: Boolean get() = statusTags || titleCards || panelHeader || squareSwitch
+
     companion object {
         val OFF = Ornament(ArtPlaceholder.NOTE, artBorder = false, brackets = false, segmentedMeters = false, navBlock = false, rowEdge = false)
     }

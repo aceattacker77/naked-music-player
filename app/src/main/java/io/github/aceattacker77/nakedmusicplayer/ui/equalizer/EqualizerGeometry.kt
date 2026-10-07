@@ -13,6 +13,10 @@ internal fun bandCellsFilled(levelMb: Int, range: IntRange, cells: Int): Int {
     return (fraction * cells).roundToInt().coerceIn(0, cells)
 }
 
+/** Whether cell [index] of [cells] is filled; in a right-to-left layout the cells fill from the right, like the thumb moves. */
+internal fun cellFilled(index: Int, filled: Int, cells: Int, rtl: Boolean): Boolean =
+    (if (rtl) cells - 1 - index else index) < filled
+
 /** A level in dB with one decimal and its sign kept (`-3.0`, `0.0`); never `-0.0`. */
 internal fun readoutText(db: Float): String {
     val text = String.format(Locale.ROOT, "%.1f", db)

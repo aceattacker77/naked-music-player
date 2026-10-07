@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.assert
@@ -205,5 +207,13 @@ class EqualizerScreenTest {
         assertThat(results).isNotEmpty()
         assertThat(results.first().lineCount).isEqualTo(1)
         assertThat(results.first().hasVisualOverflow).isFalse()
+    }
+
+    @Test fun restyledLabels_keepTheirOriginalAccessibleNamesUnderLabelCaps() {
+        launch(skin = accentsSkin.copy(labelCaps = true))
+        // Bass and preamp each have the slider's own name plus the label's, so there are two nodes per name.
+        compose.onAllNodesWithContentDescription("Bass boost", useUnmergedTree = true).assertCountEquals(2)
+        compose.onAllNodesWithContentDescription("Preamp", useUnmergedTree = true).assertCountEquals(2)
+        compose.onAllNodesWithContentDescription("Bands", useUnmergedTree = true).assertCountEquals(1)
     }
 }

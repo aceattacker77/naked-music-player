@@ -16,6 +16,13 @@ internal fun resolveSkinString(strings: Map<String, SkinString>, key: String, fa
 @Composable
 fun skinText(key: String, fallback: String): SkinString = resolveSkinString(LocalSkinStrings.current, key, fallback)
 
+/** The accent for a `*_kana` slot: the kana half, else the English half (a value without a bar), else null when unset. */
+internal fun resolveAccent(strings: Map<String, SkinString>, key: String): String? = strings[key]?.let { it.kana ?: it.english }
+
+/** The accent shown on a button for the skin's `*_kana` slot [key], or null. */
+@Composable
+fun skinAccent(key: String): String? = resolveAccent(LocalSkinStrings.current, key)
+
 /** Whether the glow draws: never when off, always when on, and only in a dark scheme for `dark`. */
 fun glowActive(mode: GlowMode, isDark: Boolean): Boolean = when (mode) {
     GlowMode.OFF -> false

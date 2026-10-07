@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.library
 
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -18,9 +19,9 @@ import org.robolectric.RobolectricTestRunner
 class SongsHeaderTest {
     @get:Rule val compose = createComposeRule()
 
-    private fun show(ornament: Ornament, count: Int) {
+    private fun show(ornament: Ornament, count: Int, skin: Skin = Skin.FALLBACK) {
         compose.setContent {
-            AppTheme(Skin.FALLBACK, AppSettings(dynamicColor = false)) {
+            AppTheme(skin, AppSettings(dynamicColor = false)) {
                 CompositionLocalProvider(LocalOrnament provides ornament) {
                     SortBar(sort = SongSort.TITLE, onSort = {}, trackCount = count)
                 }
@@ -47,5 +48,11 @@ class SongsHeaderTest {
     @Test fun withoutTitleCards_thereIsNoCount() {
         show(Ornament.OFF, 25)
         compose.onNodeWithText("25 songs").assertDoesNotExist()
+    }
+
+    @Test fun titleCards_countKeepsItsOriginalAccessibleTextUnderLabelCaps() {
+        show(Ornament.OFF.copy(titleCards = true), 25, Skin.FALLBACK.copy(labelCaps = true))
+        compose.onNodeWithText("25 SONGS").assertExists()
+        compose.onNodeWithContentDescription("25 songs", useUnmergedTree = true).assertExists()
     }
 }

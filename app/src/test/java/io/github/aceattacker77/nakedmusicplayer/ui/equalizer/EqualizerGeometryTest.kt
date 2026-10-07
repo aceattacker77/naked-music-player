@@ -47,4 +47,17 @@ class EqualizerGeometryTest {
         assertThat(bandsCode(3)).isEqualTo("03 CH")
         assertThat(bandsCode(12)).isEqualTo("12 CH")
     }
+
+    @Test fun cellFilled_leftToRight() {
+        assertThat(cellFilled(index = 0, filled = 3, cells = 10, rtl = false)).isTrue()
+        assertThat(cellFilled(index = 2, filled = 3, cells = 10, rtl = false)).isTrue()
+        assertThat(cellFilled(index = 3, filled = 3, cells = 10, rtl = false)).isFalse()
+    }
+
+    @Test fun cellFilled_rightToLeftFillsFromTheRight() {
+        assertThat(cellFilled(index = 9, filled = 3, cells = 10, rtl = true)).isTrue()
+        assertThat(cellFilled(index = 7, filled = 3, cells = 10, rtl = true)).isTrue()
+        assertThat(cellFilled(index = 6, filled = 3, cells = 10, rtl = true)).isFalse()
+        assertThat(cellFilled(index = 0, filled = 3, cells = 10, rtl = true)).isFalse()
+    }
 }

@@ -53,4 +53,16 @@ class SkinStringsTest {
         compose.setContent { Text(skinText("library_kicker", "Plain").english) }
         compose.onNodeWithText("Plain").assertExists()
     }
+
+    @Test fun accent_prefersTheKanaHalf() {
+        assertThat(resolveAccent(mapOf("sort_kana" to SkinString("Sort", "順")), "sort_kana")).isEqualTo("順")
+    }
+
+    @Test fun accent_fallsBackToTheEnglishHalfWhenThereIsNoBar() {
+        assertThat(resolveAccent(mapOf("sort_kana" to SkinString("順", null)), "sort_kana")).isEqualTo("順")
+    }
+
+    @Test fun accent_isNullWhenTheSlotIsAbsent() {
+        assertThat(resolveAccent(emptyMap(), "sort_kana")).isNull()
+    }
 }

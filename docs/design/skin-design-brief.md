@@ -62,12 +62,14 @@ Layouts are shown schematically; the numbers are in density-independent pixels (
 
 ```
 ┌──────────────────────────────┐
-│ ‹Title›        🔍   ⋮        │  top app bar: app name, search, overflow (Settings)
-│                  Title  ≡    │  sort bar: current sort + sort icon, right-aligned
+│ ‹Title›        🔍   ⋮        │  top app bar: app name, search, overflow (Settings); with `titleCards`, the actions
+│                              │  sit on the right and a title card follows: kicker, large squeezed title, rule
+│                  Title  ≡    │  sort bar: current sort + sort icon, right-aligned (with `titleCards`: the track
+│                              │  count on the left and a themed outlined sort button with its kana)
 │ ▢  Song title            3:36│  row: 48 dp artwork, title, "Artist · Album", duration
 │    Artist · Album          A │  ← A–Z fast scroller strip down the right edge
 │ ▢  Current song (accented)   │  the playing song's title uses `primary`
-│ ▢  ⚠ Unplayable file         │  warning icon in `error`
+│ ▢  ⚠ Unplayable file         │  warning icon in `error` (with `statusTags`: a lamp, `UNPLAYABLE` and kana, title struck through)
 │ ┌──────────────────────────┐ │
 │ │▢ Title  Artist     ▶  ⏭ │ │  mini player (§3.2)
 │ └──────────────────────────┘ │
@@ -113,13 +115,21 @@ A **Switch** row to enable it, a **Preset** selector (outlined button with a men
 slider, a **Preamp** slider (−6 to 0 dB) and a **Save as preset** outlined button. Standard Material switch and slider
 colours: `primary` for the active part, `surfaceVariant`/`onSurfaceVariant` for tracks and labels.
 
+A skin can restyle it with the `components` switches (§9): `squareSwitch` swaps the Material switch for a square one;
+`statusTags` adds an Enabled tag under the label when on; `panelHeader` frames the bands in a panel titled "Bands" with a
+`05 CH` code taken from the device's band count; `segmentedMeters` draws each band as 12 bordered cells (in `secondary`),
+the bass boost as a segmented meter with a percentage, and the preamp as a large readout that keeps trailing zeros;
+any of the Phase 3 switches also makes **Save as preset** the one solid button and gives the buttons the skin's chamfer.
+The cell counts come from the device's reported range, never a fixed ±12 dB. `titleCards` adds the title card above.
+
 ### 3.6 Settings and the skin picker
 
 - **Settings:** a list: Theme (three radio rows: System, Light, Dark), **Dynamic colour** switch, Skins, a Library
   section (minimum song length as four filter chips: Off, 15 s, 30 s, 60 s; excluded folders; folders to scan with
   **Add folder**; **Rescan now**), Equalizer, About. Section headers use `primary`.
 - **Skin picker:** a two-column grid of **live preview cards**: each card is a miniature Now Playing rendered in
-  that skin, with the skin name beneath and the active one outlined in its `primary`. Cards use `outlineVariant`
+  that skin, with the skin name beneath and the active one outlined in its `primary` (with `brackets` and a Phase 3 switch such as
+  `statusTags` it becomes a bracketed panel that can glow, with an Active tag beneath). Cards use `outlineVariant`
   borders. Long-press a card for Export and Delete. See [`reference/skin_picker_cards.png`](reference/skin_picker_cards.png).
   **The first thing a user sees of a new skin is its card, so the Now Playing design must read well at about
   170 dp wide.**
@@ -197,6 +207,10 @@ than by this app's own code, but they appear on screen all the same.
   horizontally, `labelCaps` uppercases the labels the app draws itself (sort label, bottom-bar tabs, Queue, seek-bar
   times, fast-scroller letters, the "No artwork" caption; not dialog or button text or unit labels such as the Equalizer's `Hz` and `dB`), and `labelLetterSpacingEm` (0–0.5,
   default 0 = Material's spacing) tracks the label styles. Check that a squeezed heading still reads at font scale 1.3.
+- Phase 3 adds three typographic elements built from those roles: the **kicker** above a title card (label font, tracked caps,
+  `primary`, with an optional `// kana` suffix), the **title** itself (heading font at about 44 sp, squeezed by `headingScaleX`,
+  shrinking toward 24 sp instead of clipping), and the **status tag word** (label font, tracked caps, in the tag's colour). Kana
+  from the `strings` map uses the system font until a font that includes the glyphs is bundled.
 - Where each style is used: list titles `bodyLarge`, list subtitles `bodyMedium`, durations and captions `bodySmall`, album-card titles `titleSmall`,
   Now Playing track title `headlineSmall`, artist `bodyLarge`, seek-bar times `labelMedium`, the queue button
   `labelLarge`, fast-scroller letters `labelSmall`. Top bars, dialogs, chips and buttons use the Material defaults.
@@ -442,6 +456,9 @@ Use this pattern when the job is to **revise a skin that already exists** rather
 palette, and change only what the brief lists under "What to change". The example below revises Geofront
 (`id` `com.nakedmusic.geofront`), a hard-edged black-and-orange skin, to use the container roles and separate fonts
 that format 1 now supports. Supply the existing `.mskin` alongside this brief.
+
+The current Geofront sample (version 1.4, `docs/skins/geofront/`) also uses the text accents described in §3 and §9: status tags,
+title cards, panel headers, the square switch, a dark-mode glow and a strings pack that gives the kickers and tags their kana.
 
 ### 13.1 What Geofront is today
 

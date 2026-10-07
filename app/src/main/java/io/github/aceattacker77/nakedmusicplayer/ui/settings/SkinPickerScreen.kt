@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.settings
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinAccent
 import androidx.compose.foundation.layout.padding
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.components.themedButtonShape
@@ -219,11 +221,11 @@ private suspend fun writeSkin(
 internal fun ImportSkinButton(onClick: () -> Unit, accent: Boolean) {
     val label = stringResource(R.string.skin_import)
     if (accent) {
-        val kana = skinText("import_kana", "").kana
+        val kana = skinAccent("import_kana")
         OutlinedButton(onClick = onClick, shape = themedButtonShape(), modifier = Modifier.padding(end = 8.dp)) {
             Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(6.dp))
-            Text(skinLabel(label))
+            Text(skinLabel(label), modifier = Modifier.originalLabel(label))
             if (kana != null) Text(" $kana", modifier = Modifier.clearAndSetSemantics {})
         }
     } else {
