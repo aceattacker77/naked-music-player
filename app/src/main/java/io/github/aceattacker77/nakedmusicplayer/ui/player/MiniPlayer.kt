@@ -116,7 +116,7 @@ fun MiniPlayer(
 
     if (brackets) {
         // Inset so the brackets, which draw outside the panel, stay visible; tonal elevation 0 keeps surfaceTint off it.
-        Box(Modifier.fillMaxWidth().padding(12.dp)) { GeoPanel(modifier = interaction, content = body) }
+        Box(Modifier.fillMaxWidth().padding(12.dp)) { GeoPanel(modifier = interaction, live = true, content = body) }
     } else {
         Surface(
             modifier = interaction,
