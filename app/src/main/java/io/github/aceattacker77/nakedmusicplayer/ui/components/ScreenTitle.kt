@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,6 +41,7 @@ fun ScreenTitle(kicker: SkinString, title: String, modifier: Modifier = Modifier
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.clearAndSetSemantics { text = AnnotatedString(kicker.english) },
         )
         Text(
@@ -48,6 +51,7 @@ fun ScreenTitle(kicker: SkinString, title: String, modifier: Modifier = Modifier
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             autoSize = TextAutoSize.StepBased(minFontSize = 24.sp, maxFontSize = 44.sp),
+            modifier = Modifier.semantics { heading() },
         )
         Box(
             Modifier.fillMaxWidth().padding(top = 8.dp).height(1.dp)

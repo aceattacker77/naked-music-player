@@ -145,7 +145,7 @@ read on its own.
 The widget also follows the ornament fields a skin already sets for Now Playing, with no extra fields: `components.brackets`
 draws a 1 dp `outline` frame and corner brackets in `primary`; `player.artPlaceholder: hexagon` puts a hexagon-and-note in the
 artwork tile when an album has no art; `player.artBorder` outlines the tile; and `player.seekBar: segmented` replaces the
-4×2 progress bar with a segmented one in `seekColor` (using `seekSegments`, fewer if the widget is narrow). Three things a
+4×2 progress bar with a segmented one in `seekColor` (using `seekSegments`, at most 33 cells because the widget is laid out for a 250 dp bar, and fewer on a narrower one). Three things a
 widget cannot do, whatever the skin says: it is never chamfered (it cannot clip to a path, so it stays a rectangle rounded by
 `cornerRadiusDp`; set that to 0 for a square one), it always uses the system font (it cannot load a skin font file), and it
 shows no kana or status tags.

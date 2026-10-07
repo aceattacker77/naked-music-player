@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.widget
 
+import android.content.Context
+import androidx.compose.ui.graphics.Color
 import androidx.glance.color.ColorProviders
 import androidx.glance.material3.ColorProviders
 import androidx.glance.unit.ColorProvider
@@ -19,7 +21,12 @@ fun widgetColorProviders(skin: Skin): ColorProviders = ColorProviders(
 /**
  * The widget's background. For a skin's own colours it is the skin's `surface`: Glance's `widgetBackground` role is a fixed system colour
  * that ignores the skin, so a skin's widget would show a tint from none of its schemes. With dynamic (wallpaper) colours Glance's own role
- * is the wallpaper-tinted container the widget has always used, so it stays.
+ * is the wallpaper-tinted container the widget has always used, so it stays. A skin's `surface` is forced opaque: the widget sits on the
+ * wallpaper, and a translucent one would be unreadable.
  */
 fun widgetBackground(colors: ColorProviders, dynamic: Boolean = false): ColorProvider =
-    if (dynamic) colors.widgetBackground else colors.surface
+    if (dynamic) colors.widgetBackground else OpaqueColorProvider(colors.surface)
+
+private class OpaqueColorProvider(private val source: ColorProvider) : ColorProvider {
+    override fun getColor(context: Context): Color = source.getColor(context).copy(alpha = 1f)
+}
