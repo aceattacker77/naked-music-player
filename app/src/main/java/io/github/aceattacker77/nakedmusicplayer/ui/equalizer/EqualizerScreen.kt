@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.text.TextAutoSize
 import io.github.aceattacker77.nakedmusicplayer.ui.player.segmentsFilled
 import io.github.aceattacker77.nakedmusicplayer.ui.player.positionPercentText
 import io.github.aceattacker77.nakedmusicplayer.ui.components.themedButtonShape
@@ -295,7 +297,13 @@ private fun BandColumn(index: Int, level: Int, freqHz: Int, range: IntRange, cel
             cells = cells,
             modifier = Modifier.height(SLIDER_HEIGHT_DP.dp).testTag("eq-band-$index"),
         )
-        Text(frequency, style = MaterialTheme.typography.labelMedium)
+        // Tracked label fonts are wider than the column; shrink toward 8 sp on one line instead of wrapping or clipping.
+        Text(
+            text = frequency,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = MaterialTheme.typography.labelMedium.fontSize),
+        )
     }
 }
 

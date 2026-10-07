@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.SemanticsMatcher
@@ -193,5 +194,16 @@ class EqualizerScreenTest {
         compose.onNodeWithTag("screen-title-rule", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("geo-panel-rule", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithTag("status-tag", useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    @Test fun frequencyLabel_staysOnOneLineWithWideTracking() {
+        // A tracked label font is wider than the 56 dp band column; "3.6 kHz" used to wrap onto two lines.
+        launch(skin = Skin.FALLBACK.copy(labelLetterSpacingEm = 0.4f))
+        val results = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+        compose.onNodeWithText("3.6 kHz").fetchSemanticsNode().config
+            .getOrNull(SemanticsActions.GetTextLayoutResult)?.action?.invoke(results)
+        assertThat(results).isNotEmpty()
+        assertThat(results.first().lineCount).isEqualTo(1)
+        assertThat(results.first().hasVisualOverflow).isFalse()
     }
 }
