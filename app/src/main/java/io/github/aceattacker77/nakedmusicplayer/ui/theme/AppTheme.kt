@@ -71,10 +71,11 @@ fun AppTheme(skin: Skin, settings: AppSettings, content: @Composable () -> Unit)
     }
     val ornament = remember(
         skin.player.artPlaceholder, skin.player.artBorder, skin.brackets, skin.segmentedMeters, skin.navStyle, skin.rowEdge,
+        skin.statusTags, skin.titleCards, skin.panelHeader, skin.squareSwitch, skin.glow,
     ) { ornamentOf(skin) }
     val shapes = remember(skin.cornerStyle, skin.chamferDp, skin.cornerRadiusDp) { shapesFor(skin) }
 
-    CompositionLocalProvider(LocalSkin provides skin, LocalLabelCaps provides skin.labelCaps, LocalOrnament provides ornament) {
+    CompositionLocalProvider(LocalSkin provides skin, LocalLabelCaps provides skin.labelCaps, LocalOrnament provides ornament, LocalSkinStrings provides skin.strings) {
         MaterialTheme(colorScheme = colors, typography = typography, shapes = shapes, content = content)
     }
 }

@@ -1,5 +1,6 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.theme
 
+import io.github.aceattacker77.nakedmusicplayer.ui.skins.GlowMode
 import androidx.compose.runtime.staticCompositionLocalOf
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.ArtPlaceholder
 import io.github.aceattacker77.nakedmusicplayer.ui.skins.NavStyle
@@ -13,6 +14,11 @@ data class Ornament(
     val segmentedMeters: Boolean,
     val navBlock: Boolean,
     val rowEdge: Boolean,
+    val statusTags: Boolean = false,
+    val titleCards: Boolean = false,
+    val panelHeader: Boolean = false,
+    val squareSwitch: Boolean = false,
+    val glow: GlowMode = GlowMode.OFF,
 ) {
     companion object {
         val OFF = Ornament(ArtPlaceholder.NOTE, artBorder = false, brackets = false, segmentedMeters = false, navBlock = false, rowEdge = false)
@@ -26,6 +32,11 @@ fun ornamentOf(skin: Skin): Ornament = Ornament(
     segmentedMeters = skin.segmentedMeters,
     navBlock = skin.navStyle == NavStyle.BLOCK,
     rowEdge = skin.rowEdge,
+    statusTags = skin.statusTags,
+    titleCards = skin.titleCards,
+    panelHeader = skin.panelHeader,
+    squareSwitch = skin.squareSwitch,
+    glow = skin.glow,
 )
 
 /** Off outside [AppTheme], so composables rendered without a theme (tests, previews) look as before. */
