@@ -47,7 +47,8 @@ fun unplayableDecoration(unplayable: Boolean, statusTags: Boolean): TextDecorati
 
 /**
  * A lamp (the only round element), the status word in tracked caps and an optional kana accent after a divider.
- * The whole tag is one accessibility node named [accessibleName]; the kana is decoration.
+ * The whole tag is one accessibility node named [accessibleName]; the kana is decoration. [tagged] false leaves off the test tag,
+ * for an invisible copy that only reserves the tag's space.
  */
 @Composable
 fun StatusTag(
@@ -56,10 +57,11 @@ fun StatusTag(
     kana: String?,
     modifier: Modifier = Modifier,
     accessibleName: String = word,
+    tagged: Boolean = true,
 ) {
     val colour = kind.color(MaterialTheme.colorScheme)
     Row(
-        modifier = modifier.testTag("status-tag").clearAndSetSemantics { contentDescription = accessibleName },
+        modifier = modifier.then(if (tagged) Modifier.testTag("status-tag") else Modifier).clearAndSetSemantics { contentDescription = accessibleName },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {

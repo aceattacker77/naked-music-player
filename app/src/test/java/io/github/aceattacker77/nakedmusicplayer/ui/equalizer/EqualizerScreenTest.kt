@@ -177,6 +177,14 @@ class EqualizerScreenTest {
         compose.onNodeWithTag("status-tag", useUnmergedTree = true).assertExists()
     }
 
+    @Test fun restyled_headerKeepsItsHeightWhenTheEnabledTagAppears() {
+        launch(skin = accentsSkin)
+        val before = compose.onNodeWithTag("eq-header").fetchSemanticsNode().size.height
+        compose.onNodeWithTag("eq-switch").performClick()
+        compose.waitForIdle()
+        assertThat(compose.onNodeWithTag("eq-header").fetchSemanticsNode().size.height).isEqualTo(before)
+    }
+
     @Test fun restyled_preampReadoutKeepsTrailingZeros() {
         launch(skin = accentsSkin)
         compose.onNodeWithText("0.0").assertExists()

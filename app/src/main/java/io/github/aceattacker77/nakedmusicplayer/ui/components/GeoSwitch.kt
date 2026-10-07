@@ -11,8 +11,12 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+
+/** The switch fades to Material's disabled opacity when it cannot be toggled. */
+internal fun geoSwitchAlpha(enabled: Boolean): Float = if (enabled) 1f else 0.38f
 
 /**
  * A square switch: a 52 by 28 dp track with a 1 dp border and a 22 dp square thumb, `tertiary` when on. It is a real
@@ -34,6 +38,7 @@ fun GeoSwitch(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, modifier:
     ) {
         Box(
             Modifier
+                .alpha(geoSwitchAlpha(onCheckedChange != null))
                 .size(width = 52.dp, height = 28.dp)
                 .border(1.dp, colors.outline)
                 .background(if (checked) colors.tertiary else colors.surfaceVariant)

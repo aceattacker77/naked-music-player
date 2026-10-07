@@ -32,6 +32,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -138,10 +140,16 @@ private fun EqualizerControls(caps: EqCapabilities, state: EqState, controller: 
         val ornament = LocalOrnament.current
         ListItem(
             headlineContent = { Text(stringResource(R.string.equalizer)) },
-            supportingContent = if (ornament.statusTags && state.enabled) {
+            supportingContent = if (ornament.statusTags) {
                 {
                     val tag = skinText("eq_enabled_tag", stringResource(R.string.eq_enabled_tag))
-                    StatusTag(StatusKind.GOOD, tag.english, tag.kana)
+                    // When off the tag is laid out but invisible and hidden from accessibility, so the row does not jump on switching on.
+                    StatusTag(
+                        StatusKind.GOOD, tag.english, tag.kana,
+                        modifier = if (state.enabled) Modifier else Modifier.alpha(0f).semantics { invisibleToUser() },
+                        accessibleName = if (state.enabled) tag.english else "",
+                        tagged = state.enabled,
+                    )
                 }
             } else {
                 null
@@ -157,7 +165,7 @@ private fun EqualizerControls(caps: EqCapabilities, state: EqState, controller: 
                     )
                 }
             },
-            modifier = Modifier.clickable { controller.setEnabled(!state.enabled) },
+            modifier = Modifier.testTag("eq-header").clickable { controller.setEnabled(!state.enabled) },
         )
         PresetPicker(caps, state, controller)
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
