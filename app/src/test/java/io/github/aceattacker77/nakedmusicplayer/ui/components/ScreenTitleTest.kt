@@ -65,4 +65,10 @@ class ScreenTitleTest {
         compose.onNodeWithText("Library").assertExists()
         compose.onNodeWithText("曲目", substring = true).assertDoesNotExist()
     }
+
+    @Test fun title_isExposedAsAHeading() {
+        show("Songs")
+        val node = compose.onNodeWithText("Songs").fetchSemanticsNode()
+        assertThat(node.config.contains(androidx.compose.ui.semantics.SemanticsProperties.Heading)).isTrue()
+    }
 }

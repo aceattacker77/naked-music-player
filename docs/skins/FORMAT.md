@@ -108,7 +108,7 @@ Each role font is a separate file in the archive, validated like `fontFamily`. A
 
 ### The home-screen widget
 
-The widget takes the skin's colours (it follows the system light/dark setting) and `cornerRadiusDp`, and reuses these fields with no extra ones: `components.brackets` (a 1 dp `outline` frame and corner brackets in `primary`), `player.artPlaceholder` `hexagon` (a hexagon-and-note in an empty artwork tile), `player.artBorder` (a 1 dp outline on the tile) and `player.seekBar` `segmented` (a segmented progress bar on the 4×2 widget, using `seekSegments` and `seekColor`). It is never chamfered, always uses the system font, and shows no kana, because a widget cannot clip to a path or load a font file.
+The widget takes the skin's colours (it follows the system light/dark setting) and `cornerRadiusDp`, and reuses these fields with no extra ones: `components.brackets` (a 1 dp `outline` frame and corner brackets in `primary`), `player.artPlaceholder` `hexagon` (a hexagon-and-note in an empty artwork tile), `player.artBorder` (a 1 dp outline on the tile) and `player.seekBar` `segmented` (a segmented progress bar on the 4×2 widget, using `seekColor` and up to 33 of the `seekSegments` cells). It is never chamfered, always uses the system font, and shows no kana, because a widget cannot clip to a path or load a font file.
 
 ### `layout`
 

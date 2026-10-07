@@ -47,4 +47,13 @@ class WidgetBackgroundTest {
         assertThat(widgetBackground(providers, dynamic = false).getColor(ctx))
             .isEqualTo(providers.surface.getColor(ctx))
     }
+
+    @Test fun background_isOpaque_evenWhenTheSkinsSurfaceIsTranslucent() {
+        val translucent = Skin.FALLBACK.copy(
+            light = lightColorScheme(surface = Color(0x80F6F2E8)),
+            dark = darkColorScheme(surface = Color(0x800B0B0E)),
+        )
+        val colour = widgetBackground(widgetColorProviders(translucent)).getColor(context(night = false))
+        assertThat(colour.toArgb()).isEqualTo(Color(0xFFF6F2E8).toArgb())
+    }
 }
