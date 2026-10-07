@@ -30,6 +30,7 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.layout.ContentScale
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.action.clickable
@@ -254,6 +255,9 @@ private fun SegmentedProgress(progress: Float, style: WidgetStyle, widthDp: Dp) 
         provider = ImageProvider(bitmap),
         contentDescription = context.getString(R.string.widget_progress, (progress * 100).roundToInt()),
         modifier = GlanceModifier.fillMaxWidth().height(SEGMENT_BAR_HEIGHT_DP.dp).semantics { testTag = "widget-segmented-progress" },
+        // Glance lays the widget out for a size from its responsive set, which can be narrower than the real widget; stretch
+        // the bitmap to the width it is given rather than letting it keep its aspect ratio and float in the middle.
+        contentScale = ContentScale.FillBounds,
     )
 }
 
