@@ -1,5 +1,9 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -119,5 +123,75 @@ class EqualizerScreenTest {
     @Test fun labelCaps_doesNotUppercaseTheUnits() {
         launch(skin = Skin.FALLBACK.copy(labelCaps = true))
         listOf("60 Hz", "3.6 kHz").forEach { compose.onNodeWithText(it).assertIsDisplayed() }
+    }
+
+    private val accentsSkin = Skin.FALLBACK.copy(
+        squareSwitch = true, panelHeader = true, segmentedMeters = true, statusTags = true, titleCards = true,
+    )
+
+    @Test fun restyled_keepsEveryControlAndTag() {
+        launch(skin = accentsSkin)
+        listOf("eq-switch", "eq-bass", "eq-preamp", "eq-preset-button").forEach { compose.onNodeWithTag(it).assertExists() }
+        (0..4).forEach { compose.onNodeWithTag("eq-band-$it").assertExists() }
+    }
+
+    @Test fun restyled_bandsPanelCodeComesFromTheDevice() {
+        launch(skin = accentsSkin)
+        compose.onNodeWithText("05 CH").assertExists()
+    }
+
+    @Test fun restyled_bandsPanelCodeFollowsABandCountOfThree() {
+        launch(
+            FakeAudioEffectsBackend.DEFAULT_CAPS.copy(bandCount = 3, centerFreqsHz = listOf(60_000, 230_000, 910_000)),
+            skin = accentsSkin,
+        )
+        compose.onNodeWithText("03 CH").assertExists()
+    }
+
+    @Test fun restyled_bandSliderKeepsItsSemantics() {
+        val controller = launch(skin = accentsSkin)
+        compose.onNodeWithTag("eq-band-1")
+            .assert(hasContentDescription("230 Hz"))
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
+            .performSemanticsAction(SemanticsActions.SetProgress) { it(750f) }
+        compose.waitForIdle()
+        assertThat(controller.state.value.bandLevelsMb[1]).isEqualTo(750)
+        assertThat(backend.appliedBands!![1]).isEqualTo(750)
+    }
+
+    @Test fun restyled_switchTogglesTheEffect() {
+        launch(skin = accentsSkin)
+        compose.onNodeWithTag("eq-switch").performClick()
+        compose.waitForIdle()
+        assertThat(backend.appliedEnabled).isTrue()
+    }
+
+    @Test fun restyled_enabledTagShowsOnlyWhenOn() {
+        launch(skin = accentsSkin)
+        compose.onNodeWithTag("status-tag", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("eq-switch").performClick()
+        compose.waitForIdle()
+        compose.onNodeWithTag("status-tag", useUnmergedTree = true).assertExists()
+    }
+
+    @Test fun restyled_preampReadoutKeepsTrailingZeros() {
+        launch(skin = accentsSkin)
+        compose.onNodeWithText("0.0").assertExists()
+        compose.onNodeWithTag("eq-preamp").performSemanticsAction(SemanticsActions.SetProgress) { it(-3f) }
+        compose.waitForIdle()
+        compose.onNodeWithText("-3.0").assertExists()
+    }
+
+    @Test fun restyled_hasATitleCardAndABandsHeader() {
+        launch(skin = accentsSkin)
+        compose.onNodeWithTag("screen-title-rule", useUnmergedTree = true).assertExists()
+        compose.onNodeWithTag("geo-panel-rule", useUnmergedTree = true).assertExists()
+    }
+
+    @Test fun plainSkin_hasNoTitleCardNorPanelHeader() {
+        launch()
+        compose.onNodeWithTag("screen-title-rule", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("geo-panel-rule", useUnmergedTree = true).assertDoesNotExist()
+        compose.onNodeWithTag("status-tag", useUnmergedTree = true).assertDoesNotExist()
     }
 }

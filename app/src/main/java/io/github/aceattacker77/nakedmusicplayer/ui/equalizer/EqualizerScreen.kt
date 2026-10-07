@@ -1,5 +1,15 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import io.github.aceattacker77.nakedmusicplayer.ui.player.segmentsFilled
+import io.github.aceattacker77.nakedmusicplayer.ui.player.positionPercentText
+import io.github.aceattacker77.nakedmusicplayer.ui.components.themedButtonShape
+import io.github.aceattacker77.nakedmusicplayer.ui.components.StatusTag
+import io.github.aceattacker77.nakedmusicplayer.ui.components.StatusKind
+import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoSwitch
+import io.github.aceattacker77.nakedmusicplayer.ui.components.GeoPanel
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.material3.SliderState
+import androidx.compose.material3.Button
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
 import io.github.aceattacker77.nakedmusicplayer.ui.components.ScreenTitle
@@ -65,6 +75,8 @@ private const val SLIDER_HEIGHT_DP = 180
 private const val BAND_COLUMN_WIDTH_DP = 56
 private const val MAX_BASS_BOOST = 1000f
 private const val MIN_PREAMP_DB = -6f
+private const val BAND_CELLS = 12
+private const val METER_CELLS = 20
 
 /** Centre frequency as a short number for the kHz label: 3600 -> "3.6", 14000 -> "14". */
 fun kiloHertzText(hz: Int): String = String.format(Locale.ROOT, "%.1f", hz / 1000f).removeSuffix(".0")
@@ -116,33 +128,60 @@ private fun EqualizerControls(caps: EqCapabilities, state: EqState, controller: 
     val bands = List(caps.bandCount) { state.bandLevelsMb.getOrElse(it) { 0 } }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
+        val ornament = LocalOrnament.current
         ListItem(
             headlineContent = { Text(stringResource(R.string.equalizer)) },
+            supportingContent = if (ornament.statusTags && state.enabled) {
+                {
+                    val tag = skinText("eq_enabled_tag", stringResource(R.string.eq_enabled_tag))
+                    StatusTag(StatusKind.GOOD, tag.english, tag.kana)
+                }
+            } else {
+                null
+            },
             trailingContent = {
-                Switch(
-                    checked = state.enabled,
-                    onCheckedChange = controller::setEnabled,
-                    modifier = Modifier.testTag("eq-switch"),
-                )
+                if (ornament.squareSwitch) {
+                    GeoSwitch(state.enabled, controller::setEnabled, Modifier.testTag("eq-switch"))
+                } else {
+                    Switch(
+                        checked = state.enabled,
+                        onCheckedChange = controller::setEnabled,
+                        modifier = Modifier.testTag("eq-switch"),
+                    )
+                }
             },
             modifier = Modifier.clickable { controller.setEnabled(!state.enabled) },
         )
         PresetPicker(caps, state, controller)
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-        ) {
-            bands.forEachIndexed { index, level ->
-                BandColumn(
-                    index = index,
-                    level = level,
-                    freqHz = caps.centerFreqsHz.getOrElse(index) { 0 },
-                    range = caps.levelRangeMb,
-                    onLevel = { controller.setBand(index, it) },
-                )
+        val bandsRow: @Composable () -> Unit = {
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                bands.forEachIndexed { index, level ->
+                    BandColumn(
+                        index = index,
+                        level = level,
+                        freqHz = caps.centerFreqsHz.getOrElse(index) { 0 },
+                        range = caps.levelRangeMb,
+                        cells = if (ornament.segmentedMeters) BAND_CELLS else null,
+                        onLevel = { controller.setBand(index, it) },
+                    )
+                }
             }
+        }
+        if (ornament.panelHeader) {
+            GeoPanel(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                tone = MaterialTheme.colorScheme.secondary,
+                title = stringResource(R.string.eq_bands),
+                code = bandsCode(caps.bandCount),
+                content = bandsRow,
+            )
+        } else {
+            bandsRow()
         }
 
         if (caps.bassBoostSupported) {
@@ -152,22 +191,46 @@ private fun EqualizerControls(caps: EqCapabilities, state: EqState, controller: 
                 value = state.bassBoost.toFloat(),
                 range = 0f..MAX_BASS_BOOST,
                 tag = "eq-bass",
+                segmented = ornament.segmentedMeters,
                 onValueChange = { controller.setBassBoost(it.roundToInt()) },
             )
         }
-        SliderRow(
-            label = stringResource(R.string.eq_preamp),
-            valueText = stringResource(R.string.eq_db, String.format(Locale.ROOT, "%.1f", state.preampDb)),
-            value = state.preampDb,
-            range = MIN_PREAMP_DB..0f,
-            tag = "eq-preamp",
-            onValueChange = controller::setPreamp,
-        )
+        val preampLabel = stringResource(R.string.eq_preamp)
+        if (ornament.segmentedMeters) {
+            Readout(
+                label = preampLabel,
+                value = readoutText(state.preampDb),
+                unit = stringResource(R.string.eq_unit_db),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+            Slider(
+                value = state.preampDb,
+                onValueChange = controller::setPreamp,
+                valueRange = MIN_PREAMP_DB..0f,
+                modifier = Modifier.padding(horizontal = 16.dp).testTag("eq-preamp").semantics { contentDescription = preampLabel },
+            )
+        } else {
+            SliderRow(
+                label = preampLabel,
+                valueText = stringResource(R.string.eq_db, String.format(Locale.ROOT, "%.1f", state.preampDb)),
+                value = state.preampDb,
+                range = MIN_PREAMP_DB..0f,
+                tag = "eq-preamp",
+                onValueChange = controller::setPreamp,
+            )
+        }
 
-        OutlinedButton(
-            onClick = { savingPreset = true },
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        ) { Text(stringResource(R.string.eq_save_preset)) }
+        val saveLabel = stringResource(R.string.eq_save_preset)
+        val saveModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        if (ornament.squareSwitch || ornament.panelHeader || ornament.segmentedMeters) {
+            val kana = skinText("save_kana", "").kana
+            Button(onClick = { savingPreset = true }, shape = themedButtonShape(), modifier = saveModifier) {
+                Text(saveLabel)
+                if (kana != null) Text(" $kana", modifier = Modifier.clearAndSetSemantics {})
+            }
+        } else {
+            OutlinedButton(onClick = { savingPreset = true }, shape = themedButtonShape(), modifier = saveModifier) { Text(saveLabel) }
+        }
 
         SystemEqualizerRow()
     }
@@ -197,7 +260,7 @@ private fun PresetPicker(caps: EqCapabilities, state: EqState, controller: Equal
     } ?: stringResource(R.string.eq_preset_custom)
 
     Box(Modifier.padding(horizontal = 16.dp)) {
-        OutlinedButton(onClick = { open = true }, modifier = Modifier.testTag("eq-preset-button")) {
+        OutlinedButton(onClick = { open = true }, shape = themedButtonShape(), modifier = Modifier.testTag("eq-preset-button")) {
             Text("${stringResource(R.string.eq_preset)}: $current")
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
@@ -212,7 +275,7 @@ private fun PresetPicker(caps: EqCapabilities, state: EqState, controller: Equal
 }
 
 @Composable
-private fun BandColumn(index: Int, level: Int, freqHz: Int, range: IntRange, onLevel: (Int) -> Unit) {
+private fun BandColumn(index: Int, level: Int, freqHz: Int, range: IntRange, cells: Int?, onLevel: (Int) -> Unit) {
     val frequency = if (freqHz < 1000) {
         stringResource(R.string.eq_freq_hz, freqHz)
     } else {
@@ -229,12 +292,14 @@ private fun BandColumn(index: Int, level: Int, freqHz: Int, range: IntRange, onL
             range = range.first.toFloat()..range.last.toFloat(),
             onValueChange = { onLevel(it.roundToInt()) },
             description = frequency,
+            cells = cells,
             modifier = Modifier.height(SLIDER_HEIGHT_DP.dp).testTag("eq-band-$index"),
         )
         Text(frequency, style = MaterialTheme.typography.labelMedium)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SliderRow(
     label: String,
@@ -243,11 +308,29 @@ private fun SliderRow(
     range: ClosedFloatingPointRange<Float>,
     tag: String,
     onValueChange: (Float) -> Unit,
+    segmented: Boolean = false,
 ) {
+    val fraction = ((value - range.start) / (range.endInclusive - range.start)).coerceIn(0f, 1f)
     Column(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(label, style = MaterialTheme.typography.bodyLarge)
-            Text(valueText, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(if (segmented) skinLabel(label) else label, style = if (segmented) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyLarge)
+            Text(
+                text = if (segmented) positionPercentText(fraction) else valueText,
+                style = if (segmented) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        if (segmented) {
+            val fill = MaterialTheme.colorScheme.secondary
+            Slider(
+                value = value,
+                onValueChange = onValueChange,
+                valueRange = range,
+                modifier = Modifier.testTag(tag).semantics { contentDescription = label },
+                thumb = { SquareThumb() },
+                track = { SegmentedTrack(segmentsFilled(fraction, METER_CELLS), METER_CELLS, fill) },
+            )
+            return@Column
         }
         Slider(
             value = value,
@@ -277,6 +360,7 @@ private fun SystemEqualizerRow() {
 }
 
 /** A slider that runs bottom (low) to top (high), for per-band gain. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VerticalSlider(
     value: Float,
@@ -284,12 +368,16 @@ fun VerticalSlider(
     onValueChange: (Float) -> Unit,
     description: String,
     modifier: Modifier = Modifier,
+    cells: Int? = null,
 ) {
-    Slider(
-        value = value,
-        onValueChange = onValueChange,
-        valueRange = range,
-        modifier = modifier
+    val fill = MaterialTheme.colorScheme.secondary
+    val segmented: (@Composable (SliderState) -> Unit)? = cells?.let { count ->
+        { state ->
+            val filled = bandCellsFilled(state.value.roundToInt(), state.valueRange.start.roundToInt()..state.valueRange.endInclusive.roundToInt(), count)
+            SegmentedTrack(filled, count, fill)
+        }
+    }
+    val sliderModifier = modifier
             .semantics { contentDescription = description }
             .graphicsLayer {
                 rotationZ = 270f
@@ -306,6 +394,10 @@ fun VerticalSlider(
                     ),
                 )
                 layout(placeable.height, placeable.width) { placeable.place(-placeable.width, 0) }
-            },
-    )
+            }
+    if (segmented != null) {
+        Slider(value = value, onValueChange = onValueChange, valueRange = range, modifier = sliderModifier, thumb = { SquareThumb() }, track = segmented)
+    } else {
+        Slider(value = value, onValueChange = onValueChange, valueRange = range, modifier = sliderModifier)
+    }
 }

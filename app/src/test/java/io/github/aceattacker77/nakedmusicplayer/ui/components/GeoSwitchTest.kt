@@ -1,5 +1,7 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.components
 
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -30,7 +32,7 @@ class GeoSwitchTest {
 
     private fun show(checked: Boolean, callback: ((Boolean) -> Unit)? = { changes += it }) {
         compose.setContent {
-            AppTheme(Skin.FALLBACK, AppSettings(dynamicColor = false)) { GeoSwitch(checked, callback) }
+            AppTheme(Skin.FALLBACK, AppSettings(dynamicColor = false)) { GeoSwitch(checked, callback, Modifier.testTag("geo-switch")) }
         }
         compose.waitForIdle()
     }

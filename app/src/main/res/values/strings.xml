@@ -57,6 +57,8 @@
     <string name="pause">Pause</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="eq_bands">Bands</string>
+    <string name="eq_unit_db">dB</string>
     <string name="kicker_library">Library</string>
     <string name="kicker_albums">Albums</string>
     <string name="kicker_artists">Artists</string>
