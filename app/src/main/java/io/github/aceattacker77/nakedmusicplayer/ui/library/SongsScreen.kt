@@ -1,5 +1,13 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.library
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.themedButtonShape
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.material3.OutlinedButton
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import androidx.compose.foundation.layout.Arrangement
@@ -67,7 +75,7 @@ fun SongsScreen(
     val letterIndex = remember(songs, sort) { letterIndexFor(songs, sort) }
 
     Column(modifier.fillMaxSize()) {
-        SortBar(sort = sort, onSort = viewModel::setSort)
+        SortBar(sort = sort, onSort = viewModel::setSort, trackCount = songs.size)
         Box(Modifier.weight(1f).fillMaxWidth()) {
             LazyColumn(state = listState, modifier = Modifier.fillMaxSize().testTag("song-list")) {
                 itemsIndexed(songs, key = { _, song -> song.id }, contentType = { _, _ -> "song" }) { index, song ->
@@ -106,22 +114,47 @@ private fun letterIndexFor(songs: List<Song>, sort: SongSort): Map<Char, Int> {
 }
 
 @Composable
-private fun SortBar(sort: SongSort, onSort: (SongSort) -> Unit) {
+internal fun SortBar(sort: SongSort, onSort: (SongSort) -> Unit, trackCount: Int) {
     var open by remember { mutableStateOf(false) }
+    val titleCards = LocalOrnament.current.titleCards
+    val sortLabel = stringResource(sort.labelRes())
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.End,
+        horizontalArrangement = if (titleCards) Arrangement.SpaceBetween else Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = skinLabel(stringResource(sort.labelRes())),
-            modifier = Modifier.originalLabel(stringResource(sort.labelRes())),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (titleCards) {
+            Text(
+                text = skinLabel(pluralStringResource(R.plurals.songs_count, trackCount, trackCount)),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            Text(
+                text = skinLabel(sortLabel),
+                modifier = Modifier.originalLabel(sortLabel),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Box {
-            IconButton(onClick = { open = true }) {
-                Icon(painterResource(R.drawable.ic_sort), contentDescription = stringResource(R.string.sort))
+            if (titleCards) {
+                val sortName = stringResource(R.string.sort)
+                val kana = skinText("sort_kana", "").kana
+                OutlinedButton(
+                    onClick = { open = true },
+                    shape = themedButtonShape(),
+                    modifier = Modifier.semantics { contentDescription = "$sortName: $sortLabel" },
+                ) {
+                    Text(skinLabel(sortLabel), style = MaterialTheme.typography.labelLarge)
+                    if (kana != null) {
+                        Text(" $kana", style = MaterialTheme.typography.labelLarge, modifier = Modifier.clearAndSetSemantics {})
+                    }
+                }
+            } else {
+                IconButton(onClick = { open = true }) {
+                    Icon(painterResource(R.drawable.ic_sort), contentDescription = stringResource(R.string.sort))
+                }
             }
             DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
                 SongSort.entries.forEach { option ->

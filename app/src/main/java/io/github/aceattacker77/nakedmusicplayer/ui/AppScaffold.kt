@@ -1,5 +1,13 @@
 package io.github.aceattacker77.nakedmusicplayer.ui
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
+import io.github.aceattacker77.nakedmusicplayer.ui.components.ScreenTitle
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.originalLabel
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.foundation.layout.only
@@ -30,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -105,7 +114,19 @@ fun AppScaffold(
         layoutType = if (useGeoBar) NavigationSuiteType.None else layoutType,
     ) {
         Scaffold(
-            topBar = { if (topLevel) LibraryTopBar(onSearch = onSearch, onSettings = onSettings) },
+            topBar = {
+                if (topLevel) {
+                    if (LocalOrnament.current.titleCards) {
+                        TitleCardBar(
+                            tab = tabs.firstOrNull { destination?.hasRoute(it.routeClass) == true },
+                            onSearch = onSearch,
+                            onSettings = onSettings,
+                        )
+                    } else {
+                        LibraryTopBar(onSearch = onSearch, onSettings = onSettings)
+                    }
+                }
+            },
             contentWindowInsets = scaffoldContentInsetSides(useGeoBar)
                 ?.let { ScaffoldDefaults.contentWindowInsets.only(it) } ?: ScaffoldDefaults.contentWindowInsets,
         ) { padding ->
@@ -127,27 +148,48 @@ fun AppScaffold(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LibraryTopBar(onSearch: () -> Unit, onSettings: () -> Unit) {
-    var menuOpen by remember { mutableStateOf(false) }
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
-        actions = {
-            IconButton(onClick = onSearch) {
-                Icon(painterResource(R.drawable.ic_search), contentDescription = stringResource(R.string.search))
-            }
-            Box {
-                IconButton(onClick = { menuOpen = true }) {
-                    Icon(painterResource(R.drawable.ic_more_vert), contentDescription = stringResource(R.string.more_options))
-                }
-                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.settings)) },
-                        onClick = {
-                            menuOpen = false
-                            onSettings()
-                        },
-                    )
-                }
-            }
-        },
+        actions = { LibraryActions(onSearch, onSettings) },
     )
+}
+
+/** The search button and the overflow menu, shared by the Material app bar and the title-card header. */
+@Composable
+private fun LibraryActions(onSearch: () -> Unit, onSettings: () -> Unit) {
+    var menuOpen by remember { mutableStateOf(false) }
+    IconButton(onClick = onSearch) {
+        Icon(painterResource(R.drawable.ic_search), contentDescription = stringResource(R.string.search))
+    }
+    Box {
+        IconButton(onClick = { menuOpen = true }) {
+            Icon(painterResource(R.drawable.ic_more_vert), contentDescription = stringResource(R.string.more_options))
+        }
+        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.settings)) },
+                onClick = {
+                    menuOpen = false
+                    onSettings()
+                },
+            )
+        }
+    }
+}
+
+/** The header for skins with title cards: the actions on the right, then the screen's kicker, title and rule. */
+@Composable
+private fun TitleCardBar(tab: Tab?, onSearch: () -> Unit, onSettings: () -> Unit) {
+    val (key, fallback) = when (tab?.routeClass) {
+        Albums::class -> "albums_kicker" to R.string.kicker_albums
+        Artists::class -> "artists_kicker" to R.string.kicker_artists
+        Playlists::class -> "playlists_kicker" to R.string.kicker_playlists
+        else -> "library_kicker" to R.string.kicker_library
+    }
+    Column(Modifier.windowInsetsPadding(WindowInsets.statusBars)) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.End) {
+            LibraryActions(onSearch, onSettings)
+        }
+        ScreenTitle(skinText(key, stringResource(fallback)), stringResource(tab?.label ?: R.string.library_songs))
+    }
 }

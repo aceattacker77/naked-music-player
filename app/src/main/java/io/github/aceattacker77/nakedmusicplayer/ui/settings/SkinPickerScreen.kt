@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.settings
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.ScreenTitle
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
@@ -93,8 +96,9 @@ fun SkinPickerScreen(
     }
 
     Column(modifier.fillMaxSize().testTag("skin-picker")) {
+        val titleCards = LocalOrnament.current.titleCards
         TopAppBar(
-            title = { Text(stringResource(R.string.settings_skins)) },
+            title = { if (!titleCards) Text(stringResource(R.string.settings_skins)) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.back))
@@ -105,6 +109,9 @@ fun SkinPickerScreen(
             },
             windowInsets = WindowInsets(0),
         )
+        if (titleCards) {
+            ScreenTitle(skinText("skins_kicker", stringResource(R.string.kicker_skins)), stringResource(R.string.settings_skins))
+        }
         LazyVerticalGrid(
             columns = GridCells.Adaptive(150.dp),
             contentPadding = PaddingValues(16.dp),

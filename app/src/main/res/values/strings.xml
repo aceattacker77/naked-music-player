@@ -57,6 +57,12 @@
     <string name="pause">Pause</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="kicker_library">Library</string>
+    <string name="kicker_albums">Albums</string>
+    <string name="kicker_artists">Artists</string>
+    <string name="kicker_playlists">Playlists</string>
+    <string name="kicker_eq">Audio</string>
+    <string name="kicker_skins">Appearance</string>
     <string name="unplayable_tag">Unplayable</string>
     <string name="now_playing_playing">Playing</string>
     <string name="now_playing_paused">Paused</string>

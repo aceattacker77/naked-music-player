@@ -1,5 +1,8 @@
 package io.github.aceattacker77.nakedmusicplayer.ui.equalizer
 
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinText
+import io.github.aceattacker77.nakedmusicplayer.ui.theme.LocalOrnament
+import io.github.aceattacker77.nakedmusicplayer.ui.components.ScreenTitle
 import io.github.aceattacker77.nakedmusicplayer.ui.theme.skinLabel
 import android.content.Intent
 import android.media.audiofx.AudioEffect
@@ -81,8 +84,9 @@ fun EqualizerScreen(
     val state by controller.state.collectAsStateWithLifecycle()
 
     Column(modifier.fillMaxSize().testTag("equalizer-screen")) {
+        val titleCards = LocalOrnament.current.titleCards
         TopAppBar(
-            title = { Text(stringResource(R.string.equalizer)) },
+            title = { if (!titleCards) Text(stringResource(R.string.equalizer)) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.back))
@@ -90,6 +94,9 @@ fun EqualizerScreen(
             },
             windowInsets = WindowInsets(0),
         )
+        if (titleCards) {
+            ScreenTitle(skinText("eq_kicker", stringResource(R.string.kicker_eq)), stringResource(R.string.equalizer))
+        }
         val caps = capabilities
         if (caps == null) {
             EmptyState(
