@@ -6,6 +6,15 @@ field the skin format offers for shape and type, so it doubles as a worked examp
 **Import it:** copy `geofront.mskin` to the phone, then **Settings → Skins → Import skin**. If a skin with the same
 `id` is installed, the app asks before replacing it.
 
+## What it looks like
+
+Rendered by the app's screenshot tests with every field Geofront sets, in the dark palette (system fonts, so the bundled
+fonts are not shown; see the fonts section below).
+
+| Songs | Now Playing | Equalizer | Skin picker |
+|---|---|---|---|
+| <img src="../../../app/src/test/screenshots/accents_songs_dark.png" alt="Songs" width="180"> | <img src="../../../app/src/test/screenshots/accents_now_playing_dark.png" alt="Now Playing" width="180"> | <img src="../../../app/src/test/screenshots/accents_equalizer_dark.png" alt="Equalizer" width="180"> | <img src="../../../app/src/test/screenshots/accents_picker_dark.png" alt="Skin picker" width="180"> |
+
 ## What it sets
 
 | Area | Value |
