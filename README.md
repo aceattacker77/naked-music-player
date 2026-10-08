@@ -47,7 +47,7 @@ The five Now Playing layouts and the colour roles are shown in the [skin design 
 - **Playlists:** create, rename, delete, drag to reorder, swipe to remove with Undo, smart playlists (Recently
   added, Most played, Recently played), and M3U import and export.
 - **Equalizer:** the device's bands and presets, saved custom presets, bass boost and a preamp.
-- **Widget:** a 4×1 strip that resizes to a 4×2 card with progress, shuffle and repeat, coloured by the active skin.
+- **Widget:** a 4×1 strip that resizes to a 4×2 card with progress, shuffle and repeat, coloured by the active skin. An optional setting moves its progress bar live.
 
 ## Build and run
 
@@ -75,7 +75,7 @@ For anything performance-related, test a release-like build instead of the debug
 ## Test
 
 ```bash
-./gradlew :app:testDebugUnitTest         # 553 JVM and Robolectric tests, including Compose UI tests
+./gradlew :app:testDebugUnitTest         # 560 JVM and Robolectric tests, including Compose UI tests
 ./gradlew :app:verifyRoborazziDebug      # compare screenshots with the stored goldens
 ./gradlew :app:recordRoborazziDebug      # re-record the goldens after an intended visual change
 ./gradlew :app:lintDebug                 # Android lint

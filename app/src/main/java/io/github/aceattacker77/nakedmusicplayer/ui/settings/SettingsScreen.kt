@@ -116,6 +116,20 @@ fun SettingsScreen(
                 modifier = Modifier.clickable(onClick = onOpenSkins).padding(top = 8.dp),
             )
 
+            SectionHeader(stringResource(R.string.settings_widget))
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_widget_live)) },
+                supportingContent = { Text(stringResource(R.string.settings_widget_live_hint)) },
+                trailingContent = {
+                    Switch(
+                        checked = settings.widgetLiveProgress,
+                        onCheckedChange = viewModel::setWidgetLiveProgress,
+                        modifier = Modifier.testTag("widget-live-switch"),
+                    )
+                },
+                modifier = Modifier.clickable { viewModel.setWidgetLiveProgress(!settings.widgetLiveProgress) },
+            )
+
             SectionHeader(stringResource(R.string.settings_library))
             Column(Modifier.padding(horizontal = 16.dp)) {
                 Text(stringResource(R.string.settings_min_length), style = MaterialTheme.typography.bodyLarge)
