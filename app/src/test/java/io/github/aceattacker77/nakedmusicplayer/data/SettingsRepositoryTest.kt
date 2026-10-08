@@ -31,9 +31,14 @@ class SettingsRepositoryTest {
             excludedFolders = setOf("Music/WhatsApp/", "Recordings/"),
             scanFolderUris = setOf("content://tree/primary%3AMusic"),
             songSort = SongSort.DATE_ADDED,
+            widgetLiveProgress = true,
         )
         repo.update { changed }
         assertThat(repo.settings.first()).isEqualTo(changed)
+    }
+
+    @Test fun widgetLiveProgress_isOffByDefault() = runTest(UnconfinedTestDispatcher()) {
+        assertThat(SettingsRepository(newStore()).settings.first().widgetLiveProgress).isFalse()
     }
 
     @Test fun libraryFilter_mapsMinDurationAndFolders() {

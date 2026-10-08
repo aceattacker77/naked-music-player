@@ -36,6 +36,8 @@ class SettingsViewModel(
 
     fun setDynamicColor(enabled: Boolean) = update { it.copy(dynamicColor = enabled) }
 
+    fun setWidgetLiveProgress(enabled: Boolean) = update { it.copy(widgetLiveProgress = enabled) }
+
     fun setMinDuration(ms: Long) = update { it.copy(minDurationMs = ms) }
 
     fun setExcludedFolders(folders: Set<String>) = update { it.copy(excludedFolders = folders) }

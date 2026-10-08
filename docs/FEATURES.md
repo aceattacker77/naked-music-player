@@ -106,9 +106,10 @@ decisions taken while building, and every bug found on a device, are in
 | 4×2 | Adds a progress bar, shuffle and repeat. Resizes between the two. | Device |
 | Actions | Buttons control playback; shuffle and repeat show their state within about a second; tapping the card opens the app. **Play** with the app process dead restarts the app and resumes the last queue. | Device |
 | Colours | Follows the active skin and its corner radius; on Android 12+ with the Default skin and **Dynamic colour** on, it uses the wallpaper palette. A skin change recolours it immediately. | Device |
+| Live progress | Optional (**Settings → Widget → Live progress**, off by default): while a song plays the playback service also pushes the position about once per bar step (one step of a 40-step bar, between 2 and 10 seconds), so the bar moves without opening the app. Costs a little battery. | Tests, Device |
 
-Updates are pushed by the playback service when the track, play state, shuffle or repeat changes, not on every
-position tick.
+Without live progress, updates are pushed when the track, play state, shuffle or repeat changes, and the bar shows the
+position at the last of those events. It is never redrawn on every position tick.
 
 ## Settings, permissions and onboarding
 
@@ -143,7 +144,7 @@ committed (see the README).
 
 ## Testing
 
-- **553 JVM and Robolectric tests** pass: library building, sorting and filters, M3U parsing and matching, skin
+- **560 JVM and Robolectric tests** pass: library building, sorting and filters, M3U parsing and matching, skin
   parsing and validation, the equalizer model, play statistics, Room DAOs, view models, Compose UI flows (player,
   playlists, queue, skins, widget content), and a manifest check for the media-button receiver.
 - **Screenshot goldens** for the built-in skins and key screens (Roborazzi).

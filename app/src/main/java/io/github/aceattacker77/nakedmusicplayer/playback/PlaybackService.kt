@@ -24,8 +24,14 @@ import io.github.aceattacker77.nakedmusicplayer.MusicApp
 import io.github.aceattacker77.nakedmusicplayer.R
 import io.github.aceattacker77.nakedmusicplayer.data.session.SavedSession
 import io.github.aceattacker77.nakedmusicplayer.widget.WidgetState
+import io.github.aceattacker77.nakedmusicplayer.widget.WidgetProgressTicker
 import io.github.aceattacker77.nakedmusicplayer.widget.WidgetUpdater
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -40,6 +46,11 @@ class PlaybackService : MediaLibraryService() {
     private lateinit var playTracker: PlayTracker
     private val skipPolicy = SkipPolicy()
     private var lastWidgetState: WidgetState? = null
+
+    // The widget's live progress (a setting, off by default) ticks on the main thread because it reads the player.
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var liveProgress = false
+    private lateinit var progressTicker: WidgetProgressTicker
     private var session: MediaLibrarySession? = null
 
     override fun onCreate() {
@@ -62,6 +73,13 @@ class PlaybackService : MediaLibraryService() {
             }
         }
         player.addListener(PlayerListener())
+        progressTicker = WidgetProgressTicker(serviceScope) { updateWidget(force = true) }
+        serviceScope.launch {
+            container.settingsRepository.settings.map { it.widgetLiveProgress }.distinctUntilChanged().collect {
+                liveProgress = it
+                syncProgressTicker()
+            }
+        }
         connectEqualizer()
         session = MediaLibrarySession.Builder(this, player, LibraryCallback()).build()
         restoreSession()
@@ -75,6 +93,8 @@ class PlaybackService : MediaLibraryService() {
     }
 
     override fun onDestroy() {
+        progressTicker.stop()
+        serviceScope.cancel()
         container.equalizerVolumeSink = null
         container.equalizerController.release()
         session?.run {
@@ -146,8 +166,13 @@ class PlaybackService : MediaLibraryService() {
         playTracker.onPlaying(item.mediaId, duration, nowMs)
     }
 
-    /** Pushes the current track and modes to the home-screen widget, but only when they changed. */
-    private fun updateWidget() {
+    /** Pushes the current track and modes to the home-screen widget, but only when they changed (or when [force] is set, for live progress). */
+    private fun syncProgressTicker() {
+        val duration = player.duration.takeIf { it != C.TIME_UNSET && it > 0 } ?: 0L
+        progressTicker.update(liveProgress, player.isPlaying, duration)
+    }
+
+    private fun updateWidget(force: Boolean = false) {
         val item = player.currentMediaItem
         val meta = item?.mediaMetadata
         val duration = player.duration.takeIf { it != C.TIME_UNSET && it > 0 }
@@ -160,7 +185,7 @@ class PlaybackService : MediaLibraryService() {
             repeatMode = player.repeatMode,
             progress = if (duration != null) (player.currentPosition.toFloat() / duration).coerceIn(0f, 1f) else 0f,
         )
-        if (!WidgetUpdater.shouldUpdate(lastWidgetState, state)) return
+        if (!force && !WidgetUpdater.shouldUpdate(lastWidgetState, state)) return
         lastWidgetState = state
         container.applicationScope.launch { WidgetUpdater.push(this@PlaybackService, state) }
     }
@@ -176,6 +201,7 @@ class PlaybackService : MediaLibraryService() {
                 )
             ) {
                 updateWidget()
+                syncProgressTicker()
             }
         }
 

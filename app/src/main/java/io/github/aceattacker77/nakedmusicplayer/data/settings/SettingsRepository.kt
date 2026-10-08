@@ -19,6 +19,7 @@ object SettingsKeys {
     const val EXCLUDED_FOLDERS = "excluded_folders"
     const val SCAN_FOLDER_URIS = "scan_folder_uris"
     const val SONG_SORT = "song_sort"
+    const val WIDGET_LIVE_PROGRESS = "widget_live_progress"
 }
 
 class SettingsRepository(private val store: DataStore<Preferences>) {
@@ -29,6 +30,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
     private val excludedFolders = stringSetPreferencesKey(SettingsKeys.EXCLUDED_FOLDERS)
     private val scanFolderUris = stringSetPreferencesKey(SettingsKeys.SCAN_FOLDER_URIS)
     private val songSort = stringPreferencesKey(SettingsKeys.SONG_SORT)
+    private val widgetLiveProgress = booleanPreferencesKey(SettingsKeys.WIDGET_LIVE_PROGRESS)
 
     val settings: Flow<AppSettings> = store.data.map { p ->
         val d = AppSettings()
@@ -40,6 +42,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
             excludedFolders = p[excludedFolders] ?: d.excludedFolders,
             scanFolderUris = p[scanFolderUris] ?: d.scanFolderUris,
             songSort = p[songSort].toEnum(d.songSort),
+            widgetLiveProgress = p[widgetLiveProgress] ?: d.widgetLiveProgress,
         )
     }
 
@@ -54,6 +57,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
             p[excludedFolders] = next.excludedFolders
             p[scanFolderUris] = next.scanFolderUris
             p[songSort] = next.songSort.name
+            p[widgetLiveProgress] = next.widgetLiveProgress
         }
     }
 
@@ -67,6 +71,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
             excludedFolders = p[excludedFolders] ?: d.excludedFolders,
             scanFolderUris = p[scanFolderUris] ?: d.scanFolderUris,
             songSort = p[songSort].toEnum(d.songSort),
+            widgetLiveProgress = p[widgetLiveProgress] ?: d.widgetLiveProgress,
         )
     }
 }

@@ -136,6 +136,15 @@ class SettingsUiTest {
         assertThat(settings.dynamicColor).isFalse()
     }
 
+    @Test fun widgetLiveProgressSwitch_persists() {
+        launch(row(1, "Song"))
+        openSettings()
+        assertThat(settings.widgetLiveProgress).isFalse()
+        compose.onNodeWithTag("widget-live-switch").performClick()
+        compose.waitForIdle()
+        assertThat(settings.widgetLiveProgress).isTrue()
+    }
+
     @Test fun minLength_updatesFilter() {
         launch(row(1, "Short", durationMs = 45_000), row(2, "Long"))
         assertThat(container.libraryRepository.library.value.songs.map { it.id }).containsExactly(1L, 2L)

@@ -13,6 +13,7 @@ data class AppSettings(
     val excludedFolders: Set<String> = emptySet(),
     val scanFolderUris: Set<String> = emptySet(),
     val songSort: SongSort = SongSort.TITLE,
+    val widgetLiveProgress: Boolean = false,
 ) {
     fun libraryFilter(): LibraryFilter = LibraryFilter(minDurationMs, excludedFolders)
 }
