@@ -88,7 +88,7 @@ class DocScreenshotsTest {
     private fun launch() {
         source.rows = library
         container = TestContainer(app, source, player)
-        runBlocking { container.settingsRepository.update { it.copy(themeMode = ThemeMode.LIGHT, dynamicColor = false) } }
+        runBlocking { container.settingsRepository.update { it.copy(themeMode = ThemeMode.DARK, dynamicColor = false) } }
         compose.setContent { CompositionLocalProvider(LocalAppContainer provides container) { AppRoot() } }
         compose.waitForIdle()
     }
@@ -164,7 +164,7 @@ class DocScreenshotsTest {
         controller.setBand(1, 600)
         controller.setBand(3, -450)
         compose.setContent {
-            AppTheme(Skin.FALLBACK, AppSettings(themeMode = ThemeMode.LIGHT, dynamicColor = false)) {
+            AppTheme(Skin.FALLBACK, AppSettings(themeMode = ThemeMode.DARK, dynamicColor = false)) {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { EqualizerScreen(controller, onBack = {}) }
             }
         }

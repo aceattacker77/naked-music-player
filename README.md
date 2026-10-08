@@ -15,16 +15,16 @@ an equalizer, playlists and a home-screen widget.
 
 ## Screenshots
 
-Rendered from the app by its own tests with a made-up library (no personal data), in the Default skin. Run
+Rendered from the app by its own tests with a made-up library (no personal data), in the Default skin and the dark theme. Run
 `./gradlew :app:recordRoborazziDebug --tests "*DocScreenshotsTest*"` to refresh them after the interface changes.
 
 | Songs | Albums | Artists | Playlists |
 |---|---|---|---|
 | <img src="docs/screenshots/songs.png" alt="Songs" width="200"> | <img src="docs/screenshots/albums.png" alt="Albums" width="200"> | <img src="docs/screenshots/artists.png" alt="Artists" width="200"> | <img src="docs/screenshots/playlists.png" alt="Playlists" width="200"> |
 
-| Now Playing | Now Playing (dark) | Equalizer | Settings |
+| Now Playing | Vinyl skin | Equalizer | Settings |
 |---|---|---|---|
-| <img src="app/src/test/screenshots/now_playing_default_light.png" alt="Now Playing" width="200"> | <img src="app/src/test/screenshots/now_playing_default_dark.png" alt="Now Playing (dark)" width="200"> | <img src="docs/screenshots/equalizer.png" alt="Equalizer" width="200"> | <img src="docs/screenshots/settings.png" alt="Settings" width="200"> |
+| <img src="app/src/test/screenshots/now_playing_default_dark.png" alt="Now Playing" width="200"> | <img src="app/src/test/screenshots/now_playing_vinyl_dark.png" alt="Now Playing in the Vinyl skin" width="200"> | <img src="docs/screenshots/equalizer.png" alt="Equalizer" width="200"> | <img src="docs/screenshots/settings.png" alt="Settings" width="200"> |
 
 The skin picker, with the four built-in skins previewed on a Now Playing card:
 
