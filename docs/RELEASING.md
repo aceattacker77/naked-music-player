@@ -18,6 +18,9 @@ is left unsigned, so a fresh clone, the tests and CI build exactly as before.
 ## 2. Each release
 
 1. Raise `versionCode` (always) and `versionName` in `app/build.gradle.kts`. Play rejects a `versionCode` it has seen.
+   Then, in [`CHANGELOG.md`](../CHANGELOG.md), rename **Unreleased** to the new version and date, add a fresh empty
+   **Unreleased** above it, and copy the new section into `docs/releases/v<version>.md` as the release notes (keep the
+   install steps and known limits from the previous notes, and use absolute links).
 2. Run the checks: `./gradlew :app:testDebugUnitTest :app:verifyRoborazziDebug`.
 3. Build:
 
