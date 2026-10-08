@@ -13,6 +13,25 @@ an equalizer, playlists and a home-screen widget.
 > (Android 16). It has not been signed for release, and some checks still need a person or other hardware.
 > [`docs/FEATURES.md`](docs/FEATURES.md) says, feature by feature, what has and has not been verified.
 
+## Screenshots
+
+Rendered from the app by its own tests with a made-up library (no personal data), in the Default skin. Run
+`./gradlew :app:recordRoborazziDebug --tests "*DocScreenshotsTest*"` to refresh them after the interface changes.
+
+| Songs | Albums | Artists | Playlists |
+|---|---|---|---|
+| <img src="docs/screenshots/songs.png" alt="Songs" width="200"> | <img src="docs/screenshots/albums.png" alt="Albums" width="200"> | <img src="docs/screenshots/artists.png" alt="Artists" width="200"> | <img src="docs/screenshots/playlists.png" alt="Playlists" width="200"> |
+
+| Now Playing | Now Playing (dark) | Equalizer | Settings |
+|---|---|---|---|
+| <img src="app/src/test/screenshots/now_playing_default_light.png" alt="Now Playing" width="200"> | <img src="app/src/test/screenshots/now_playing_default_dark.png" alt="Now Playing (dark)" width="200"> | <img src="docs/screenshots/equalizer.png" alt="Equalizer" width="200"> | <img src="docs/screenshots/settings.png" alt="Settings" width="200"> |
+
+The skin picker, with the four built-in skins previewed on a Now Playing card:
+
+<img src="docs/screenshots/skins.png" alt="Skin picker" width="200">
+
+The five Now Playing layouts and the colour roles are shown in the [skin design brief](docs/design/skin-design-brief.md).
+
 ## What it does
 
 - **Library:** Songs, Albums, Artists and Playlists tabs; album and artist pages; search; four sort orders; an
@@ -56,7 +75,7 @@ For anything performance-related, test a release-like build instead of the debug
 ## Test
 
 ```bash
-./gradlew :app:testDebugUnitTest         # 538 JVM and Robolectric tests, including Compose UI tests
+./gradlew :app:testDebugUnitTest         # 545 JVM and Robolectric tests, including Compose UI tests
 ./gradlew :app:verifyRoborazziDebug      # compare screenshots with the stored goldens
 ./gradlew :app:recordRoborazziDebug      # re-record the goldens after an intended visual change
 ./gradlew :app:lintDebug                 # Android lint

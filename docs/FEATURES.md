@@ -11,6 +11,8 @@ What is implemented in the app today, how it behaves, and how far each piece has
 - **Not verified** means implemented but never seen working on hardware. The full list of open items is in
   [Known limitations](#known-limitations-and-open-items) and in [`manual-test-checklist.md`](manual-test-checklist.md).
 
+Screenshots of each page are in the [README](../README.md#screenshots).
+
 The design intent is in [`superpowers/specs/2026-10-02-music-player-design.md`](superpowers/specs/2026-10-02-music-player-design.md);
 decisions taken while building, and every bug found on a device, are in
 [`superpowers/execution-notes.md`](superpowers/execution-notes.md).
@@ -141,7 +143,7 @@ committed (see the README).
 
 ## Testing
 
-- **538 JVM and Robolectric tests** pass: library building, sorting and filters, M3U parsing and matching, skin
+- **545 JVM and Robolectric tests** pass: library building, sorting and filters, M3U parsing and matching, skin
   parsing and validation, the equalizer model, play statistics, Room DAOs, view models, Compose UI flows (player,
   playlists, queue, skins, widget content), and a manifest check for the media-button receiver.
 - **Screenshot goldens** for the built-in skins and key screens (Roborazzi).
