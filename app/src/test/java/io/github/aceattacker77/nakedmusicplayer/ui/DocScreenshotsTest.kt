@@ -54,7 +54,20 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w411dp-h891dp-xhdpi")
 @RunWith(RobolectricTestRunner::class)
-class DocScreenshotsTest {
+class DocScreenshotsTest : AppPageScreenshots("../docs/screenshots")
+
+/**
+ * The Google Play listing images in `docs/play-store/`: the same pages at a 1233 by 2400 size, which keeps the longest side
+ * under twice the shortest as the Play Console requires. Record with `recordRoborazziDebug --tests "*PlayStoreScreenshotsTest*"`,
+ * then run `scripts/flatten_screenshots.sh` to drop the alpha channel Play does not accept.
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(qualifiers = "w411dp-h800dp-xxhdpi")
+@RunWith(RobolectricTestRunner::class)
+class PlayStoreScreenshotsTest : AppPageScreenshots("../docs/play-store")
+
+abstract class AppPageScreenshots(private val outDir: String) {
     @get:Rule val compose = createComposeRule()
 
     private val app = ApplicationProvider.getApplicationContext<Application>()
@@ -95,7 +108,7 @@ class DocScreenshotsTest {
 
     private fun shot(name: String) {
         compose.waitForIdle()
-        compose.onRoot().captureRoboImage("../docs/screenshots/$name.png")
+        compose.onRoot().captureRoboImage("$outDir/$name.png")
     }
 
     private fun tab(label: String) {

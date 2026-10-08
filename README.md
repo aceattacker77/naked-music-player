@@ -75,7 +75,7 @@ For anything performance-related, test a release-like build instead of the debug
 ## Test
 
 ```bash
-./gradlew :app:testDebugUnitTest         # 545 JVM and Robolectric tests, including Compose UI tests
+./gradlew :app:testDebugUnitTest         # 552 JVM and Robolectric tests, including Compose UI tests
 ./gradlew :app:verifyRoborazziDebug      # compare screenshots with the stored goldens
 ./gradlew :app:recordRoborazziDebug      # re-record the goldens after an intended visual change
 ./gradlew :app:lintDebug                 # Android lint
@@ -123,6 +123,7 @@ Dependencies are wired by hand through `AppContainer` (no DI framework); tests s
 | [`docs/FEATURES.md`](docs/FEATURES.md) | Every feature, how it behaves, and how far it has been verified; performance results; known limitations |
 | [`docs/skins/FORMAT.md`](docs/skins/FORMAT.md) | The `.mskin` skin format, with an [example skin](docs/skins/example/README.md) and a full [sample skin, Geofront](docs/skins/geofront/README.md) |
 | [`docs/design/skin-design-brief.md`](docs/design/skin-design-brief.md) | A UI reference for designing a custom skin: screens, colour roles, sizes, limits, reference screenshots |
+| [`docs/RELEASING.md`](docs/RELEASING.md) | Signing, building a release APK and bundle, and publishing to GitHub and Google Play |
 | [`docs/manual-test-checklist.md`](docs/manual-test-checklist.md) | What automated tests cannot reach, with the results of each run on a phone |
 | [`docs/superpowers/specs/`](docs/superpowers/specs/2026-10-02-music-player-design.md) | The design spec: intent, architecture, targets |
 | [`docs/superpowers/plans/`](docs/superpowers/plans/2026-10-02-music-player.md) | The implementation plan the app was built from |

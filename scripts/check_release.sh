@@ -15,6 +15,10 @@ if [ "$size" -gt "$limit" ]; then
   exit 1
 fi
 
+case "$apk" in
+  *-unsigned.apk) echo "NOTE: the APK is unsigned (no keystore.properties); it cannot be installed or uploaded until it is signed" ;;
+esac
+
 sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$LOCALAPPDATA/Android/Sdk}}"
 aapt2="$(ls "$sdk"/build-tools/*/aapt2* 2>/dev/null | sort | tail -1)"
 [ -n "$aapt2" ] || { echo "aapt2 not found under $sdk/build-tools" >&2; exit 1; }
