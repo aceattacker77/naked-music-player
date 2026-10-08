@@ -143,7 +143,7 @@ committed (see the README).
 
 ## Testing
 
-- **552 JVM and Robolectric tests** pass: library building, sorting and filters, M3U parsing and matching, skin
+- **553 JVM and Robolectric tests** pass: library building, sorting and filters, M3U parsing and matching, skin
   parsing and validation, the equalizer model, play statistics, Room DAOs, view models, Compose UI flows (player,
   playlists, queue, skins, widget content), and a manifest check for the media-button receiver.
 - **Screenshot goldens** for the built-in skins and key screens (Roborazzi).

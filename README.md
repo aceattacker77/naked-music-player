@@ -75,7 +75,7 @@ For anything performance-related, test a release-like build instead of the debug
 ## Test
 
 ```bash
-./gradlew :app:testDebugUnitTest         # 552 JVM and Robolectric tests, including Compose UI tests
+./gradlew :app:testDebugUnitTest         # 553 JVM and Robolectric tests, including Compose UI tests
 ./gradlew :app:verifyRoborazziDebug      # compare screenshots with the stored goldens
 ./gradlew :app:recordRoborazziDebug      # re-record the goldens after an intended visual change
 ./gradlew :app:lintDebug                 # Android lint
