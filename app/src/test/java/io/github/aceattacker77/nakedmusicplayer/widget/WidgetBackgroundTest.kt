@@ -56,4 +56,11 @@ class WidgetBackgroundTest {
         val colour = widgetBackground(widgetColorProviders(translucent)).getColor(context(night = false))
         assertThat(colour.toArgb()).isEqualTo(Color(0xFFF6F2E8).toArgb())
     }
+
+    @Test fun background_isAGlanceProvider_notACustomOne() {
+        // Glance only understands its own colour providers when it applies a background to RemoteViews; a custom class renders as
+        // an unrelated grey on a real phone even though getColor() looks right.
+        val provider = widgetBackground(widgetColorProviders(skin))
+        assertThat(provider.javaClass.name).startsWith("androidx.glance.")
+    }
 }
